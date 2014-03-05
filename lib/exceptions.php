@@ -28,6 +28,14 @@ class Telerivet_InvalidParameterException extends Telerivet_APIException
     }
 }
 
+class Telerivet_NotFoundException extends Telerivet_APIException
+{
+    function __construct($message, $error_code)
+    {
+        parent::__construct($message, $error_code);
+    }
+}
+
 // exception raised when client could not connect to server
 class Telerivet_IOException extends Telerivet_Exception
 {

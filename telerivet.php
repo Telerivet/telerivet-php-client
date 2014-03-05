@@ -155,13 +155,14 @@ class Telerivet_API
             {
                 $error = $response['error'];
                 $error_code = $error['code'];
-                if ($error_code == 'invalid_param')
+                switch ($error_code)
                 {
-                    throw new Telerivet_InvalidParameterException($error['message'], $error['code'], $error['param']);
-                }
-                else
-                {
-                    throw new Telerivet_APIException($error['message'], $error['code']);
+                    case 'invalid_param':
+                        throw new Telerivet_InvalidParameterException($error['message'], $error['code'], $error['param']);
+                    case 'not_found':
+                        throw new Telerivet_NotFoundException($error['message'], $error['code']);
+                    default:
+                        throw new Telerivet_APIException($error['message'], $error['code']);
                 }
             }
             else
@@ -195,6 +196,9 @@ require_once "{$tr_lib_dir}/message.php";
 require_once "{$tr_lib_dir}/phone.php";
 require_once "{$tr_lib_dir}/group.php";
 require_once "{$tr_lib_dir}/label.php";
+require_once "{$tr_lib_dir}/service.php";
+require_once "{$tr_lib_dir}/contactservicestate.php";
 require_once "{$tr_lib_dir}/scheduledmessage.php";
 require_once "{$tr_lib_dir}/datatable.php";
 require_once "{$tr_lib_dir}/datarow.php";
+require_once "{$tr_lib_dir}/exceptions.php";

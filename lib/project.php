@@ -437,6 +437,41 @@ class Telerivet_Project extends Telerivet_Entity
         return new Telerivet_ScheduledMessage($this->_api, array('id' => $id, 'project_id' => $this->id), false);
     }        
     
+    /**     
+        Queries services within this project.
+     
+        Arguments:
+            $options (associative array)
+                - event ("incoming_message","scheduled","manual")
+                - name
+                - active
+                - priority               
+                - page_size (int)
+                         
+        Returns:
+            Telerivet_APICursor (of Telerivet_ScheduledMessage)
+     */
+    function queryServices($options = null)
+    {
+        return $this->_api->newApiCursor('Telerivet_Service', "{$this->getBaseApiPath()}/services", $options);
+    }    
+    
+    /**
+        Gets a service message by ID.
+        
+        Note: This does not make any API requests until you access a property of the scheduled message.
+     
+        Arguments:
+            $id (string)
+         
+        Returns:
+            Telerivet_Service
+     */       
+    function getServiceById($id)
+    {
+        return new Telerivet_Service($this->_api, array('id' => $id, 'project_id' => $this->id), false);
+    }            
+    
     function getBaseApiPath()
     {
         return "/projects/{$this->id}";

@@ -28,7 +28,7 @@ abstract class Telerivet_Entity
     protected function _setData($data)
     {
         $this->_data = $data;
-        $this->id = $data['id'];
+        $this->id = isset($data['id']) ? $data['id'] : null;
         
         if ($this->_has_custom_vars)
         {
