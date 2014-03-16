@@ -1,8 +1,13 @@
 <?php
 
 /**
-    An easy-to-use interface for interacting with API methods that return lists of entities,
-    which may be split into multiple pages.
+    Telerivet_APICursor
+    
+    An easy-to-use interface for interacting with API methods that return lists of entities that may
+    be split into multiple result pages.
+    
+    Using the APICursor, you can easily iterate over query results without having to
+    handle fetching each page of results.
     
     Any method in the Telerivet PHP client library starting with the word 'query' returns a 
     Telerivet_APICursor object, which exposes the following methods:
@@ -55,10 +60,16 @@ class Telerivet_ApiCursor
     private $next_marker;
     
     /* 
-        Get the total count of entities matching the current query, without actually fetching the entities themselves.
-        (much more efficient this way if you just need the count, as it only results in one API call)
+        $cursor->count()
         
-        Returns:    
+        Returns the total count of entities matching the current query, without actually fetching
+        the entities themselves.
+        
+        This is much more efficient than all() if you only need the count,
+        as it only results in one API call, regardless of the number of entities matched by the
+        query.
+        
+        Returns:
             int
      */
     function count()
@@ -75,11 +86,13 @@ class Telerivet_ApiCursor
     }
     
     /* 
-        Get all entities matching the current query in an array
+        $cursor->all()
         
-        Warning: This may result in an unbounded number of API calls!
-        If the result set may be large (e.g., contacts or messages), consider using        
-        hasNext() / next() instead.
+        Get all entities matching the current query in an array.
+        
+        Warning: This may result in an unbounded number of API calls! If the
+        result set may be large (e.g., contacts or messages), consider using hasNext() / next()
+        instead.
         
         Returns:
             array
@@ -101,6 +114,8 @@ class Telerivet_ApiCursor
     }
     
     /* 
+        $cursor->hasNext()
+        
         Returns true if there are any more entities in the result set, false otherwise
         
         Returns:
@@ -117,7 +132,9 @@ class Telerivet_ApiCursor
     }
     
     /* 
-        Returns the next entity in the result set
+        $cursor->next()
+        
+        Returns the next entity in the result set.
         
         Returns:
             Telerivet_Entity

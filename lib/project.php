@@ -1,17 +1,33 @@
 <?php
 
 /**
-    Represents a Telerivet project and methods for accessing its child entities, including contacts,
-    messages, scheduled messages, groups, labels, phones, and data tables. 
+    Telerivet_Project
     
-    Provides methods for sending and scheduling messages.
-
-    Properties:
-        id (string)
-        name (string)
-        timezone_id (string, see https://tools.ietf.org/html/rfc2445#section-4.3.10)
-        vars (associative array of custom variables)        
+    Represents a Telerivet project.
     
+    Provides methods for sending and scheduling messages, as well as accessing,
+    creating and updating a variety of entities, including contacts, messages, scheduled messages,
+    groups, labels, phones, services, and data tables.
+    
+    Fields:
+    
+      - id (string, max 34 characters)
+          * ID of the project
+          * Read-only
+      
+      - name
+          * Name of the project
+          * Updatable via API
+      
+      - timezone_id
+          * Default TZ database timezone ID; see
+              <http://en.wikipedia.org/wiki/List_of_tz_database_time_zones>
+          * Read-only
+      
+      - vars (object)
+          * Custom variables stored for this project
+          * Updatable via API
+      
     Example Usage:
     -------------
     
@@ -29,86 +45,213 @@ class Telerivet_Project extends Telerivet_Entity
 {
     protected $_has_custom_vars = true;
 
-    /*
+    /**
+        $project->sendMessage($options)
+        
         Sends one message (SMS or USSD request).
-     
+        
         Arguments:
-            $options (associative array)
-                - content (string)
-                - to_number OR contact_id (string)               
-                - phone_id or route_id (string, uses project/contact default phone if omitted)                
-                - status_url (callback webhook URL)                
-                - status_secret (passed as 'secret' POST parameter to status_url)                
-                - is_template (bool, default false; set true to evaluate variables like [[contact.name]] in message content)                
-                - message_type ("sms" or "ussd"; default "sms")                                
-                         
+          - $options (associative array)
+              * Required
+            
+            - content
+                * Content of the message to send
+                * Required if sending SMS message
+            
+            - to_number (string)
+                * Phone number to send the message to
+                * Required if contact_id not set
+            
+            - contact_id
+                * ID of the contact to send the message to
+                * Required if to_number not set
+            
+            - route_id
+                * ID of the phone or route to send the message from
+                * Default: default sender phone ID for your project
+            
+            - status_url
+                * Webhook callback URL to be notified when message status changes
+            
+            - status_secret
+                * POST parameter 'secret' passed to status_url
+            
+            - is_template (bool)
+                * Set to true to evaluate variables like [[contact.name]] in message content
+                * Default: false
+            
+            - message_type
+                * Type of message to send
+                * Allowed values: sms, ussd
+                * Default: sms
+            
+            - priority (int)
+                * Priority of the message (currently only observed for Android phones). Telerivet
+                    will attempt to send messages with higher priority numbers first (for example, so
+                    you can prioritize an auto-reply ahead of a bulk message to a large group).
+                * Default: 1
+          
         Returns:
-            Telerivet_APICursor (of Telerivet_Phone)
+            Telerivet_Message
      */
     function sendMessage($options)
     {
-        return $this->_api->doRequest('POST', $this->getBaseApiPath() . '/messages/send', $options);        
+        return new Telerivet_Message($this->_api, $this->_api->doRequest('POST', $this->getBaseApiPath() . '/messages/send', $options));
     }
     
-    /*
-        Sends an SMS message (optionally with mail-merge templates) to a group or list of up to 500 phone numbers
-     
+    /**
+        $project->sendMessages($options)
+        
+        Sends an SMS message (optionally with mail-merge templates) to a group or a list of up to
+        500 phone numbers
+        
         Arguments:
-            $options (associative array)
-                - content (string)
-                - group_id (string) OR to_numbers (array of up to 500 strings)
-                - phone_id or route_id (string, uses project/contact default phone if omitted)                
-                - status_url (callback webhook URL)                                
-                - status_secret (passed as 'secret' POST parameter to status_url)                
-                - exclude_contact_id (string -- optionally excludes one contact from receiving the message only when group_id param is set)
-                - is_template (bool, default false; set true to evaluate variables like [[contact.name]] in message content)                                              
-                         
+          - $options (associative array)
+              * Required
+            
+            - content
+                * Content of the message to send
+                * Required
+            
+            - group_id
+                * ID of the group to send the message to
+                * Required if to_numbers not set
+            
+            - to_numbers (array of strings)
+                * List of up to 500 phone numbers to send the message to
+                * Required if group_id not set
+            
+            - route_id
+                * ID of the phone or route to send the message from
+                * Default: default sender phone ID
+            
+            - status_url
+                * Webhook callback URL to be notified when message status changes
+            
+            - status_secret
+                * POST parameter 'secret' passed to status_url
+            
+            - exclude_contact_id
+                * Optionally excludes one contact from receiving the message (only when group_id is
+                    set)
+            
+            - is_template (bool)
+                * Set to true to evaluate variables like [[contact.name]] in message content
+                * Default: false
+          
         Returns:
             (associative array)
-                - count_queued (int)
+              - count_queued (int)
+                  * Number of messages queued to send
+              
      */
     function sendMessages($options)
     {
         return $this->_api->doRequest('POST', $this->getBaseApiPath() . '/messages/send_batch', $options);        
     }
     
-    /*
+    /**
+        $project->scheduleMessage($options)
+        
         Schedules an SMS message to a group or single contact
-     
+        
         Arguments:
-            $options (associative array)
-                - content (string)
-                - group_id OR to_number (string)
-                - start_time (UNIX timestamp, when the message will be sent (or first sent for recurring messages))
-                    OR start_time_offset (number of seconds until the message is sent)
-                - rrule (string; default "COUNT=1" (no recurrence); see https://tools.ietf.org/html/rfc2445#section-4.3.10)
-                - phone_id or route_id (string, uses project/contact default phone if omitted)                
-                - message_type ("sms" or "ussd"; default "sms")                                
-                - is_template (bool, default false; set true to evaluate variables like [[contact.name]] in message content)                                                              
-                - timezone_id (string, see http://en.wikipedia.org/wiki/List_of_tz_database_time_zones, uses project default if omitted)
-                - end_time (UNIX timestamp, after which a recurring message will stop)
-                    OR end_time_offset (number of seconds until recurring message will stop)
-                
+          - $options (associative array)
+              * Required
+            
+            - content
+                * Content of the message to schedule
+                * Required
+            
+            - group_id
+                * ID of the group to send the message to
+                * Required if to_number not set
+            
+            - to_number (string)
+                * Phone number to send the message to
+                * Required if group_id not set
+            
+            - start_time (UNIX timestamp)
+                * The time that the message will be sent (or first sent for recurring messages)
+                * Required if start_time_offset not set
+            
+            - start_time_offset (int)
+                * Number of seconds from now until the message is sent
+                * Required if start_time not set
+            
+            - rrule
+                * A recurrence rule describing the how the schedule repeats, e.g. 'FREQ=MONTHLY' or
+                    'FREQ=WEEKLY;INTERVAL=2'; see <https://tools.ietf.org/html/rfc2445#section-4.3.10>.
+                    (UNTIL is ignored; use end_time parameter)
+                * Default: COUNT=1 (one-time scheduled message, does not repeat)
+            
+            - route_id
+                * ID of the phone or route to send the message from
+                * Default: default sender phone ID
+            
+            - message_type
+                * Type of message to send
+                * Allowed values: sms, ussd
+                * Default: sms
+            
+            - is_template (bool)
+                * Set to true to evaluate variables like [[contact.name]] in message content
+                * Default: false
+            
+            - timezone_id
+                * TZ database timezone ID; see
+                    <http://en.wikipedia.org/wiki/List_of_tz_database_time_zones>
+                * Default: project default timezone
+            
+            - end_time (UNIX timestamp)
+                * Time after which a recurring message will stop (not applicable to non-recurring
+                    scheduled messages)
+            
+            - end_time_offset (int)
+                * Number of seconds from now until the recurring message will stop
+          
         Returns:
             Telerivet_ScheduledMessage
      */
     function scheduleMessage($options)
     {
-        return $this->_api->doRequest('POST', $this->getBaseApiPath() . '/scheduled', $options);        
+        return new Telerivet_ScheduledMessage($this->_api, $this->_api->doRequest('POST', $this->getBaseApiPath() . '/scheduled', $options));
     }
 
     /**
+        $project->getOrCreateContact($options)
+        
         Gets OR creates and possibly updates a contact by name or phone number.
         
-        If a phone number is provided, Telerivet will search for an existing contact
-        with that phone number (including suffix matches to allow finding contacts with phone numbers in a different format).
+        If a phone number is provided, Telerivet will search for an existing
+        contact with that phone number (including suffix matches to allow finding contacts with
+        phone numbers in a different format).
         
-        If a phone number is not provided but a name is provided, Telerivet will search 
-        for a contact with that exact name (case insensitive).
+        If a phone number is not provided but a name is provided, Telerivet
+        will search for a contact with that exact name (case insensitive).
         
         If no existing contact is found, a new contact will be created.
         
-        Then that contact will be updated with any parameters provided (name, phone_number, and vars).
+        Then that contact will be updated with any parameters provided
+        (name, phone_number, and vars).
+        
+        Arguments:
+          - $options (associative array)
+              * Required
+            
+            - name
+                * Name of the contact
+                * Required if phone_number not set
+            
+            - phone_number
+                * Phone number of the contact
+                * Required if name not set
+            
+            - vars (associative array)
+                * Custom variables and values to update on the contact
+          
+        Returns:
+            Telerivet_Contact
         
         Examples:
         
@@ -124,41 +267,62 @@ class Telerivet_Project extends Telerivet_Entity
             'name' => 'John Smith', 
             'vars' => array('birthdate' => '1924-10-01')
         ));
-              
-        Arguments:
-            $options
-                - phone_number (string)
-                - name (string)
-                - vars (associative array with custom contact information)                
-         
-        Returns:
-            Telerivet_Contact
      */   
     function getOrCreateContact($options)
     {                                       
         $data = $this->_api->doRequest("POST", "{$this->getBaseApiPath()}/contacts", $options);
-        return new Telerivet_Group($this->_api, $data);
+        return new Telerivet_Contact($this->_api, $data);
     }    
         
-    /**     
+    /**
+        $project->queryContacts($options)
+        
         Queries contacts within this project.
-     
+        
         Arguments:
-            $options (associative array)
-                - name (string)
-                - name_prefix (string)
-                - phone_number (string)
-                - phone_number_prefix (string)
-                - time_created_min (UNIX timestamp)
-                - time_created_max (UNIX timestamp)
-                - last_message_time_min (UNIX timestamp)
-                - last_message_time_max (UNIX timestamp)
-                - last_message_time_exists (bool)
-                - vars (associative array where keys are custom variable name, or custom variable name followed by "_prefix", "_min", or "_max")
-                - sort ("default","name","phone_number","last_message_time")
-                - sort_dir ("asc", "desc")
-                - page_size (int)
-                         
+          - $options (associative array)
+            
+            - name
+                * Filter contacts by name
+                * Allowed modifiers: name[exists], name[ne], name[prefix], name[not_prefix],
+                    name[gte], name[gt], name[lt], name[lte]
+            
+            - phone_number
+                * Filter contacts by phone number
+                * Allowed modifiers: phone_number[exists], phone_number[ne], phone_number[prefix],
+                    phone_number[not_prefix], phone_number[gte], phone_number[gt], phone_number[lt],
+                    phone_number[lte]
+            
+            - time_created (UNIX timestamp)
+                * Filter contacts by time created
+                * Allowed modifiers: time_created[exists], time_created[ne], time_created[min],
+                    time_created[max]
+            
+            - last_message_time (UNIX timestamp)
+                * Filter contacts by last time a message was sent or received
+                * Allowed modifiers: last_message_time[exists], last_message_time[ne],
+                    last_message_time[min], last_message_time[max]
+            
+            - vars (object)
+                * Filter contacts by value of a custom variable (e.g. vars[email], vars[foo], etc.)
+                * Allowed modifiers: vars[foo][exists], vars[foo][ne], vars[foo][prefix],
+                    vars[foo][not_prefix], vars[foo][gte], vars[foo][gt], vars[foo][lt], vars[foo][lte],
+                    vars[foo][min], vars[foo][max]
+            
+            - sort
+                * Sort the results based on a field
+                * Allowed values: default, name, phone_number, last_message_time
+                * Default: default
+            
+            - sort_dir
+                * Sort the results in ascending or descending order
+                * Allowed values: asc, desc
+                * Default: asc
+            
+            - page_size (int)
+                * Number of results returned per page (max 200)
+                * Default: 50
+          
         Returns:
             Telerivet_APICursor (of Telerivet_Contact)
      */
@@ -168,34 +332,61 @@ class Telerivet_Project extends Telerivet_Entity
     }
     
     /**
+        $project->getContactById($id)
+        
         Gets a contact by ID.
         
-        Note: This does not make any API requests until you access a property of the contact.
-     
+        Arguments:
+          - $id
+              * ID of the contact
+              * Required
+          
         Returns:
             Telerivet_Contact
-     */   
+     */
     function getContactById($id)
     {
         return new Telerivet_Contact($this->_api, array('id' => $id, 'project_id' => $this->id), false);
     }
     
-    
-    /**     
-        Queries phones within the current project.
-     
+    /**
+        $project->queryPhones($options)
+        
+        Queries phones within this project.
+        
         Arguments:
-            $options (associative array)
-                - name (string)
-                - name_prefix (string)
-                - phone_number (string)
-                - phone_number_prefix (string)
-                - last_active_time_min (UNIX timestamp)
-                - last_active_time_max (UNIX timestamp)
-                - sort ("default")
-                - sort_dir ("asc", "desc")
-                - page_size (int)
-                         
+          - $options (associative array)
+            
+            - name
+                * Filter phones by name
+                * Allowed modifiers: name[exists], name[ne], name[prefix], name[not_prefix],
+                    name[gte], name[gt], name[lt], name[lte]
+            
+            - phone_number
+                * Filter phones by phone number
+                * Allowed modifiers: phone_number[exists], phone_number[ne], phone_number[prefix],
+                    phone_number[not_prefix], phone_number[gte], phone_number[gt], phone_number[lt],
+                    phone_number[lte]
+            
+            - last_active_time (UNIX timestamp)
+                * Filter phones by last active time
+                * Allowed modifiers: last_active_time[exists], last_active_time[ne],
+                    last_active_time[min], last_active_time[max]
+            
+            - sort
+                * Sort the results based on a field
+                * Allowed values: default, name, phone_number
+                * Default: default
+            
+            - sort_dir
+                * Sort the results in ascending or descending order
+                * Allowed values: asc, desc
+                * Default: asc
+            
+            - page_size (int)
+                * Number of results returned per page (max 200)
+                * Default: 50
+          
         Returns:
             Telerivet_APICursor (of Telerivet_Phone)
      */
@@ -205,39 +396,77 @@ class Telerivet_Project extends Telerivet_Entity
     }
 
     /**
+        $project->getPhoneById($id)
+        
         Gets a phone by ID.
         
-        Note: This does not make any API requests until you access a property of the phone.
-     
         Arguments:
-            $id (string -- see https://telerivet.com/dashboard/api) 
-         
+          - $id
+              * ID of the phone - see <https://telerivet.com/dashboard/api>
+              * Required
+          
         Returns:
             Telerivet_Phone
-     */   
+     */
     function getPhoneById($id)
     {
         return new Telerivet_Phone($this->_api, array('id' => $id, 'project_id' => $this->id), false);
     }               
         
-    /**     
+    /**
+        $project->queryMessages($options)
+        
         Queries messages within this project.
-     
+        
         Arguments:
-            $options (associative array)
-                - message_type ("sms","mms","ussd","call")
-                - direction ("incoming","outgoing")
-                - source ("api","web","scheduled","webhook","service","phone","provider")
-                - starred (bool)
-                - status ("queued","sent","failed","failed_queued","delivered","not_delivered","received","processing","ignored")
-                - time_created_min (UNIX timestamp)
-                - time_created_max (UNIX timestamp)
-                - contact_id (string)
-                - phone_id (string)
-                - sort ("default")
-                - sort_dir ("asc", "desc")
-                - page_size (int)
-                         
+          - $options (associative array)
+            
+            - direction
+                * Filter messages by direction
+                * Allowed values: incoming, outgoing
+            
+            - message_type
+                * Filter messages by message_type
+                * Allowed values: sms, mms, ussd, call
+            
+            - source
+                * Filter messages by source
+                * Allowed values: phone, provider, web, api, service, webhook, scheduled
+            
+            - starred (bool)
+                * Filter messages by starred/unstarred
+            
+            - status
+                * Filter messages by status
+                * Allowed values: ignored, processing, received, sent, queued, failed,
+                    failed_queued, cancelled, delivered, not_delivered
+            
+            - time_created[min] (UNIX timestamp)
+                * Filter messages created on or after a particular time
+            
+            - time_created[max] (UNIX timestamp)
+                * Filter messages created before a particular time
+            
+            - contact_id
+                * ID of the contact who sent/received the message
+            
+            - phone_id
+                * ID of the phone that sent/received the message
+            
+            - sort
+                * Sort the results based on a field
+                * Allowed values: default
+                * Default: default
+            
+            - sort_dir
+                * Sort the results in ascending or descending order
+                * Allowed values: asc, desc
+                * Default: asc
+            
+            - page_size (int)
+                * Number of results returned per page (max 200)
+                * Default: 50
+          
         Returns:
             Telerivet_APICursor (of Telerivet_Message)
      */
@@ -247,34 +476,52 @@ class Telerivet_Project extends Telerivet_Entity
     }
     
     /**
+        $project->getMessageById($id)
+        
         Gets a message by ID.
         
-        Note: This does not make any API requests until you access a property of the message.
-     
         Arguments:
-            $id (string)
-         
+          - $id
+              * ID of the message
+              * Required
+          
         Returns:
             Telerivet_Message
-     */   
+     */
     function getMessageById($id)
     {
         return new Telerivet_Message($this->_api, array('id' => $id, 'project_id' => $this->id), false);
     }
 
-    /**     
+    /**
+        $project->queryGroups($options)
+        
         Queries groups within this project.
-     
+        
         Arguments:
-            $options (associative array)
-                - name (string)
-                - name_prefix (string)
-                - sort ("default")
-                - sort_dir ("asc", "desc")
-                - page_size (int)
-                         
+          - $options (associative array)
+            
+            - name
+                * Filter groups by name
+                * Allowed modifiers: name[exists], name[ne], name[prefix], name[not_prefix],
+                    name[gte], name[gt], name[lt], name[lte]
+            
+            - sort
+                * Sort the results based on a field
+                * Allowed values: default, name
+                * Default: default
+            
+            - sort_dir
+                * Sort the results in ascending or descending order
+                * Allowed values: asc, desc
+                * Default: asc
+            
+            - page_size (int)
+                * Number of results returned per page (max 200)
+                * Default: 50
+          
         Returns:
-            Telerivet_APICursor (of Telerivet_Phone)
+            Telerivet_APICursor (of Telerivet_Group)
      */
     function queryGroups($options = null)
     {
@@ -282,11 +529,15 @@ class Telerivet_Project extends Telerivet_Entity
     }
 
     /**
-        Gets OR creates a group by name.
-              
+        $project->getOrCreateGroup($name)
+        
+        Gets or creates a group by name.
+        
         Arguments:
-            $name (string)
-                
+          - $name
+              * Name of the group
+              * Required
+          
         Returns:
             Telerivet_Group
      */       
@@ -297,15 +548,19 @@ class Telerivet_Project extends Telerivet_Entity
     }    
     
     /**
+        $project->getGroupById($id)
+        
         Gets a group by ID.
         
-        Note: This does not make any API requests until you access a property of the group.
-     
         Arguments:
-            $id (string)
-         
+          - $id
+              * ID of the group
+              * Required
+          
         Returns:
             Telerivet_Group
+        
+        Note: This does not make any API requests until you access a property of the group.     
      */       
     function getGroupById($id)
     {
@@ -313,16 +568,32 @@ class Telerivet_Project extends Telerivet_Entity
     }        
         
     /**     
+        $project->queryLabels($options)
+        
         Queries labels within this project.
-     
+        
         Arguments:
-            $options (associative array)
-                - name (string)
-                - name_prefix (string)
-                - sort ("default")
-                - sort_dir ("asc", "desc")
-                - page_size (int)
-                         
+          - $options (associative array)
+            
+            - name
+                * Filter labels by name
+                * Allowed modifiers: name[exists], name[ne], name[prefix], name[not_prefix],
+                    name[gte], name[gt], name[lt], name[lte]
+            
+            - sort
+                * Sort the results based on a field
+                * Allowed values: default, name
+                * Default: default
+            
+            - sort_dir
+                * Sort the results in ascending or descending order
+                * Allowed values: asc, desc
+                * Default: asc
+            
+            - page_size (int)
+                * Number of results returned per page (max 200)
+                * Default: 50
+          
         Returns:
             Telerivet_APICursor (of Telerivet_Label)
      */    
@@ -332,11 +603,13 @@ class Telerivet_Project extends Telerivet_Entity
     }
         
     /**
-        Gets OR creates a label by name.
-              
+        $project->getOrCreateLabel($name)
+        
+        Gets or creates a label by name.
+        
         Arguments:
-            $name (string)
-                
+          - name (Name of the label)
+          
         Returns:
             Telerivet_Label
      */       
@@ -347,15 +620,18 @@ class Telerivet_Project extends Telerivet_Entity
     }        
     
     /**
+        $project->getLabelById($id)
+        
         Gets a label by ID.
         
-        Note: This does not make any API requests until you access a property of the label.
-     
         Arguments:
-            $id (string)
-         
+          - $id (ID of the label)
+              * Required
+          
         Returns:
             Telerivet_Label
+        
+        Note: This does not make any API requests until you access a property of the label.     
      */   
     function getLabelById($id)
     {
@@ -364,16 +640,32 @@ class Telerivet_Project extends Telerivet_Entity
     
     
     /**     
+        $project->queryDataTables($options)
+        
         Queries data tables within this project.
-     
+        
         Arguments:
-            $options (associative array)
-                - name (string)
-                - name_prefix (string)
-                - sort ("default")
-                - sort_dir ("asc", "desc")
-                - page_size (int)
-                         
+          - $options (associative array)
+            
+            - name
+                * Filter data tables by name
+                * Allowed modifiers: name[exists], name[ne], name[prefix], name[not_prefix],
+                    name[gte], name[gt], name[lt], name[lte]
+            
+            - sort
+                * Sort the results based on a field
+                * Allowed values: default, name
+                * Default: default
+            
+            - sort_dir
+                * Sort the results in ascending or descending order
+                * Allowed values: asc, desc
+                * Default: asc
+            
+            - page_size (int)
+                * Number of results returned per page (max 200)
+                * Default: 50
+          
         Returns:
             Telerivet_APICursor (of Telerivet_DataTable)
      */
@@ -383,15 +675,18 @@ class Telerivet_Project extends Telerivet_Entity
     }
     
     /**
+        $project->getDataTableById($id)
+        
         Gets a data table by ID.
         
-        Note: This does not make any API requests until you access a property of the label.
-     
         Arguments:
-            $id (string)
-         
+          - $id (ID of the data table)
+              * Required
+          
         Returns:
             Telerivet_DataTable
+        
+        Note: This does not make any API requests until you access a property of the label.    
      */   
     function getDataTableById($id)
     {
@@ -399,20 +694,41 @@ class Telerivet_Project extends Telerivet_Entity
     }
     
     /**     
+        $project->queryScheduledMessages($options)
+        
         Queries scheduled messages within this project.
-     
+        
         Arguments:
-            $options (associative array)
-                - message_type ("sms","mms","ussd","call")
-                - time_created_min (UNIX timestamp)
-                - time_created_max (UNIX timestamp)
-                - next_time_min (UNIX timestamp)
-                - next_time_max (UNIX timestamp)
-                - next_time_exists (bool)
-                - sort ("default", "next_time")
-                - sort_dir ("asc", "desc")
-                - page_size (int)
-                         
+          - $options (associative array)
+            
+            - message_type
+                * Filter scheduled messages by message_type
+                * Allowed values: sms, mms, ussd, call
+            
+            - time_created (UNIX timestamp)
+                * Filter scheduled messages by time_created
+                * Allowed modifiers: time_created[exists], time_created[ne], time_created[min],
+                    time_created[max]
+            
+            - next_time (UNIX timestamp)
+                * Filter scheduled messages by next_time
+                * Allowed modifiers: next_time[exists], next_time[ne], next_time[min],
+                    next_time[max]
+            
+            - sort
+                * Sort the results based on a field
+                * Allowed values: default, name
+                * Default: default
+            
+            - sort_dir
+                * Sort the results in ascending or descending order
+                * Allowed values: asc, desc
+                * Default: asc
+            
+            - page_size (int)
+                * Number of results returned per page (max 200)
+                * Default: 50
+          
         Returns:
             Telerivet_APICursor (of Telerivet_ScheduledMessage)
      */
@@ -422,15 +738,18 @@ class Telerivet_Project extends Telerivet_Entity
     }
     
     /**
+        $project->getScheduledMessageById($id)
+        
         Gets a scheduled message by ID.
         
-        Note: This does not make any API requests until you access a property of the scheduled message.
-     
         Arguments:
-            $id (string)
-         
+          - $id (ID of the scheduled message)
+              * Required
+          
         Returns:
             Telerivet_ScheduledMessage
+        
+        Note: This does not make any API requests until you access a property of the scheduled message.     
      */       
     function getScheduledMessageById($id)
     {
@@ -438,18 +757,41 @@ class Telerivet_Project extends Telerivet_Entity
     }        
     
     /**     
+        $project->queryServices($options)
+        
         Queries services within this project.
-     
+        
         Arguments:
-            $options (associative array)
-                - event ("incoming_message","scheduled","manual")
-                - name
-                - active
-                - priority               
-                - page_size (int)
-                         
+          - $options (associative array)
+            
+            - name
+                * Filter services by name
+                * Allowed modifiers: name[exists], name[ne], name[prefix], name[not_prefix],
+                    name[gte], name[gt], name[lt], name[lte]
+            
+            - active (bool)
+                * Filter services by active/inactive state
+            
+            - context
+                * Filter services that can be invoked in a particular context
+                * Allowed values: message, contact, project, receipt
+            
+            - sort
+                * Sort the results based on a field
+                * Allowed values: default, priority, name
+                * Default: default
+            
+            - sort_dir
+                * Sort the results in ascending or descending order
+                * Allowed values: asc, desc
+                * Default: asc
+            
+            - page_size (int)
+                * Number of results returned per page (max 200)
+                * Default: 50
+          
         Returns:
-            Telerivet_APICursor (of Telerivet_ScheduledMessage)
+            Telerivet_APICursor (of Telerivet_Service)
      */
     function queryServices($options = null)
     {
@@ -457,20 +799,34 @@ class Telerivet_Project extends Telerivet_Entity
     }    
     
     /**
-        Gets a service message by ID.
+        $project->getServiceById($id)
         
-        Note: This does not make any API requests until you access a property of the scheduled message.
-     
+        Gets a service by ID.
+        
         Arguments:
-            $id (string)
-         
+          - $id (ID of the service)
+              * Required
+          
         Returns:
             Telerivet_Service
+        
+        Note: This does not make any API requests until you access a property of the scheduled message.
      */       
     function getServiceById($id)
     {
         return new Telerivet_Service($this->_api, array('id' => $id, 'project_id' => $this->id), false);
-    }            
+    }         
+
+    /**
+        $project->save()
+        
+        Saves any fields or custom variables that have changed for this project.
+        
+     */
+    function save()
+    {
+        parent::save();
+    }
     
     function getBaseApiPath()
     {

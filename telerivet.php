@@ -58,6 +58,21 @@ class Telerivet_API
     
     private $curl;
     
+    /**     
+        $tr = new Telerivet_API($api_key)
+        
+        Initializes a client handle to the Telerivet REST API.
+        
+        Each API key is associated with a Telerivet user account, and all
+        API actions are performed with that user's permissions. If you want to restrict the
+        permissions of an API client, simply add another user account at
+        <https://telerivet.com/dashboard/users> with the desired permissions.
+        
+        Arguments:
+          - $api_key (Your Telerivet API key; see <https://telerivet.com/dashboard/api>)
+              * Required
+          
+     */
     public function __construct($api_key, $api_url = 'https://api.telerivet.com/v1')
     {
         $this->api_key = $api_key;
@@ -65,16 +80,32 @@ class Telerivet_API
     }    
     
     /**     
+        $tr->queryProjects($options)
+        
         Queries projects accessible to the current user account.
-     
+        
         Arguments:
-            $options (associative array)
-                - name
-                - name_prefix
-                - sort ("default")
-                - sort_dir: ("asc", "desc")
-                - page_size (int)
-         
+          - $options (associative array)
+            
+            - name
+                * Filter projects by name
+                * Allowed modifiers: name[exists], name[ne], name[prefix], name[not_prefix],
+                    name[gte], name[gt], name[lt], name[lte]
+            
+            - sort
+                * Sort the results based on a field
+                * Allowed values: default, name
+                * Default: default
+            
+            - sort_dir
+                * Sort the results in ascending or descending order
+                * Allowed values: asc, desc
+                * Default: asc
+            
+            - page_size (int)
+                * Number of results returned per page (max 200)
+                * Default: 50
+          
         Returns:
             Telerivet_APICursor (of Telerivet_Project)
      */
@@ -83,17 +114,19 @@ class Telerivet_API
         return $this->newApiCursor('Telerivet_Project', '/projects', $options);
     }
     
-    /**
-        Gets a project by ID 
+    /**     
+        $tr->getProjectById($id)
         
-        Note: This does not make any API requests until you access a property of the project.
-     
+        Gets a Telerivet project by its ID.
+        
         Arguments:
-            $id (string -- see https://telerivet.com/dashboard/api) 
-         
+          - $id
+              * ID of the project -- see <https://telerivet.com/dashboard/api>
+              * Required
+          
         Returns:
             Telerivet_Project
-     */    
+     */
     function getProjectById($id)
     {
         return new Telerivet_Project($this, array('id' => $id), false);

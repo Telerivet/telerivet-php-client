@@ -16,8 +16,6 @@ abstract class Telerivet_Entity
     
     protected $_dirty = array();
     
-    public $id;
-    
     function __construct($api, $data, $is_loaded = true)
     {
         $this->_api = $api;
@@ -28,7 +26,6 @@ abstract class Telerivet_Entity
     protected function _setData($data)
     {
         $this->_data = $data;
-        $this->id = isset($data['id']) ? $data['id'] : null;
         
         if ($this->_has_custom_vars)
         {
@@ -40,8 +37,8 @@ abstract class Telerivet_Entity
     {
         if (!$this->_is_loaded)
         {
-            $this->_setData($this->_api->doRequest('GET', $this->getBaseApiPath()));
             $this->_is_loaded = true;
+            $this->_setData($this->_api->doRequest('GET', $this->getBaseApiPath()));            
         }
     }
         

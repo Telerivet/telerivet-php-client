@@ -1,14 +1,32 @@
 <?php
 
-/**
+/**    
+    Telerivet_Group
+    
     Represents a group used to organize contacts within Telerivet.
     
-    Properties:
-        id (string)
-        name (string)
-        num_members (int)
-        time_created (UNIX timestamp)        
-        project_id (string)            
+    Fields:
+    
+      - id (string, max 34 characters)
+          * ID of the group
+          * Read-only
+      
+      - name
+          * Name of the group
+          * Updatable via API
+      
+      - num_members (int)
+          * Number of contacts in the group
+          * Read-only
+      
+      - time_created (UNIX timestamp)
+          * Time the group was created in Telerivet
+          * Read-only
+      
+      - project_id
+          * ID of the project this group belongs to
+          * Read-only
+      
     
     Example Usage:
     -------------
@@ -33,24 +51,54 @@ class Telerivet_Group extends Telerivet_Entity
     }
 
     /**     
-        Queries contacts within this group.
+        $group->queryContacts($options)
+        
+        Queries contacts that are members of this group.
         
         Arguments:
-            $options (associative array)
-                - name (string)
-                - name_prefix (string)
-                - phone_number (string)
-                - phone_number_prefix (string)
-                - time_created_min (UNIX timestamp)
-                - time_created_max (UNIX timestamp)
-                - last_message_time_min (UNIX timestamp)
-                - last_message_time_max (UNIX timestamp)
-                - last_message_time_exists (bool)
-                - vars (associative array where keys are custom variable name, or custom variable name followed by "_prefix", "_min", or "_max")
-                - sort ("default","name","phone_number","last_message_time")
-                - sort_dir ("asc", "desc")
-                - page_size (int)
-                         
+          - $options (associative array)
+            
+            - name
+                * Filter contacts by name
+                * Allowed modifiers: name[exists], name[ne], name[prefix], name[not_prefix],
+                    name[gte], name[gt], name[lt], name[lte]
+            
+            - phone_number
+                * Filter contacts by phone number
+                * Allowed modifiers: phone_number[exists], phone_number[ne], phone_number[prefix],
+                    phone_number[not_prefix], phone_number[gte], phone_number[gt], phone_number[lt],
+                    phone_number[lte]
+            
+            - time_created (UNIX timestamp)
+                * Filter contacts by time created
+                * Allowed modifiers: time_created[exists], time_created[ne], time_created[min],
+                    time_created[max]
+            
+            - last_message_time (UNIX timestamp)
+                * Filter contacts by last time a message was sent or received
+                * Allowed modifiers: last_message_time[exists], last_message_time[ne],
+                    last_message_time[min], last_message_time[max]
+            
+            - vars (object)
+                * Filter contacts by value of a custom variable (e.g. vars[email], vars[foo], etc.)
+                * Allowed modifiers: vars[foo][exists], vars[foo][ne], vars[foo][prefix],
+                    vars[foo][not_prefix], vars[foo][gte], vars[foo][gt], vars[foo][lt], vars[foo][lte],
+                    vars[foo][min], vars[foo][max]
+            
+            - sort
+                * Sort the results based on a field
+                * Allowed values: default, name, phone_number, last_message_time
+                * Default: default
+            
+            - sort_dir
+                * Sort the results in ascending or descending order
+                * Allowed values: asc, desc
+                * Default: asc
+            
+            - page_size (int)
+                * Number of results returned per page (max 200)
+                * Default: 50
+          
         Returns:
             Telerivet_APICursor (of Telerivet_Contact)
      */    
@@ -59,21 +107,42 @@ class Telerivet_Group extends Telerivet_Entity
         return $this->_api->newApiCursor('Telerivet_Contact', "{$this->getBaseApiPath()}/contacts", $options);
     }
     
-    /**     
+    /** 
+        $group->queryScheduledMessages($options)
+        
         Queries scheduled messages to this group.
-     
+        
         Arguments:
-            $options (associative array)
-                - message_type ("sms","mms","ussd","call")
-                - time_created_min (UNIX timestamp)
-                - time_created_max (UNIX timestamp)
-                - next_time_min (UNIX timestamp)
-                - next_time_max (UNIX timestamp)
-                - next_time_exists (bool)
-                - sort ("default", "next_time")
-                - sort_dir ("asc", "desc")
-                - page_size (int)
-                         
+          - $options (associative array)
+            
+            - message_type
+                * Filter scheduled messages by message_type
+                * Allowed values: sms, mms, ussd, call
+            
+            - time_created (UNIX timestamp)
+                * Filter scheduled messages by time_created
+                * Allowed modifiers: time_created[exists], time_created[ne], time_created[min],
+                    time_created[max]
+            
+            - next_time (UNIX timestamp)
+                * Filter scheduled messages by next_time
+                * Allowed modifiers: next_time[exists], next_time[ne], next_time[min],
+                    next_time[max]
+            
+            - sort
+                * Sort the results based on a field
+                * Allowed values: default, name
+                * Default: default
+            
+            - sort_dir
+                * Sort the results in ascending or descending order
+                * Allowed values: asc, desc
+                * Default: asc
+            
+            - page_size (int)
+                * Number of results returned per page (max 200)
+                * Default: 50
+          
         Returns:
             Telerivet_APICursor (of Telerivet_ScheduledMessage)
      */    
@@ -83,7 +152,21 @@ class Telerivet_Group extends Telerivet_Entity
     }    
     
     /**
+        $group->save()
+        
+        Saves any fields that have changed for this group.
+        
+     */
+    function save()
+    {        
+        parent::save();
+    }          
+    
+    /**
+        $group->delete()
+        
         Deletes this group (Note: no contacts are deleted.)
+        
      */    
     function delete()
     {        

@@ -1,13 +1,28 @@
 <?php
 
 /**
+    Telerivet_Label
+    
     Represents a label used to organize messages within Telerivet.
     
-    Properties:
-        id (string)
-        name (string)
-        time_created (UNIX timestamp)        
-        project_id (string)            
+    Fields:
+    
+      - id (string, max 34 characters)
+          * ID of the label
+          * Read-only
+      
+      - name
+          * Name of the label
+          * Updatable via API
+      
+      - time_created (UNIX timestamp)
+          * Time the label was created in Telerivet
+          * Read-only
+      
+      - project_id
+          * ID of the project this label belongs to
+          * Read-only
+      
     
     Example Usage:
     -------------
@@ -26,30 +41,61 @@
  */
 class Telerivet_Label extends Telerivet_Entity
 {
-    function getBaseApiPath()
-    {
-        return "/projects/{$this->project_id}/labels/{$this->id}";
-    }
-
         
-    /**
+    /**        
+        $label->queryMessages($options)
+        
         Queries messages with this label.
-     
+        
         Arguments:
-            $options (associative array)
-                - message_type ("sms","mms","ussd","call")
-                - direction ("incoming","outgoing")
-                - source ("api","web","scheduled","webhook","service","phone","provider")
-                - starred (bool)
-                - status ("queued","sent","failed","failed_queued","delivered","not_delivered","received","processing","ignored")
-                - time_created_min (UNIX timestamp)
-                - time_created_max (UNIX timestamp)
-                - contact_id (string)
-                - phone_id (string)
-                - sort ("default")
-                - sort_dir ("asc", "desc")
-                - page_size (int)
-                         
+          - $options (associative array)
+            
+            - direction
+                * Filter messages by direction
+                * Allowed values: incoming, outgoing
+            
+            - message_type
+                * Filter messages by message_type
+                * Allowed values: sms, mms, ussd, call
+            
+            - source
+                * Filter messages by source
+                * Allowed values: phone, provider, web, api, service, webhook, scheduled
+            
+            - starred (bool)
+                * Filter messages by starred/unstarred
+            
+            - status
+                * Filter messages by status
+                * Allowed values: ignored, processing, received, sent, queued, failed,
+                    failed_queued, cancelled, delivered, not_delivered
+            
+            - time_created[min] (UNIX timestamp)
+                * Filter messages created on or after a particular time
+            
+            - time_created[max] (UNIX timestamp)
+                * Filter messages created before a particular time
+            
+            - contact_id
+                * ID of the contact who sent/received the message
+            
+            - phone_id
+                * ID of the phone that sent/received the message
+            
+            - sort
+                * Sort the results based on a field
+                * Allowed values: default
+                * Default: default
+            
+            - sort_dir
+                * Sort the results in ascending or descending order
+                * Allowed values: asc, desc
+                * Default: asc
+            
+            - page_size (int)
+                * Number of results returned per page (max 200)
+                * Default: 50
+          
         Returns:
             Telerivet_APICursor (of Telerivet_Message)
      */
@@ -57,12 +103,31 @@ class Telerivet_Label extends Telerivet_Entity
     {
         return $this->_api->newApiCursor('Telerivet_Message', "{$this->getBaseApiPath()}/messages", $options);
     }
-    
+      
     /**
+        $label->save()
+        
+        Saves any fields that have changed for this label.
+        
+     */
+    function save()
+    {        
+        parent::save();
+    }      
+      
+     /**        
+        $label->delete()
+        
         Deletes this label (Note: no messages are deleted.)
-     */    
+        
+     */
     function delete()
     {        
         $this->_api->doRequest("DELETE", $this->getBaseApiPath());               
+    }    
+
+    function getBaseApiPath()
+    {
+        return "/projects/{$this->project_id}/labels/{$this->id}";
     }    
 }
