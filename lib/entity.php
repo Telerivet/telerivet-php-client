@@ -1,9 +1,7 @@
 <?php
 /*
     Base class for all entities returned by the Telerivet API, including projects,
-    contacts, messages, groups, labels, scheduled messages, data tables, and data rows.
-    
-    All messages
+    contacts, messages, groups, labels, scheduled messages, data tables, and data rows.       
  */ 
  
 abstract class Telerivet_Entity

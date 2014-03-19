@@ -32,32 +32,6 @@
 class Telerivet_DataTable extends Telerivet_Entity
 {
     /**
-        $table->createRow($options)
-        
-        Adds a new row to this data table.
-        
-        Arguments:
-          - $options (associative array)
-            
-            - contact_id
-                * ID of the contact that this row is associated with (if applicable)
-            
-            - from_number (string)
-                * Phone number that this row is associated with (if applicable)
-            
-            - vars (associative array)
-                * Custom variables and values to set for this data row
-          
-        Returns:
-            Telerivet_DataRow
-     */
-    function createRow($options)
-    {                                          
-        $data = $this->_api->doRequest("POST", "{$this->getBaseApiPath()}/rows", $options);
-        return new Telerivet_DataRow($this->_api, $data);
-    }
-    
-    /**
         $table->queryRows($options)
         
         Queries rows in this data table.
@@ -89,13 +63,42 @@ class Telerivet_DataTable extends Telerivet_Entity
             - page_size (int)
                 * Number of results returned per page (max 200)
                 * Default: 50
+            
+            - offset (int)
+                * Number of items to skip from beginning of result set
+                * Default: 0
           
         Returns:
             Telerivet_APICursor (of Telerivet_DataRow)
-     */
+    */
     function queryRows($options = null)
     {
         return $this->_api->newApiCursor('Telerivet_DataRow', "{$this->getBaseApiPath()}/rows", $options);
+    }
+
+    /**
+        $table->createRow($options)
+        
+        Adds a new row to this data table.
+        
+        Arguments:
+          - $options (associative array)
+            
+            - contact_id
+                * ID of the contact that this row is associated with (if applicable)
+            
+            - from_number (string)
+                * Phone number that this row is associated with (if applicable)
+            
+            - vars (associative array)
+                * Custom variables and values to set for this data row
+          
+        Returns:
+            Telerivet_DataRow
+    */
+    function createRow($options = null)
+    {
+        return new Telerivet_DataRow($this->_api, $this->_api->doRequest("POST", "{$this->getBaseApiPath()}/rows", $options));
     }
 
     /**
@@ -109,23 +112,23 @@ class Telerivet_DataTable extends Telerivet_Entity
           
         Returns:
             Telerivet_DataRow
-     */
+    */
     function getRowById($id)
-    {                                          
-        return new Telerivet_DataRow($this->_api, array('id' => $id, 'table_id' => $this->id, 'project_id' => $this->project_id), false);
+    {
+        return new Telerivet_DataRow($this->_api, $this->_api->doRequest("GET", "{$this->getBaseApiPath()}/rows/{$id}"));
     }
-    
+
     /**
         $table->save()
         
         Saves any fields that have changed for this data table.
         
-     */
+    */
     function save()
-    {        
+    {
         parent::save();
     }
-        
+
     function getBaseApiPath()
     {
         return "/projects/{$this->project_id}/tables/{$this->id}";

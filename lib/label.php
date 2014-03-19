@@ -41,8 +41,7 @@
  */
 class Telerivet_Label extends Telerivet_Entity
 {
-        
-    /**        
+    /**
         $label->queryMessages($options)
         
         Queries messages with this label.
@@ -95,39 +94,43 @@ class Telerivet_Label extends Telerivet_Entity
             - page_size (int)
                 * Number of results returned per page (max 200)
                 * Default: 50
+            
+            - offset (int)
+                * Number of items to skip from beginning of result set
+                * Default: 0
           
         Returns:
             Telerivet_APICursor (of Telerivet_Message)
-     */
+    */
     function queryMessages($options = null)
     {
         return $this->_api->newApiCursor('Telerivet_Message', "{$this->getBaseApiPath()}/messages", $options);
     }
-      
+
     /**
         $label->save()
         
         Saves any fields that have changed for this label.
         
-     */
+    */
     function save()
-    {        
+    {
         parent::save();
-    }      
-      
-     /**        
+    }
+
+    /**
         $label->delete()
         
         Deletes this label (Note: no messages are deleted.)
         
-     */
+    */
     function delete()
-    {        
-        $this->_api->doRequest("DELETE", $this->getBaseApiPath());               
-    }    
+    {
+        $this->_api->doRequest("DELETE", "{$this->getBaseApiPath()}");
+    }
 
     function getBaseApiPath()
     {
         return "/projects/{$this->project_id}/labels/{$this->id}";
-    }    
+    }
 }

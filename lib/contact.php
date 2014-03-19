@@ -49,11 +49,61 @@
       
  */
 class Telerivet_Contact extends Telerivet_Entity
-{
-    protected $_has_custom_vars = true;
-    
+{    
     private $_group_ids_set = array();
     
+    /**
+        $contact->isInGroup($group)
+        
+        Returns true if this contact is in a particular group, false otherwise.
+        
+        Arguments:
+          - $group (Telerivet_Group)
+              * Required
+          
+        Returns:
+            bool
+     */    
+    function isInGroup($group)
+    {
+        $this->_loadData();
+        return isset($this->_group_ids_set[$group->id]);
+    }
+    
+    /**
+        $contact->addToGroup($group)
+        
+        Adds this contact to a group.
+        
+        Arguments:
+          - $group (Telerivet_Group)
+              * Required
+          
+     */    
+    function addToGroup($group)
+    {
+        $this->_api->doRequest("PUT", "{$group->getBaseApiPath()}/contacts/{$this->id}");               
+        $this->_group_ids_set[$group->id] = true;        
+    }
+    
+    /**
+        $contact->removeFromGroup($group)
+        
+        Removes this contact from a group.
+        
+        Arguments:
+          - $group (Telerivet_Group)
+              * Required
+          
+     */    
+    function removeFromGroup($group)
+    {        
+        $this->_api->doRequest("DELETE", "{$group->getBaseApiPath()}/contacts/{$this->id}");               
+        unset($this->_group_ids_set[$group->id]);
+    }
+    
+    protected $_has_custom_vars = true;
+
     /**
         $contact->queryMessages($options)
         
@@ -107,15 +157,19 @@ class Telerivet_Contact extends Telerivet_Entity
             - page_size (int)
                 * Number of results returned per page (max 200)
                 * Default: 50
+            
+            - offset (int)
+                * Number of items to skip from beginning of result set
+                * Default: 0
           
         Returns:
             Telerivet_APICursor (of Telerivet_Message)
-     */
+    */
     function queryMessages($options = null)
     {
         return $this->_api->newApiCursor('Telerivet_Message', "{$this->getBaseApiPath()}/messages", $options);
     }
-    
+
     /**
         $contact->queryGroups($options)
         
@@ -142,10 +196,14 @@ class Telerivet_Contact extends Telerivet_Entity
             - page_size (int)
                 * Number of results returned per page (max 200)
                 * Default: 50
+            
+            - offset (int)
+                * Number of items to skip from beginning of result set
+                * Default: 0
           
         Returns:
             Telerivet_APICursor (of Telerivet_Group)
-     */
+    */
     function queryGroups($options = null)
     {
         return $this->_api->newApiCursor('Telerivet_Group', "{$this->getBaseApiPath()}/groups", $options);
@@ -187,15 +245,19 @@ class Telerivet_Contact extends Telerivet_Entity
             - page_size (int)
                 * Number of results returned per page (max 200)
                 * Default: 50
+            
+            - offset (int)
+                * Number of items to skip from beginning of result set
+                * Default: 0
           
         Returns:
             Telerivet_APICursor (of Telerivet_ScheduledMessage)
-     */
+    */
     function queryScheduledMessages($options = null)
     {
         return $this->_api->newApiCursor('Telerivet_ScheduledMessage', "{$this->getBaseApiPath()}/scheduled", $options);
     }
-    
+
     /**
         $contact->queryDataRows($options)
         
@@ -228,15 +290,19 @@ class Telerivet_Contact extends Telerivet_Entity
             - page_size (int)
                 * Number of results returned per page (max 200)
                 * Default: 50
+            
+            - offset (int)
+                * Number of items to skip from beginning of result set
+                * Default: 0
           
         Returns:
             Telerivet_APICursor (of Telerivet_DataRow)
-     */
+    */
     function queryDataRows($options = null)
     {
         return $this->_api->newApiCursor('Telerivet_DataRow', "{$this->getBaseApiPath()}/rows", $options);
     }
-    
+
     /**
         $contact->queryServiceStates($options)
         
@@ -269,92 +335,46 @@ class Telerivet_Contact extends Telerivet_Entity
             - page_size (int)
                 * Number of results returned per page (max 200)
                 * Default: 50
+            
+            - offset (int)
+                * Number of items to skip from beginning of result set
+                * Default: 0
           
         Returns:
             Telerivet_APICursor (of Telerivet_ContactServiceState)
-     */
+    */
     function queryServiceStates($options = null)
     {
         return $this->_api->newApiCursor('Telerivet_ContactServiceState', "{$this->getBaseApiPath()}/states", $options);
     }
-    
-    /**
-        $contact->isInGroup($group)
-        
-        Returns true if this contact is in a particular group, false otherwise.
-        
-        Arguments:
-          - $group (Telerivet_Group)
-              * Required
-          
-        Returns:
-            bool
-     */    
-    function isInGroup($group)
-    {
-        $this->_loadData();
-        return isset($this->_group_ids_set[$group->id]);
-    }
-    
-    /**
-        $contact->addToGroup($group)
-        
-        Adds this contact to a group.
-        
-        Arguments:
-          - $group (Telerivet_Group)
-              * Required
-          
-     */    
-    function addToGroup($group)
-    {
-        $this->_api->doRequest("PUT", "{$group->getBaseApiPath()}/contacts/{$this->id}");               
-        $this->_group_ids_set[$group->id] = true;        
-    }
-    
-    /**
-        $contact->removeFromGroup($group)
-        
-        Removes this contact from a group.
-        
-        Arguments:
-          - $group (Telerivet_Group)
-              * Required
-          
-     */    
-    function removeFromGroup($group)
-    {        
-        $this->_api->doRequest("DELETE", "{$group->getBaseApiPath()}/contacts/{$this->id}");               
-        unset($this->_group_ids_set[$group->id]);
-    }
-    
-    /**
-        $contact->delete()
-        
-        Deletes this contact.
-        
-     */    
-    function delete()
-    {        
-        $this->_api->doRequest("DELETE", $this->getBaseApiPath());               
-    }    
-    
+
     /**
         $contact->save()
         
         Saves any fields or custom variables that have changed for this contact.
         
-     */
+    */
     function save()
-    {        
+    {
         parent::save();
     }
-           
+
+    /**
+        $contact->delete()
+        
+        Deletes this contact.
+        
+    */
+    function delete()
+    {
+        $this->_api->doRequest("DELETE", "{$this->getBaseApiPath()}");
+    }
+
     function getBaseApiPath()
     {
         return "/projects/{$this->project_id}/contacts/{$this->id}";
     }
-    
+           
     protected function _setData($data)
     {
         parent::_setData($data);

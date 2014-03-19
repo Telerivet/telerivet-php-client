@@ -76,16 +76,16 @@
  */
 class Telerivet_ScheduledMessage extends Telerivet_Entity
 {
-    /** 
+    /**
         $scheduledmessage->delete()
         
         Cancels this scheduled message.
         
     */
     function delete()
-    {        
-        $this->_api->doRequest("DELETE", $this->getBaseApiPath());               
-    }            
+    {
+        $this->_api->doRequest("DELETE", "{$this->getBaseApiPath()}");
+    }
 
     function getBaseApiPath()
     {

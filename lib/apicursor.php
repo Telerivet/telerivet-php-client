@@ -26,7 +26,7 @@
     
     $name_prefix = 'John';
     $cursor = $project->queryContacts(array(
-        'name_prefix' => $name_prefix,
+        'name[prefix]' => $name_prefix,
         'sort' => 'name',
     ));   
     

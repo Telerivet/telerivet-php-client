@@ -45,12 +45,7 @@
  */
 class Telerivet_Group extends Telerivet_Entity
 {
-    function getBaseApiPath()
-    {
-        return "/projects/{$this->project_id}/groups/{$this->id}";
-    }
-
-    /**     
+    /**
         $group->queryContacts($options)
         
         Queries contacts that are members of this group.
@@ -98,16 +93,20 @@ class Telerivet_Group extends Telerivet_Entity
             - page_size (int)
                 * Number of results returned per page (max 200)
                 * Default: 50
+            
+            - offset (int)
+                * Number of items to skip from beginning of result set
+                * Default: 0
           
         Returns:
             Telerivet_APICursor (of Telerivet_Contact)
-     */    
+    */
     function queryContacts($options = null)
     {
         return $this->_api->newApiCursor('Telerivet_Contact', "{$this->getBaseApiPath()}/contacts", $options);
     }
-    
-    /** 
+
+    /**
         $group->queryScheduledMessages($options)
         
         Queries scheduled messages to this group.
@@ -142,34 +141,43 @@ class Telerivet_Group extends Telerivet_Entity
             - page_size (int)
                 * Number of results returned per page (max 200)
                 * Default: 50
+            
+            - offset (int)
+                * Number of items to skip from beginning of result set
+                * Default: 0
           
         Returns:
             Telerivet_APICursor (of Telerivet_ScheduledMessage)
-     */    
+    */
     function queryScheduledMessages($options = null)
     {
         return $this->_api->newApiCursor('Telerivet_ScheduledMessage', "{$this->getBaseApiPath()}/scheduled", $options);
-    }    
-    
+    }
+
     /**
         $group->save()
         
         Saves any fields that have changed for this group.
         
-     */
+    */
     function save()
-    {        
+    {
         parent::save();
-    }          
-    
+    }
+
     /**
         $group->delete()
         
         Deletes this group (Note: no contacts are deleted.)
         
-     */    
+    */
     function delete()
-    {        
-        $this->_api->doRequest("DELETE", $this->getBaseApiPath());               
-    }            
+    {
+        $this->_api->doRequest("DELETE", "{$this->getBaseApiPath()}");
+    }
+
+    function getBaseApiPath()
+    {
+        return "/projects/{$this->project_id}/groups/{$this->id}";
+    }
 }

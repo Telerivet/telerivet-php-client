@@ -67,12 +67,12 @@ class Telerivet_ContactServiceState extends Telerivet_Entity
         Saves the state id and any custom variables for this contact. If the state id is null, this
         is equivalent to calling reset().
         
-     */
+    */
     function save()
-    {        
+    {
         parent::save();
     }
-        
+
     /**
         $state->reset()
         
@@ -81,11 +81,11 @@ class Telerivet_ContactServiceState extends Telerivet_Entity
     */
     function reset()
     {
-        return $this->_api->doRequest('DELETE', $this->getBaseApiPath());
+        $this->_api->doRequest("DELETE", "{$this->getBaseApiPath()}");
     }
 
     function getBaseApiPath()
     {
         return "/projects/{$this->project_id}/services/{$this->service_id}/states/{$this->contact_id}";
-    }    
+    }
 }

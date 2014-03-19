@@ -156,22 +156,27 @@ class Telerivet_Message extends Telerivet_Entity
         
         Saves any fields that have changed for this message.
         
-     */
+    */
     function save()
-    {        
+    {
         parent::save();
     }
-    
+
     /**
         $message->delete()
         
         Deletes this message.
         
-     */
+    */
     function delete()
-    {        
-        $this->_api->doRequest("DELETE", $this->getBaseApiPath());               
-    }         
+    {
+        $this->_api->doRequest("DELETE", "{$this->getBaseApiPath()}");
+    }
+
+    function getBaseApiPath()
+    {
+        return "/projects/{$this->project_id}/messages/{$this->id}";
+    }
     
     protected function _setData($data)
     {
@@ -185,10 +190,4 @@ class Telerivet_Message extends Telerivet_Entity
             }
         }
     }
-
-    function getBaseApiPath()
-    {
-        return "/projects/{$this->project_id}/messages/{$this->id}";
-    }
-        
 }

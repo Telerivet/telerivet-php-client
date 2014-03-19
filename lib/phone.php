@@ -111,10 +111,14 @@ class Telerivet_Phone extends Telerivet_Entity
             - page_size (int)
                 * Number of results returned per page (max 200)
                 * Default: 50
+            
+            - offset (int)
+                * Number of items to skip from beginning of result set
+                * Default: 0
           
         Returns:
             Telerivet_APICursor (of Telerivet_Message)
-     */
+    */
     function queryMessages($options = null)
     {
         return $this->_api->newApiCursor('Telerivet_Message', "{$this->getBaseApiPath()}/messages", $options);
@@ -125,12 +129,12 @@ class Telerivet_Phone extends Telerivet_Entity
         
         Saves any fields or custom variables that have changed for this phone.
         
-     */
+    */
     function save()
-    {        
+    {
         parent::save();
     }
-    
+
     function getBaseApiPath()
     {
         return "/projects/{$this->project_id}/phones/{$this->id}";

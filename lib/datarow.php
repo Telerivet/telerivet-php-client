@@ -47,12 +47,12 @@ class Telerivet_DataRow extends Telerivet_Entity
         
         Saves any fields or custom variables that have changed for this data row.
         
-     */
+    */
     function save()
-    {        
+    {
         parent::save();
     }
-            
+
     /**
         $row->delete()
         
@@ -60,10 +60,10 @@ class Telerivet_DataRow extends Telerivet_Entity
         
     */
     function delete()
-    {        
-        $this->_api->doRequest("DELETE", $this->getBaseApiPath());               
+    {
+        $this->_api->doRequest("DELETE", "{$this->getBaseApiPath()}");
     }
-    
+
     function getBaseApiPath()
     {
         return "/projects/{$this->project_id}/tables/{$this->table_id}/rows/{$this->id}";

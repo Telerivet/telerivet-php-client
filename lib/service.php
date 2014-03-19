@@ -53,8 +53,6 @@
  */
 class Telerivet_Service extends Telerivet_Entity
 {
-    protected $_has_custom_vars = true;
-
     /**
         $service->invoke($options)
         
@@ -139,6 +137,10 @@ class Telerivet_Service extends Telerivet_Entity
             - page_size (int)
                 * Number of results returned per page (max 200)
                 * Default: 50
+            
+            - offset (int)
+                * Number of items to skip from beginning of result set
+                * Default: 0
           
         Returns:
             Telerivet_APICursor (of Telerivet_ContactServiceState)
@@ -217,17 +219,19 @@ class Telerivet_Service extends Telerivet_Entity
         return new Telerivet_ContactServiceState($this->_api, $this->_api->doRequest('DELETE', $this->getBaseApiPath() . '/states/' . $contact->id));        
     }
 
+    protected $_has_custom_vars = true;
+
     /**
         $service->save()
         
         Saves any fields or custom variables that have changed for this service.
         
-     */
+    */
     function save()
-    {        
+    {
         parent::save();
     }
-    
+
     function getBaseApiPath()
     {
         return "/projects/{$this->project_id}/services/{$this->id}";

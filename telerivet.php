@@ -17,40 +17,8 @@
     $project->sendMessage(array(
         'to_number' => '555-0001',
         'content' => 'Hello world!'
-    ));   
-   
-    // Query contacts  
-    $name_prefix = 'John';
-    $cursor = $project->queryContacts(array(
-        'name_prefix' => $name_prefix,
-        'sort' => 'name',
     ));
-   
-    echo "{$cursor->count()} contacts matching $name_prefix:\n";
-   
-    while ($cursor->hasNext())
-    {
-        $contact = $cursor->next();
-        echo "{$contact->name} {$contact->phone_number} {$contact->vars->birthdate}\n";        
-    }
-  
-    // Import a contact
-    $contact = $project->getOrCreateContact(array(
-        'name' => 'John Smith',
-        'phone_number' => '555-0001',
-        'vars' => array(
-            'birthdate' => '1981-03-04',
-            'network' => 'Vodacom'
-        )
-    ));
-    
-    // Add a contact to a group    
-    $group = $project->getOrCreateGroup('Subscribers');
-    $contact->addToGroup($group);
-       
  */
-
- 
 class Telerivet_API
 {
     private $api_key;
@@ -105,6 +73,10 @@ class Telerivet_API
             - page_size (int)
                 * Number of results returned per page (max 200)
                 * Default: 50
+            
+            - offset (int)
+                * Number of items to skip from beginning of result set
+                * Default: 0
           
         Returns:
             Telerivet_APICursor (of Telerivet_Project)
@@ -223,15 +195,16 @@ $tr_lib_dir = dirname(__FILE__) . '/lib';
  
 require_once "{$tr_lib_dir}/entity.php";
 require_once "{$tr_lib_dir}/apicursor.php";
-require_once "{$tr_lib_dir}/project.php";
-require_once "{$tr_lib_dir}/contact.php";
+require_once "{$tr_lib_dir}/exceptions.php";
 require_once "{$tr_lib_dir}/message.php";
-require_once "{$tr_lib_dir}/phone.php";
-require_once "{$tr_lib_dir}/group.php";
+require_once "{$tr_lib_dir}/contact.php";
+require_once "{$tr_lib_dir}/project.php";
 require_once "{$tr_lib_dir}/label.php";
-require_once "{$tr_lib_dir}/service.php";
-require_once "{$tr_lib_dir}/contactservicestate.php";
-require_once "{$tr_lib_dir}/scheduledmessage.php";
+require_once "{$tr_lib_dir}/group.php";
+require_once "{$tr_lib_dir}/phone.php";
 require_once "{$tr_lib_dir}/datatable.php";
 require_once "{$tr_lib_dir}/datarow.php";
-require_once "{$tr_lib_dir}/exceptions.php";
+require_once "{$tr_lib_dir}/scheduledmessage.php";
+require_once "{$tr_lib_dir}/service.php";
+require_once "{$tr_lib_dir}/contactservicestate.php";
+require_once "{$tr_lib_dir}/mobilemoneyreceipt.php";
