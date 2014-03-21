@@ -9,6 +9,7 @@
     Using the APICursor, you can easily iterate over query results without having to
     handle fetching each page of results.
     
+    
     Any method in the Telerivet PHP client library starting with the word 'query' returns a 
     Telerivet_APICursor object, which exposes the following methods:
     
@@ -47,6 +48,15 @@ class Telerivet_ApiCursor
     
     function __construct($api, $item_cls, $path, $params)
     {
+        if (!isset($params))
+        {
+            $params = array();
+        }
+        if (isset($params['count']))
+        {
+            throw new Telerivet_Exception("Cannot construct Telerivet_ApiCursor with 'count' parameter. Call the count() method instead.");
+        }
+    
         $this->api = $api;
         $this->item_cls = $item_cls;
         $this->path = $path;
@@ -128,7 +138,18 @@ class Telerivet_ApiCursor
             $this->loadNextPage();
         }
 
-        return $this->pos < sizeof($this->data) || $this->truncated;
+        if ($this->pos < sizeof($this->data))
+        {
+            return true;
+        }
+
+        if (!$this->truncated)
+        {
+            return false;            
+        }
+        
+        $this->loadNextPage();
+        return $this->pos < sizeof($this->data);        
     }
     
     /* 
