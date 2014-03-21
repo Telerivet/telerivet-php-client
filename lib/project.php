@@ -24,7 +24,7 @@
               <http://en.wikipedia.org/wiki/List_of_tz_database_time_zones>
           * Read-only
       
-      - vars (object)
+      - vars (associative array)
           * Custom variables stored for this project
           * Updatable via API
       
@@ -78,6 +78,9 @@ class Telerivet_Project extends Telerivet_Entity
                 * Set to true to evaluate variables like [[contact.name]] in message content
                 * Default: false
             
+            - label_ids (array)
+                * List of IDs of labels to add to this message
+            
             - message_type
                 * Type of message to send
                 * Allowed values: sms, ussd
@@ -125,6 +128,9 @@ class Telerivet_Project extends Telerivet_Entity
             
             - status_url
                 * Webhook callback URL to be notified when message status changes
+            
+            - label_ids (array)
+                * Array of IDs of labels to add to all messages sent (maximum 5)
             
             - status_secret
                 * POST parameter 'secret' passed to status_url
@@ -195,6 +201,9 @@ class Telerivet_Project extends Telerivet_Entity
             - is_template (bool)
                 * Set to true to evaluate variables like [[contact.name]] in message content
                 * Default: false
+            
+            - label_ids (array)
+                * Array of IDs of labels to add to the sent messages (maximum 5)
             
             - timezone_id
                 * TZ database timezone ID; see
@@ -273,66 +282,12 @@ class Telerivet_Project extends Telerivet_Entity
     }    
         
     /**
-        $project->getContactById($id)
-        
-        Gets a contact by ID.
-        
-        Arguments:
-          - $id
-              * ID of the contact
-              * Required
-          
-        Returns:
-            Telerivet_Contact
-     */
-    function getContactById($id)
-    {
-        return new Telerivet_Contact($this->_api, array('id' => $id, 'project_id' => $this->id), false);
-    }
-
-    /**
-        $project->getPhoneById($id)
-        
-        Gets a phone by ID.
-        
-        Arguments:
-          - $id
-              * ID of the phone - see <https://telerivet.com/dashboard/api>
-              * Required
-          
-        Returns:
-            Telerivet_Phone
-     */
-    function getPhoneById($id)
-    {
-        return new Telerivet_Phone($this->_api, array('id' => $id, 'project_id' => $this->id), false);
-    }               
-    
-    /**
-        $project->getMessageById($id)
-        
-        Gets a message by ID.
-        
-        Arguments:
-          - $id
-              * ID of the message
-              * Required
-          
-        Returns:
-            Telerivet_Message
-     */
-    function getMessageById($id)
-    {
-        return new Telerivet_Message($this->_api, array('id' => $id, 'project_id' => $this->id), false);
-    }
-
-    /**
         $project->getOrCreateGroup($name)
         
         Gets or creates a group by name.
         
         Arguments:
-          - $name
+          - name
               * Name of the group
               * Required
           
@@ -343,27 +298,7 @@ class Telerivet_Project extends Telerivet_Entity
     {                                          
         $data = $this->_api->doRequest("POST", "{$this->getBaseApiPath()}/groups", array('name' => $name));
         return new Telerivet_Group($this->_api, $data);
-    }    
-    
-    /**
-        $project->getGroupById($id)
-        
-        Gets a group by ID.
-        
-        Arguments:
-          - $id
-              * ID of the group
-              * Required
-          
-        Returns:
-            Telerivet_Group
-        
-        Note: This does not make any API requests until you access a property of the group.     
-     */       
-    function getGroupById($id)
-    {
-        return new Telerivet_Group($this->_api, array('id' => $id, 'project_id' => $this->id), false);
-    }               
+    }        
         
     /**
         $project->getOrCreateLabel($name)
@@ -382,82 +317,6 @@ class Telerivet_Project extends Telerivet_Entity
         return new Telerivet_Label($this->_api, $data);
     }        
     
-    /**
-        $project->getLabelById($id)
-        
-        Gets a label by ID.
-        
-        Arguments:
-          - $id (ID of the label)
-              * Required
-          
-        Returns:
-            Telerivet_Label
-        
-        Note: This does not make any API requests until you access a property of the label.     
-     */   
-    function getLabelById($id)
-    {
-        return new Telerivet_Label($this->_api, array('id' => $id, 'project_id' => $this->id), false);
-    }
-
-    /**
-        $project->getDataTableById($id)
-        
-        Gets a data table by ID.
-        
-        Arguments:
-          - $id (ID of the data table)
-              * Required
-          
-        Returns:
-            Telerivet_DataTable
-        
-        Note: This does not make any API requests until you access a property of the label.    
-     */   
-    function getDataTableById($id)
-    {
-        return new Telerivet_DataTable($this->_api, array('id' => $id, 'project_id' => $this->id), false);
-    }    
-    
-    /**
-        $project->getScheduledMessageById($id)
-        
-        Gets a scheduled message by ID.
-        
-        Arguments:
-          - $id (ID of the scheduled message)
-              * Required
-          
-        Returns:
-            Telerivet_ScheduledMessage
-        
-        Note: This does not make any API requests until you access a property of the scheduled message.     
-     */       
-    function getScheduledMessageById($id)
-    {
-        return new Telerivet_ScheduledMessage($this->_api, array('id' => $id, 'project_id' => $this->id), false);
-    }            
-    
-    /**
-        $project->getServiceById($id)
-        
-        Gets a service by ID.
-        
-        Arguments:
-          - $id (ID of the service)
-              * Required
-          
-        Returns:
-            Telerivet_Service
-        
-        Note: This does not make any API requests until you access a property of the scheduled message.
-     */       
-    function getServiceById($id)
-    {
-        return new Telerivet_Service($this->_api, array('id' => $id, 'project_id' => $this->id), false);
-    }         
-
     protected $_has_custom_vars = true;
 
     /**
@@ -470,26 +329,25 @@ class Telerivet_Project extends Telerivet_Entity
             
             - name
                 * Filter contacts by name
-                * Allowed modifiers: name[exists], name[ne], name[prefix], name[not_prefix],
-                    name[gte], name[gt], name[lt], name[lte]
+                * Allowed modifiers: name[ne], name[prefix], name[not_prefix], name[gte], name[gt],
+                    name[lt], name[lte]
             
             - phone_number
                 * Filter contacts by phone number
-                * Allowed modifiers: phone_number[exists], phone_number[ne], phone_number[prefix],
+                * Allowed modifiers: phone_number[ne], phone_number[prefix],
                     phone_number[not_prefix], phone_number[gte], phone_number[gt], phone_number[lt],
                     phone_number[lte]
             
             - time_created (UNIX timestamp)
                 * Filter contacts by time created
-                * Allowed modifiers: time_created[exists], time_created[ne], time_created[min],
-                    time_created[max]
+                * Allowed modifiers: time_created[ne], time_created[min], time_created[max]
             
             - last_message_time (UNIX timestamp)
                 * Filter contacts by last time a message was sent or received
                 * Allowed modifiers: last_message_time[exists], last_message_time[ne],
                     last_message_time[min], last_message_time[max]
             
-            - vars (object)
+            - vars (associative array)
                 * Filter contacts by value of a custom variable (e.g. vars[email], vars[foo], etc.)
                 * Allowed modifiers: vars[foo][exists], vars[foo][ne], vars[foo][prefix],
                     vars[foo][not_prefix], vars[foo][gte], vars[foo][gt], vars[foo][lt], vars[foo][lte],
@@ -522,6 +380,24 @@ class Telerivet_Project extends Telerivet_Entity
     }
 
     /**
+        $project->getContactById($id)
+        
+        Gets a contact by ID.
+        
+        Arguments:
+          - $id
+              * ID of the contact
+              * Required
+          
+        Returns:
+            Telerivet_Contact
+    */
+    function getContactById($id)
+    {
+        return new Telerivet_Contact($this->_api, $this->_api->doRequest("GET", "{$this->getBaseApiPath()}/contacts/{$id}"));
+    }
+
+    /**
         $project->queryPhones($options)
         
         Queries phones within this project.
@@ -531,12 +407,12 @@ class Telerivet_Project extends Telerivet_Entity
             
             - name
                 * Filter phones by name
-                * Allowed modifiers: name[exists], name[ne], name[prefix], name[not_prefix],
-                    name[gte], name[gt], name[lt], name[lte]
+                * Allowed modifiers: name[ne], name[prefix], name[not_prefix], name[gte], name[gt],
+                    name[lt], name[lte]
             
             - phone_number
                 * Filter phones by phone number
-                * Allowed modifiers: phone_number[exists], phone_number[ne], phone_number[prefix],
+                * Allowed modifiers: phone_number[ne], phone_number[prefix],
                     phone_number[not_prefix], phone_number[gte], phone_number[gt], phone_number[lt],
                     phone_number[lte]
             
@@ -569,6 +445,24 @@ class Telerivet_Project extends Telerivet_Entity
     function queryPhones($options = null)
     {
         return $this->_api->newApiCursor('Telerivet_Phone', "{$this->getBaseApiPath()}/phones", $options);
+    }
+
+    /**
+        $project->getPhoneById($id)
+        
+        Gets a phone by ID.
+        
+        Arguments:
+          - $id
+              * ID of the phone - see <https://telerivet.com/dashboard/api>
+              * Required
+          
+        Returns:
+            Telerivet_Phone
+    */
+    function getPhoneById($id)
+    {
+        return new Telerivet_Phone($this->_api, $this->_api->doRequest("GET", "{$this->getBaseApiPath()}/phones/{$id}"));
     }
 
     /**
@@ -638,6 +532,26 @@ class Telerivet_Project extends Telerivet_Entity
     }
 
     /**
+        $project->getMessageById($id)
+        
+        Gets a message by ID.
+        
+        Note: This does not make any API requests until you access a property of the Message.
+        
+        Arguments:
+          - $id
+              * ID of the message
+              * Required
+          
+        Returns:
+            Telerivet_Message
+    */
+    function getMessageById($id)
+    {
+        return new Telerivet_Message($this->_api, array('project_id' => $this->id, 'id' => $id), false);
+    }
+
+    /**
         $project->queryGroups($options)
         
         Queries groups within this project.
@@ -647,8 +561,8 @@ class Telerivet_Project extends Telerivet_Entity
             
             - name
                 * Filter groups by name
-                * Allowed modifiers: name[exists], name[ne], name[prefix], name[not_prefix],
-                    name[gte], name[gt], name[lt], name[lte]
+                * Allowed modifiers: name[ne], name[prefix], name[not_prefix], name[gte], name[gt],
+                    name[lt], name[lte]
             
             - sort
                 * Sort the results based on a field
@@ -677,6 +591,26 @@ class Telerivet_Project extends Telerivet_Entity
     }
 
     /**
+        $project->getGroupById($id)
+        
+        Gets a group by ID.
+        
+        Note: This does not make any API requests until you access a property of the Group.
+        
+        Arguments:
+          - $id
+              * ID of the group
+              * Required
+          
+        Returns:
+            Telerivet_Group
+    */
+    function getGroupById($id)
+    {
+        return new Telerivet_Group($this->_api, array('project_id' => $this->id, 'id' => $id), false);
+    }
+
+    /**
         $project->queryLabels($options)
         
         Queries labels within this project.
@@ -686,8 +620,8 @@ class Telerivet_Project extends Telerivet_Entity
             
             - name
                 * Filter labels by name
-                * Allowed modifiers: name[exists], name[ne], name[prefix], name[not_prefix],
-                    name[gte], name[gt], name[lt], name[lte]
+                * Allowed modifiers: name[ne], name[prefix], name[not_prefix], name[gte], name[gt],
+                    name[lt], name[lte]
             
             - sort
                 * Sort the results based on a field
@@ -716,6 +650,25 @@ class Telerivet_Project extends Telerivet_Entity
     }
 
     /**
+        $project->getLabelById($id)
+        
+        Gets a label by ID.
+        
+        Note: This does not make any API requests until you access a property of the Label.
+        
+        Arguments:
+          - $id (ID of the label)
+              * Required
+          
+        Returns:
+            Telerivet_Label
+    */
+    function getLabelById($id)
+    {
+        return new Telerivet_Label($this->_api, array('project_id' => $this->id, 'id' => $id), false);
+    }
+
+    /**
         $project->queryDataTables($options)
         
         Queries data tables within this project.
@@ -725,8 +678,8 @@ class Telerivet_Project extends Telerivet_Entity
             
             - name
                 * Filter data tables by name
-                * Allowed modifiers: name[exists], name[ne], name[prefix], name[not_prefix],
-                    name[gte], name[gt], name[lt], name[lte]
+                * Allowed modifiers: name[ne], name[prefix], name[not_prefix], name[gte], name[gt],
+                    name[lt], name[lte]
             
             - sort
                 * Sort the results based on a field
@@ -755,6 +708,25 @@ class Telerivet_Project extends Telerivet_Entity
     }
 
     /**
+        $project->getDataTableById($id)
+        
+        Gets a data table by ID.
+        
+        Note: This does not make any API requests until you access a property of the DataTable.
+        
+        Arguments:
+          - $id (ID of the data table)
+              * Required
+          
+        Returns:
+            Telerivet_DataTable
+    */
+    function getDataTableById($id)
+    {
+        return new Telerivet_DataTable($this->_api, array('project_id' => $this->id, 'id' => $id), false);
+    }
+
+    /**
         $project->queryScheduledMessages($options)
         
         Queries scheduled messages within this project.
@@ -768,8 +740,7 @@ class Telerivet_Project extends Telerivet_Entity
             
             - time_created (UNIX timestamp)
                 * Filter scheduled messages by time_created
-                * Allowed modifiers: time_created[exists], time_created[ne], time_created[min],
-                    time_created[max]
+                * Allowed modifiers: time_created[ne], time_created[min], time_created[max]
             
             - next_time (UNIX timestamp)
                 * Filter scheduled messages by next_time
@@ -803,6 +774,26 @@ class Telerivet_Project extends Telerivet_Entity
     }
 
     /**
+        $project->getScheduledMessageById($id)
+        
+        Gets a scheduled message by ID.
+        
+        Note: This does not make any API requests until you access a property of the
+        ScheduledMessage.
+        
+        Arguments:
+          - $id (ID of the scheduled message)
+              * Required
+          
+        Returns:
+            Telerivet_ScheduledMessage
+    */
+    function getScheduledMessageById($id)
+    {
+        return new Telerivet_ScheduledMessage($this->_api, array('project_id' => $this->id, 'id' => $id), false);
+    }
+
+    /**
         $project->queryServices($options)
         
         Queries services within this project.
@@ -812,8 +803,8 @@ class Telerivet_Project extends Telerivet_Entity
             
             - name
                 * Filter services by name
-                * Allowed modifiers: name[exists], name[ne], name[prefix], name[not_prefix],
-                    name[gte], name[gt], name[lt], name[lte]
+                * Allowed modifiers: name[ne], name[prefix], name[not_prefix], name[gte], name[gt],
+                    name[lt], name[lte]
             
             - active (bool)
                 * Filter services by active/inactive state
@@ -849,6 +840,25 @@ class Telerivet_Project extends Telerivet_Entity
     }
 
     /**
+        $project->getServiceById($id)
+        
+        Gets a service by ID.
+        
+        Note: This does not make any API requests until you access a property of the Service.
+        
+        Arguments:
+          - $id (ID of the service)
+              * Required
+          
+        Returns:
+            Telerivet_Service
+    */
+    function getServiceById($id)
+    {
+        return new Telerivet_Service($this->_api, array('project_id' => $this->id, 'id' => $id), false);
+    }
+
+    /**
         $project->queryReceipts($options)
         
         Queries mobile money receipts within this project.
@@ -866,16 +876,16 @@ class Telerivet_Project extends Telerivet_Entity
             
             - tx_time (UNIX timestamp)
                 * Filter receipts by transaction time
-                * Allowed modifiers: tx_time[exists], tx_time[ne], tx_time[min], tx_time[max]
+                * Allowed modifiers: tx_time[ne], tx_time[min], tx_time[max]
             
             - name
                 * Filter receipts by other person's name
-                * Allowed modifiers: name[exists], name[ne], name[prefix], name[not_prefix],
-                    name[gte], name[gt], name[lt], name[lte]
+                * Allowed modifiers: name[ne], name[prefix], name[not_prefix], name[gte], name[gt],
+                    name[lt], name[lte]
             
             - phone_number
                 * Filter receipts by other person's phone number
-                * Allowed modifiers: phone_number[exists], phone_number[ne], phone_number[prefix],
+                * Allowed modifiers: phone_number[ne], phone_number[prefix],
                     phone_number[not_prefix], phone_number[gte], phone_number[gt], phone_number[lt],
                     phone_number[lte]
             
@@ -910,6 +920,9 @@ class Telerivet_Project extends Telerivet_Entity
         
         Gets a mobile money receipt by ID.
         
+        Note: This does not make any API requests until you access a property of the
+        MobileMoneyReceipt.
+        
         Arguments:
           - $id
               * ID of the mobile money receipt
@@ -920,7 +933,7 @@ class Telerivet_Project extends Telerivet_Entity
     */
     function getReceiptById($id)
     {
-        return new Telerivet_MobileMoneyReceipt($this->_api, $this->_api->doRequest("GET", "{$this->getBaseApiPath()}/receipts/{$id}"));
+        return new Telerivet_MobileMoneyReceipt($this->_api, array('project_id' => $this->id, 'id' => $id), false);
     }
 
     /**

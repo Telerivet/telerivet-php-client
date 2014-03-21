@@ -41,10 +41,9 @@ class Telerivet_DataTable extends Telerivet_Entity
             
             - time_created (UNIX timestamp)
                 * Filter data rows by the time they were created
-                * Allowed modifiers: time_created[exists], time_created[ne], time_created[min],
-                    time_created[max]
+                * Allowed modifiers: time_created[ne], time_created[min], time_created[max]
             
-            - vars (object)
+            - vars (associative array)
                 * Filter data rows by value of a custom variable (e.g. vars[q1], vars[foo], etc.)
                 * Allowed modifiers: vars[foo][exists], vars[foo][ne], vars[foo][prefix],
                     vars[foo][not_prefix], vars[foo][gte], vars[foo][gt], vars[foo][lt], vars[foo][lte],
@@ -90,7 +89,7 @@ class Telerivet_DataTable extends Telerivet_Entity
             - from_number (string)
                 * Phone number that this row is associated with (if applicable)
             
-            - vars (associative array)
+            - vars
                 * Custom variables and values to set for this data row
           
         Returns:
@@ -106,6 +105,8 @@ class Telerivet_DataTable extends Telerivet_Entity
         
         Gets a row in this table by its ID.
         
+        Note: This does not make any API requests until you access a property of the DataRow.
+        
         Arguments:
           - $id (ID of the row)
               * Required
@@ -115,7 +116,7 @@ class Telerivet_DataTable extends Telerivet_Entity
     */
     function getRowById($id)
     {
-        return new Telerivet_DataRow($this->_api, $this->_api->doRequest("GET", "{$this->getBaseApiPath()}/rows/{$id}"));
+        return new Telerivet_DataRow($this->_api, array('project_id' => $this->project_id, 'table_id' => $this->id, 'id' => $id), false);
     }
 
     /**

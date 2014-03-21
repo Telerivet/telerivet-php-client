@@ -55,26 +55,25 @@ class Telerivet_Group extends Telerivet_Entity
             
             - name
                 * Filter contacts by name
-                * Allowed modifiers: name[exists], name[ne], name[prefix], name[not_prefix],
-                    name[gte], name[gt], name[lt], name[lte]
+                * Allowed modifiers: name[ne], name[prefix], name[not_prefix], name[gte], name[gt],
+                    name[lt], name[lte]
             
             - phone_number
                 * Filter contacts by phone number
-                * Allowed modifiers: phone_number[exists], phone_number[ne], phone_number[prefix],
+                * Allowed modifiers: phone_number[ne], phone_number[prefix],
                     phone_number[not_prefix], phone_number[gte], phone_number[gt], phone_number[lt],
                     phone_number[lte]
             
             - time_created (UNIX timestamp)
                 * Filter contacts by time created
-                * Allowed modifiers: time_created[exists], time_created[ne], time_created[min],
-                    time_created[max]
+                * Allowed modifiers: time_created[ne], time_created[min], time_created[max]
             
             - last_message_time (UNIX timestamp)
                 * Filter contacts by last time a message was sent or received
                 * Allowed modifiers: last_message_time[exists], last_message_time[ne],
                     last_message_time[min], last_message_time[max]
             
-            - vars (object)
+            - vars (associative array)
                 * Filter contacts by value of a custom variable (e.g. vars[email], vars[foo], etc.)
                 * Allowed modifiers: vars[foo][exists], vars[foo][ne], vars[foo][prefix],
                     vars[foo][not_prefix], vars[foo][gte], vars[foo][gt], vars[foo][lt], vars[foo][lte],
@@ -120,8 +119,7 @@ class Telerivet_Group extends Telerivet_Entity
             
             - time_created (UNIX timestamp)
                 * Filter scheduled messages by time_created
-                * Allowed modifiers: time_created[exists], time_created[ne], time_created[min],
-                    time_created[max]
+                * Allowed modifiers: time_created[ne], time_created[min], time_created[max]
             
             - next_time (UNIX timestamp)
                 * Filter scheduled messages by next_time

@@ -42,7 +42,7 @@
               can be invoked for a particular context and event.)
           * Read-only
       
-      - vars (object)
+      - vars (associative array)
           * Custom variables stored for this service
           * Updatable via API
       
@@ -115,10 +115,10 @@ class Telerivet_Service extends Telerivet_Entity
             
             - id
                 * Filter states by id
-                * Allowed modifiers: id[exists], id[ne], id[prefix], id[not_prefix], id[gte],
-                    id[gt], id[lt], id[lte]
+                * Allowed modifiers: id[ne], id[prefix], id[not_prefix], id[gte], id[gt], id[lt],
+                    id[lte]
             
-            - vars (object)
+            - vars (associative array)
                 * Filter states by value of a custom variable (e.g. vars[email], vars[foo], etc.)
                 * Allowed modifiers: vars[foo][exists], vars[foo][ne], vars[foo][prefix],
                     vars[foo][not_prefix], vars[foo][gte], vars[foo][gt], vars[foo][lt], vars[foo][lte],

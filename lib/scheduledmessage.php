@@ -77,7 +77,7 @@
 class Telerivet_ScheduledMessage extends Telerivet_Entity
 {
     /**
-        $scheduledmessage->delete()
+        $scheduled_msg->delete()
         
         Cancels this scheduled message.
         

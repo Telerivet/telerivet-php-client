@@ -25,7 +25,7 @@
               number)
           * Updatable via API
       
-      - vars (object)
+      - vars (associative array)
           * Custom variables stored for this data row
           * Updatable via API
       

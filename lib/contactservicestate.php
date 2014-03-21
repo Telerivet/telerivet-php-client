@@ -40,7 +40,7 @@
           * ID of the service
           * Read-only
       
-      - vars (object)
+      - vars (associative array)
           * Custom variables stored for this contact/service state
           * Updatable via API
       

@@ -57,8 +57,8 @@ class Telerivet_API
             
             - name
                 * Filter projects by name
-                * Allowed modifiers: name[exists], name[ne], name[prefix], name[not_prefix],
-                    name[gte], name[gt], name[lt], name[lte]
+                * Allowed modifiers: name[ne], name[prefix], name[not_prefix], name[gte], name[gt],
+                    name[lt], name[lte]
             
             - sort
                 * Sort the results based on a field
@@ -190,12 +190,46 @@ class Telerivet_API
         return new Telerivet_ApiCursor($this, $item_cls, $path, $options);
     }
 }
- 
+
+// base class for exceptions raised by this library
+class Telerivet_Exception extends Exception {}
+
+// exception corresponding to error returned in API response
+class Telerivet_APIException extends Telerivet_Exception
+{
+    public $error_code;
+
+    function __construct($message, $error_code)
+    {
+        parent::__construct($message);
+        $this->error_code = $error_code;
+    }
+}
+
+class Telerivet_InvalidParameterException extends Telerivet_APIException
+{
+    public $param;    
+    function __construct($message, $error_code, $param)
+    {
+        parent::__construct($message, $error_code);
+        $this->param = $param;
+    }
+}
+
+class Telerivet_NotFoundException extends Telerivet_APIException
+{
+    function __construct($message, $error_code)
+    {
+        parent::__construct($message, $error_code);
+    }
+}
+
+// exception raised when client could not connect to server
+class Telerivet_IOException extends Telerivet_Exception {}
+
 $tr_lib_dir = dirname(__FILE__) . '/lib';
- 
 require_once "{$tr_lib_dir}/entity.php";
 require_once "{$tr_lib_dir}/apicursor.php";
-require_once "{$tr_lib_dir}/exceptions.php";
 require_once "{$tr_lib_dir}/message.php";
 require_once "{$tr_lib_dir}/contact.php";
 require_once "{$tr_lib_dir}/project.php";
@@ -208,3 +242,4 @@ require_once "{$tr_lib_dir}/scheduledmessage.php";
 require_once "{$tr_lib_dir}/service.php";
 require_once "{$tr_lib_dir}/contactservicestate.php";
 require_once "{$tr_lib_dir}/mobilemoneyreceipt.php";
+require_once "{$tr_lib_dir}/apicursor.php";

@@ -31,7 +31,7 @@
           * Approximate time this phone last connected to Telerivet
           * Read-only
       
-      - vars (object)
+      - vars (associative array)
           * Custom variables stored for this phone
           * Updatable via API
       

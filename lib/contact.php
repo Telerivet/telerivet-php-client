@@ -39,7 +39,7 @@
           * List of IDs of groups that this contact belongs to
           * Read-only
       
-      - vars (object)
+      - vars (associative array)
           * Custom variables stored for this contact
           * Updatable via API
       
@@ -180,8 +180,8 @@ class Telerivet_Contact extends Telerivet_Entity
             
             - name
                 * Filter groups by name
-                * Allowed modifiers: name[exists], name[ne], name[prefix], name[not_prefix],
-                    name[gte], name[gt], name[lt], name[lte]
+                * Allowed modifiers: name[ne], name[prefix], name[not_prefix], name[gte], name[gt],
+                    name[lt], name[lte]
             
             - sort
                 * Sort the results based on a field
@@ -224,8 +224,7 @@ class Telerivet_Contact extends Telerivet_Entity
             
             - time_created (UNIX timestamp)
                 * Filter scheduled messages by time_created
-                * Allowed modifiers: time_created[exists], time_created[ne], time_created[min],
-                    time_created[max]
+                * Allowed modifiers: time_created[ne], time_created[min], time_created[max]
             
             - next_time (UNIX timestamp)
                 * Filter scheduled messages by next_time
@@ -268,10 +267,9 @@ class Telerivet_Contact extends Telerivet_Entity
             
             - time_created (UNIX timestamp)
                 * Filter data rows by the time they were created
-                * Allowed modifiers: time_created[exists], time_created[ne], time_created[min],
-                    time_created[max]
+                * Allowed modifiers: time_created[ne], time_created[min], time_created[max]
             
-            - vars (object)
+            - vars (associative array)
                 * Filter data rows by value of a custom variable (e.g. vars[q1], vars[foo], etc.)
                 * Allowed modifiers: vars[foo][exists], vars[foo][ne], vars[foo][prefix],
                     vars[foo][not_prefix], vars[foo][gte], vars[foo][gt], vars[foo][lt], vars[foo][lte],
@@ -313,10 +311,10 @@ class Telerivet_Contact extends Telerivet_Entity
             
             - id
                 * Filter states by id
-                * Allowed modifiers: id[exists], id[ne], id[prefix], id[not_prefix], id[gte],
-                    id[gt], id[lt], id[lte]
+                * Allowed modifiers: id[ne], id[prefix], id[not_prefix], id[gte], id[gt], id[lt],
+                    id[lte]
             
-            - vars (object)
+            - vars (associative array)
                 * Filter states by value of a custom variable (e.g. vars[email], vars[foo], etc.)
                 * Allowed modifiers: vars[foo][exists], vars[foo][ne], vars[foo][prefix],
                     vars[foo][not_prefix], vars[foo][gte], vars[foo][gt], vars[foo][lt], vars[foo][lte],
