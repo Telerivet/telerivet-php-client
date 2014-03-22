@@ -23,9 +23,11 @@ class Telerivet_API
 {
     private $api_key;
     private $api_url;
+    public $num_requests = 0;
     private $client_version = '1.0';    
     
     private $curl;
+    public $debug = false;
     
     /**     
         $tr = new Telerivet_API($api_key)
@@ -141,12 +143,19 @@ class Telerivet_API
         curl_setopt($curl, CURLOPT_TIMEOUT, 60);
         curl_setopt($curl, CURLOPT_HTTPAUTH, CURLAUTH_BASIC); 
         
+        if ($this->debug)
+        {
+            error_log("$method $url");
+        }
+        
         $cacert_file = dirname(__FILE__) . "/cacert.pem";
         if (file_exists($cacert_file))
         {
             curl_setopt($curl, CURLOPT_CAINFO, $cacert_file);        
         }
         curl_setopt($curl, CURLOPT_USERPWD, "{$this->api_key}:");        
+        
+        $this->num_requests++;
         
         $response_json = curl_exec($curl);        
         $network_error = curl_error($curl);                
