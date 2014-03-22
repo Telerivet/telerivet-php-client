@@ -1,6 +1,5 @@
-<?php
-
-/** 
+<?php          
+/**
     Telerivet_ScheduledMessage
     
     Represents a scheduled message within Telerivet.
@@ -73,7 +72,7 @@
           * Number of times this scheduled message has already been sent
           * Read-only
       
- */
+*/
 class Telerivet_ScheduledMessage extends Telerivet_Entity
 {
     /**

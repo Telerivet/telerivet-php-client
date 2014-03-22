@@ -23,6 +23,7 @@ class Telerivet_API
 {
     private $api_key;
     private $api_url;
+    private $client_version = '1.0';    
     
     private $curl;
     
@@ -114,7 +115,9 @@ class Telerivet_API
         
         $url = "{$this->api_url}{$path}";
 
-        $headers = array();
+        $headers = array(
+            "User-Agent: Telerivet PHP Client/{$this->client_version} PHP/" . PHP_VERSION . " OS/" . PHP_OS
+        );
         if ($method === 'POST' || $method == 'PUT')
         {
             $headers[] = "Content-Type: application/json";
@@ -150,7 +153,7 @@ class Telerivet_API
         
         if ($network_error)
         {
-            throw new Telerivet_IOException("Error connecting to Telerivet API: $error");
+            throw new Telerivet_IOException("Error connecting to Telerivet API: {$network_error}");
         }
         else
         {

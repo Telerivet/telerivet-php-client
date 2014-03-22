@@ -1,5 +1,4 @@
-<?php
-
+<?php          
 /**
     Telerivet_DataTable
     
@@ -28,7 +27,7 @@
           * ID of the project this data table belongs to
           * Read-only
       
- */
+*/
 class Telerivet_DataTable extends Telerivet_Entity
 {
     /**

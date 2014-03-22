@@ -1,5 +1,4 @@
-<?php
-
+<?php          
 /**
     Telerivet_ContactServiceState
     
@@ -56,7 +55,7 @@
           * ID of the project this contact/service state belongs to
           * Read-only
       
- */
+*/
 class Telerivet_ContactServiceState extends Telerivet_Entity
 {
     protected $_has_custom_vars = true;

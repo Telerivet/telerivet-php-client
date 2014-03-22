@@ -1,5 +1,4 @@
-<?php
-
+<?php          
 /**
     Telerivet_DataRow
     
@@ -37,7 +36,7 @@
           * ID of the project this data row belongs to
           * Read-only
       
- */
+*/
 class Telerivet_DataRow extends Telerivet_Entity
 {
     protected $_has_custom_vars = true;
