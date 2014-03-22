@@ -55,7 +55,7 @@ $name_prefix = 'John';
 $cursor = $project->queryContacts(array(
     'name[prefix]' => $name_prefix,
     'sort' => 'name',
-));
+))->limit(20);
 
 echo "{$cursor->count()} contacts matching $name_prefix:\n";
 

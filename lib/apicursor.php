@@ -46,6 +46,7 @@ class Telerivet_ApiCursor
     protected $path;
     protected $params;
     
+    
     function __construct($api, $item_cls, $path, $params)
     {
         if (!isset($params))
@@ -63,6 +64,8 @@ class Telerivet_ApiCursor
         $this->params = $params;
     }
     
+    private $_limit;
+    private $offset = 0;
     private $_count = -1;
     private $pos;
     private $data;
@@ -93,6 +96,26 @@ class Telerivet_ApiCursor
             $this->_count = (int)$res['count'];
         }
         return $this->_count;
+    }
+    
+    /* 
+        $cursor->limit($limit)
+        
+        Limits the maximum number of entities fetched by this query.
+        
+        Arguments:
+          - $limit
+              * The maximum number of entities to fetch from the server (may require multiple API
+                  calls if greater than 200)
+              * Required
+          
+        Returns:
+            the current APICursor object
+     */
+    function limit($limit)
+    {
+        $this->_limit = $limit;
+        return $this;
     }
     
     /* 
@@ -133,6 +156,11 @@ class Telerivet_ApiCursor
      */
     function hasNext()
     {
+        if (isset($this->_limit) && $this->offset >= $this->_limit)
+        {
+            return false;
+        }
+    
         if (!isset($this->data))
         {
             $this->loadNextPage();
@@ -162,6 +190,11 @@ class Telerivet_ApiCursor
      */
     function next()
     {
+        if (isset($this->_limit) && $this->offset >= $this->_limit)
+        {
+            return null;
+        }
+    
         if (!isset($this->data) || ($this->pos >= sizeof($this->data) && $this->truncated))
         {
             $this->loadNextPage();
@@ -170,7 +203,8 @@ class Telerivet_ApiCursor
         if ($this->pos < sizeof($this->data))
         {
             $item_data = $this->data[$this->pos];
-            $this->pos++;            
+            $this->pos++;        
+            $this->offset++;            
             $cls = $this->item_cls;
             return new $cls($this->api, $item_data, true);
         }
@@ -187,6 +221,11 @@ class Telerivet_ApiCursor
         if (isset($this->next_marker))
         {
             $request_params['marker'] = $this->next_marker;
+        }
+        
+        if (isset($this->_limit) && !isset($request_params['page_size']))
+        {
+            $request_params['page_size'] = min($this->_limit, 200);
         }
         
         $response = $this->api->doRequest("GET", $this->path, $request_params);
