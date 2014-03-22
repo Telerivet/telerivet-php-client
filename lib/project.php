@@ -384,6 +384,8 @@ class Telerivet_Project extends Telerivet_Entity
         
         Gets a contact by ID.
         
+        Note: This does not make any API requests until you access a property of the Contact.
+        
         Arguments:
           - $id
               * ID of the contact
@@ -394,7 +396,7 @@ class Telerivet_Project extends Telerivet_Entity
     */
     function getContactById($id)
     {
-        return new Telerivet_Contact($this->_api, $this->_api->doRequest("GET", "{$this->getBaseApiPath()}/contacts/{$id}"));
+        return new Telerivet_Contact($this->_api, array('project_id' => $this->id, 'id' => $id), false);
     }
 
     /**
@@ -452,6 +454,8 @@ class Telerivet_Project extends Telerivet_Entity
         
         Gets a phone by ID.
         
+        Note: This does not make any API requests until you access a property of the Phone.
+        
         Arguments:
           - $id
               * ID of the phone - see <https://telerivet.com/dashboard/api>
@@ -462,7 +466,7 @@ class Telerivet_Project extends Telerivet_Entity
     */
     function getPhoneById($id)
     {
-        return new Telerivet_Phone($this->_api, $this->_api->doRequest("GET", "{$this->getBaseApiPath()}/phones/{$id}"));
+        return new Telerivet_Phone($this->_api, array('project_id' => $this->id, 'id' => $id), false);
     }
 
     /**
