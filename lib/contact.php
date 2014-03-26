@@ -102,8 +102,6 @@ class Telerivet_Contact extends Telerivet_Entity
         unset($this->_group_ids_set[$group->id]);
     }
     
-    protected $_has_custom_vars = true;
-
     /**
         $contact->queryMessages($options)
         

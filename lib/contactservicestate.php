@@ -58,8 +58,6 @@
 */
 class Telerivet_ContactServiceState extends Telerivet_Entity
 {
-    protected $_has_custom_vars = true;
-
     /**
         $state->save()
         

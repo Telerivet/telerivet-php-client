@@ -56,8 +56,6 @@
  */
 class Telerivet_Phone extends Telerivet_Entity
 {
-    protected $_has_custom_vars = true;
-
     /**
         $phone->queryMessages($options)
         

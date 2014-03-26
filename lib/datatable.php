@@ -23,6 +23,10 @@
           * Number of rows in the table
           * Read-only
       
+      - vars (associative array)
+          * Custom variables stored for this data table
+          * Updatable via API
+      
       - project_id
           * ID of the project this data table belongs to
           * Read-only
@@ -102,7 +106,7 @@ class Telerivet_DataTable extends Telerivet_Entity
     /**
         $table->getRowById($id)
         
-        Gets a row in this table by its ID.
+        Retrieves the row in the given table with the given ID.
         
         Note: This does not make any API requests until you access a property of the DataRow.
         

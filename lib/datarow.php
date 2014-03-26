@@ -39,8 +39,6 @@
 */
 class Telerivet_DataRow extends Telerivet_Entity
 {
-    protected $_has_custom_vars = true;
-
     /**
         $row->save()
         

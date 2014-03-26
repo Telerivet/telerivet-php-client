@@ -76,6 +76,10 @@
           * List of IDs of labels applied to this message
           * Read-only
       
+      - vars (associative array)
+          * Custom variables stored for this message
+          * Updatable via API
+      
       - mms_parts (array)
           * List of MMS parts for this message (null for non-MMS messages).
               Only included when retrieving an individual message, not when
@@ -122,7 +126,7 @@ class Telerivet_Message extends Telerivet_Entity
     /**
         $message->addLabel($label)
         
-        Adds a label to this message.
+        Adds a label to the given message.
         
         Arguments:
           - $label (Telerivet_Label)
@@ -138,7 +142,7 @@ class Telerivet_Message extends Telerivet_Entity
     /**
         $message->removeLabel($label)
         
-        Removes a label from this message.
+        Removes a label from the given message.
         
         Arguments:
           - $label (Telerivet_Label)

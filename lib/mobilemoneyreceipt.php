@@ -2,6 +2,13 @@
 /**
     Telerivet_MobileMoneyReceipt
     
+    Represents a receipt received from a mobile money system such as Safaricom M-Pesa (Kenya),
+    Vodacom M-Pesa (Tanzania), or Tigo Pesa (Tanzania).
+    
+    When your Android phone receives a SMS receipt from a supported mobile money
+    service that Telerivet can understand, Telerivet will automatically parse it and create a
+    MobileMoneyReceipt object.
+    
     Fields:
     
       - id (string, max 34 characters)
@@ -14,11 +21,13 @@
       
       - tx_type
           * Type of mobile money transaction
+          * Allowed values: receive_money, send_money, pay_bill, deposit, withdrawal,
+              airtime_purchase, balance_inquiry, reversal
           * Read-only
       
       - currency
-          * ISO 4217 Currency code for transaction (amount, balance, and fee are expressed in units
-              of this currency); see <http://en.wikipedia.org/wiki/ISO_4217>
+          * [ISO 4217 Currency code](http://en.wikipedia.org/wiki/ISO_4217) for the transaction,
+              e.g. KES or TZS. Amount, balance, and fee are expressed in units of this currency.
           * Read-only
       
       - amount (number)
@@ -59,9 +68,16 @@
           * Telerivet's internal ID for the mobile money provider
           * Read-only
       
+      - vars (associative array)
+          * Custom variables stored for this mobile money receipt
+          * Updatable via API
+      
       - contact_id
-          * ID of the contact associated with the name/phone_number on the receipt
-          * Read-only
+          * ID of the contact associated with the name/phone number on the receipt. Note that some
+              mobile money systems do not provide the other person's phone number, so it's possible
+              Telerivet may not automatically assign a contact_id, or may assign it to a different
+              contact with the same name.
+          * Updatable via API
       
       - phone_id
           * ID of the phone that received the receipt
@@ -79,6 +95,17 @@
 class Telerivet_MobileMoneyReceipt extends Telerivet_Entity
 {
     /**
+        $receipt->save()
+        
+        Saves any fields or custom variables that have changed for this mobile money receipt.
+        
+    */
+    function save()
+    {
+        parent::save();
+    }
+
+    /**
         $receipt->delete()
         
         Deletes this receipt.
@@ -91,6 +118,6 @@ class Telerivet_MobileMoneyReceipt extends Telerivet_Entity
 
     function getBaseApiPath()
     {
-        return "/projects/{$this->project_id}/receipts/{$this->receipt_id}";
+        return "/projects/{$this->project_id}/receipts/{$this->id}";
     }
 }

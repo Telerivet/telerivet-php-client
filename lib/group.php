@@ -23,6 +23,10 @@
           * Time the group was created in Telerivet
           * Read-only
       
+      - vars (associative array)
+          * Custom variables stored for this group
+          * Updatable via API
+      
       - project_id
           * ID of the project this group belongs to
           * Read-only
@@ -48,7 +52,7 @@ class Telerivet_Group extends Telerivet_Entity
     /**
         $group->queryContacts($options)
         
-        Queries contacts that are members of this group.
+        Queries contacts that are members of the given group.
         
         Arguments:
           - $options (associative array)
@@ -108,7 +112,7 @@ class Telerivet_Group extends Telerivet_Entity
     /**
         $group->queryScheduledMessages($options)
         
-        Queries scheduled messages to this group.
+        Queries scheduled messages to the given group.
         
         Arguments:
           - $options (associative array)

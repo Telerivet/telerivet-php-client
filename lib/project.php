@@ -86,6 +86,9 @@ class Telerivet_Project extends Telerivet_Entity
                 * Allowed values: sms, ussd
                 * Default: sms
             
+            - vars (associative array)
+                * Custom variables to store with the message
+            
             - priority (int)
                 * Priority of the message (currently only observed for Android phones). Telerivet
                     will attempt to send messages with higher priority numbers first (for example, so
@@ -142,6 +145,9 @@ class Telerivet_Project extends Telerivet_Entity
             - is_template (bool)
                 * Set to true to evaluate variables like [[contact.name]] in message content
                 * Default: false
+            
+            - vars (associative array)
+                * Custom variables to set for each message
           
         Returns:
             (associative array)
@@ -157,7 +163,9 @@ class Telerivet_Project extends Telerivet_Entity
     /**
         $project->scheduleMessage($options)
         
-        Schedules an SMS message to a group or single contact
+        Schedules an SMS message to a group or single contact. Note that Telerivet only sends
+        scheduled messages approximately once per minute, so it is not possible to control the exact
+        second at which a scheduled message is sent.
         
         Arguments:
           - $options (associative array)
@@ -186,7 +194,7 @@ class Telerivet_Project extends Telerivet_Entity
             - rrule
                 * A recurrence rule describing the how the schedule repeats, e.g. 'FREQ=MONTHLY' or
                     'FREQ=WEEKLY;INTERVAL=2'; see <https://tools.ietf.org/html/rfc2445#section-4.3.10>.
-                    (UNTIL is ignored; use end_time parameter)
+                    (UNTIL is ignored; use end_time parameter instead).
                 * Default: COUNT=1 (one-time scheduled message, does not repeat)
             
             - route_id
@@ -228,7 +236,7 @@ class Telerivet_Project extends Telerivet_Entity
     /**
         $project->getOrCreateContact($options)
         
-        Gets OR creates and possibly updates a contact by name or phone number.
+        Retrieves OR creates and possibly updates a contact by name or phone number.
         
         If a phone number is provided, Telerivet will search for an existing
         contact with that phone number (including suffix matches to allow finding contacts with
@@ -284,7 +292,7 @@ class Telerivet_Project extends Telerivet_Entity
     /**
         $project->getOrCreateGroup($name)
         
-        Gets or creates a group by name.
+        Retrieves or creates a group by name.
         
         Arguments:
           - name
@@ -306,7 +314,9 @@ class Telerivet_Project extends Telerivet_Entity
         Gets or creates a label by name.
         
         Arguments:
-          - name (Name of the label)
+          - name
+              * Name of the label
+              * Required
           
         Returns:
             Telerivet_Label
@@ -317,12 +327,10 @@ class Telerivet_Project extends Telerivet_Entity
         return new Telerivet_Label($this->_api, $data);
     }        
     
-    protected $_has_custom_vars = true;
-
     /**
         $project->queryContacts($options)
         
-        Queries contacts within this project.
+        Queries contacts within the given project.
         
         Arguments:
           - $options (associative array)
@@ -382,7 +390,7 @@ class Telerivet_Project extends Telerivet_Entity
     /**
         $project->getContactById($id)
         
-        Gets a contact by ID.
+        Retrieves the contact with the given ID.
         
         Note: This does not make any API requests until you access a property of the Contact.
         
@@ -402,7 +410,7 @@ class Telerivet_Project extends Telerivet_Entity
     /**
         $project->queryPhones($options)
         
-        Queries phones within this project.
+        Queries phones within the given project.
         
         Arguments:
           - $options (associative array)
@@ -452,7 +460,7 @@ class Telerivet_Project extends Telerivet_Entity
     /**
         $project->getPhoneById($id)
         
-        Gets a phone by ID.
+        Retrieves the phone with the given ID.
         
         Note: This does not make any API requests until you access a property of the Phone.
         
@@ -472,7 +480,7 @@ class Telerivet_Project extends Telerivet_Entity
     /**
         $project->queryMessages($options)
         
-        Queries messages within this project.
+        Queries messages within the given project.
         
         Arguments:
           - $options (associative array)
@@ -538,7 +546,7 @@ class Telerivet_Project extends Telerivet_Entity
     /**
         $project->getMessageById($id)
         
-        Gets a message by ID.
+        Retrieves the message with the given ID.
         
         Note: This does not make any API requests until you access a property of the Message.
         
@@ -558,7 +566,7 @@ class Telerivet_Project extends Telerivet_Entity
     /**
         $project->queryGroups($options)
         
-        Queries groups within this project.
+        Queries groups within the given project.
         
         Arguments:
           - $options (associative array)
@@ -597,7 +605,7 @@ class Telerivet_Project extends Telerivet_Entity
     /**
         $project->getGroupById($id)
         
-        Gets a group by ID.
+        Retrieves the group with the given ID.
         
         Note: This does not make any API requests until you access a property of the Group.
         
@@ -617,7 +625,7 @@ class Telerivet_Project extends Telerivet_Entity
     /**
         $project->queryLabels($options)
         
-        Queries labels within this project.
+        Queries labels within the given project.
         
         Arguments:
           - $options (associative array)
@@ -656,7 +664,7 @@ class Telerivet_Project extends Telerivet_Entity
     /**
         $project->getLabelById($id)
         
-        Gets a label by ID.
+        Retrieves the label with the given ID.
         
         Note: This does not make any API requests until you access a property of the Label.
         
@@ -675,7 +683,7 @@ class Telerivet_Project extends Telerivet_Entity
     /**
         $project->queryDataTables($options)
         
-        Queries data tables within this project.
+        Queries data tables within the given project.
         
         Arguments:
           - $options (associative array)
@@ -714,7 +722,7 @@ class Telerivet_Project extends Telerivet_Entity
     /**
         $project->getDataTableById($id)
         
-        Gets a data table by ID.
+        Retrieves the data table with the given ID.
         
         Note: This does not make any API requests until you access a property of the DataTable.
         
@@ -733,7 +741,7 @@ class Telerivet_Project extends Telerivet_Entity
     /**
         $project->queryScheduledMessages($options)
         
-        Queries scheduled messages within this project.
+        Queries scheduled messages within the given project.
         
         Arguments:
           - $options (associative array)
@@ -780,7 +788,7 @@ class Telerivet_Project extends Telerivet_Entity
     /**
         $project->getScheduledMessageById($id)
         
-        Gets a scheduled message by ID.
+        Retrieves the scheduled message with the given ID.
         
         Note: This does not make any API requests until you access a property of the
         ScheduledMessage.
@@ -800,7 +808,7 @@ class Telerivet_Project extends Telerivet_Entity
     /**
         $project->queryServices($options)
         
-        Queries services within this project.
+        Queries services within the given project.
         
         Arguments:
           - $options (associative array)
@@ -846,7 +854,7 @@ class Telerivet_Project extends Telerivet_Entity
     /**
         $project->getServiceById($id)
         
-        Gets a service by ID.
+        Retrieves the service with the given ID.
         
         Note: This does not make any API requests until you access a property of the Service.
         
@@ -865,7 +873,7 @@ class Telerivet_Project extends Telerivet_Entity
     /**
         $project->queryReceipts($options)
         
-        Queries mobile money receipts within this project.
+        Queries mobile money receipts within the given project.
         
         Arguments:
           - $options (associative array)
@@ -922,7 +930,7 @@ class Telerivet_Project extends Telerivet_Entity
     /**
         $project->getReceiptById($id)
         
-        Gets a mobile money receipt by ID.
+        Retrieves the mobile money receipt with the given ID.
         
         Note: This does not make any API requests until you access a property of the
         MobileMoneyReceipt.
@@ -943,7 +951,7 @@ class Telerivet_Project extends Telerivet_Entity
     /**
         $project->save()
         
-        Saves any fields or custom variables that have changed for this project.
+        Saves any fields or custom variables that have changed for the project.
         
     */
     function save()

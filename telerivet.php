@@ -24,7 +24,7 @@ class Telerivet_API
     private $api_key;
     private $api_url;
     public $num_requests = 0;
-    private $client_version = '1.0';    
+    private $client_version = '1.0.1';    
     
     private $curl;
     public $debug = false;
@@ -92,7 +92,7 @@ class Telerivet_API
     /**     
         $tr->getProjectById($id)
         
-        Gets a Telerivet project by its ID.
+        Retrieves the Telerivet project with the given ID.
         
         Arguments:
           - $id
@@ -254,4 +254,3 @@ require_once "{$tr_lib_dir}/scheduledmessage.php";
 require_once "{$tr_lib_dir}/service.php";
 require_once "{$tr_lib_dir}/contactservicestate.php";
 require_once "{$tr_lib_dir}/mobilemoneyreceipt.php";
-require_once "{$tr_lib_dir}/apicursor.php";

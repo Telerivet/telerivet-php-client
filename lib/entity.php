@@ -9,7 +9,6 @@ abstract class Telerivet_Entity
     protected $_is_loaded;
     protected $_data;
     protected $_api;
-    protected $_has_custom_vars = false;
     protected $_vars;
     
     protected $_dirty = array();
@@ -24,11 +23,7 @@ abstract class Telerivet_Entity
     protected function _setData($data)
     {
         $this->_data = $data;
-        
-        if ($this->_has_custom_vars)
-        {
-            $this->_vars = new Telerivet_CustomVars(isset($data['vars']) ? $data['vars'] : array());
-        }
+        $this->_vars = new Telerivet_CustomVars(isset($data['vars']) ? $data['vars'] : array());        
     }
     
     protected function _loadData()

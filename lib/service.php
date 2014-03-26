@@ -175,7 +175,8 @@ class Telerivet_Service extends Telerivet_Entity
     /**
         $service->setContactState($contact, $options)
         
-        Initializes or updates the current state for a particular contact for this service.
+        Initializes or updates the current state for a particular contact for the given service. If
+        the state id is null, the contact's state will be reset.
         
         Arguments:
           - $contact (Telerivet_Contact)
@@ -204,7 +205,7 @@ class Telerivet_Service extends Telerivet_Entity
     /**
         $service->resetContactState($contact)
         
-        Resets the current state for a particular contact for this service.
+        Resets the current state for a particular contact for the given service.
         
         Arguments:
           - $contact (Telerivet_Contact)
@@ -218,8 +219,6 @@ class Telerivet_Service extends Telerivet_Entity
     {
         return new Telerivet_ContactServiceState($this->_api, $this->_api->doRequest('DELETE', $this->getBaseApiPath() . '/states/' . $contact->id));        
     }
-
-    protected $_has_custom_vars = true;
 
     /**
         $service->save()

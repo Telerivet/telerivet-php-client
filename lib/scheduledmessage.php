@@ -64,6 +64,19 @@
               not be sent again)
           * Read-only
       
+      - is_template
+          * Set to true if Telerivet will render variables like [[contact.name]] in the message
+              content, false otherwise
+          * Read-only
+      
+      - vars (associative array)
+          * Custom variables stored for this scheduled message (copied to Message when sent)
+          * Updatable via API
+      
+      - label_ids (array)
+          * IDs of labels to add to the Message
+          * Read-only
+      
       - project_id
           * ID of the project this scheduled message belongs to
           * Read-only
@@ -75,6 +88,17 @@
 */
 class Telerivet_ScheduledMessage extends Telerivet_Entity
 {
+    /**
+        $scheduled_msg->save()
+        
+        Saves any fields or custom variables that have changed for this scheduled message.
+        
+    */
+    function save()
+    {
+        parent::save();
+    }
+
     /**
         $scheduled_msg->delete()
         

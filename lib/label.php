@@ -19,6 +19,10 @@
           * Time the label was created in Telerivet
           * Read-only
       
+      - vars (associative array)
+          * Custom variables stored for this label
+          * Updatable via API
+      
       - project_id
           * ID of the project this label belongs to
           * Read-only
@@ -44,7 +48,7 @@ class Telerivet_Label extends Telerivet_Entity
     /**
         $label->queryMessages($options)
         
-        Queries messages with this label.
+        Queries messages with the given label.
         
         Arguments:
           - $options (associative array)
@@ -110,7 +114,7 @@ class Telerivet_Label extends Telerivet_Entity
     /**
         $label->save()
         
-        Saves any fields that have changed for this label.
+        Saves any fields that have changed for the label.
         
     */
     function save()
@@ -121,7 +125,7 @@ class Telerivet_Label extends Telerivet_Entity
     /**
         $label->delete()
         
-        Deletes this label (Note: no messages are deleted.)
+        Deletes the given label (Note: no messages are deleted.)
         
     */
     function delete()
