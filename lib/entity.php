@@ -25,7 +25,7 @@ abstract class Telerivet_Entity
         $this->_data = $data;
         $this->_vars = new Telerivet_CustomVars(isset($data['vars']) ? $data['vars'] : array());        
     }
-    
+        
     protected function _loadData()
     {
         if (!$this->_is_loaded)
@@ -94,6 +94,18 @@ abstract class Telerivet_Entity
         {
             $this->_vars->clearDirtyVariables();
         }
+    }
+    
+    function __toString()
+    {
+        $res = get_class($this);
+        if (!$this->_is_loaded)
+        {
+            $res .= " (not loaded)";
+        }
+        $res .= " JSON: " . json_encode($this->_data);
+        
+        return $res;
     }
     
     abstract function getBaseApiPath();

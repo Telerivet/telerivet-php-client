@@ -64,6 +64,10 @@
               not be sent again)
           * Read-only
       
+      - occurrences (int)
+          * Number of times this scheduled message has already been sent
+          * Read-only
+      
       - is_template
           * Set to true if Telerivet will render variables like [[contact.name]] in the message
               content, false otherwise
@@ -79,10 +83,6 @@
       
       - project_id
           * ID of the project this scheduled message belongs to
-          * Read-only
-      
-      - occurrences (int)
-          * Number of times this scheduled message has already been sent
           * Read-only
       
 */
