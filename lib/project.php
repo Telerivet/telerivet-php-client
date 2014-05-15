@@ -288,44 +288,6 @@ class Telerivet_Project extends Telerivet_Entity
         $data = $this->_api->doRequest("POST", "{$this->getBaseApiPath()}/contacts", $options);
         return new Telerivet_Contact($this->_api, $data);
     }    
-        
-    /**
-        $project->getOrCreateGroup($name)
-        
-        Retrieves or creates a group by name.
-        
-        Arguments:
-          - name
-              * Name of the group
-              * Required
-          
-        Returns:
-            Telerivet_Group
-     */       
-    function getOrCreateGroup($name)
-    {                                          
-        $data = $this->_api->doRequest("POST", "{$this->getBaseApiPath()}/groups", array('name' => $name));
-        return new Telerivet_Group($this->_api, $data);
-    }        
-        
-    /**
-        $project->getOrCreateLabel($name)
-        
-        Gets or creates a label by name.
-        
-        Arguments:
-          - name
-              * Name of the label
-              * Required
-          
-        Returns:
-            Telerivet_Label
-     */       
-    function getOrCreateLabel($name)
-    {                                       
-        $data = $this->_api->doRequest("POST", "{$this->getBaseApiPath()}/labels", array('name' => $name));
-        return new Telerivet_Label($this->_api, $data);
-    }        
     
     /**
         $project->queryContacts($options)
@@ -603,6 +565,24 @@ class Telerivet_Project extends Telerivet_Entity
     }
 
     /**
+        $project->getOrCreateGroup($name)
+        
+        Retrieves or creates a group by name.
+        
+        Arguments:
+          - name
+              * Name of the group
+              * Required
+          
+        Returns:
+            Telerivet_Group
+    */
+    function getOrCreateGroup($name)
+    {
+        return new Telerivet_Group($this->_api, $this->_api->doRequest("POST", "{$this->getBaseApiPath()}/groups", array('name' => $name)));
+    }
+
+    /**
         $project->getGroupById($id)
         
         Retrieves the group with the given ID.
@@ -662,6 +642,24 @@ class Telerivet_Project extends Telerivet_Entity
     }
 
     /**
+        $project->getOrCreateLabel($name)
+        
+        Gets or creates a label by name.
+        
+        Arguments:
+          - name
+              * Name of the label
+              * Required
+          
+        Returns:
+            Telerivet_Label
+    */
+    function getOrCreateLabel($name)
+    {
+        return new Telerivet_Label($this->_api, $this->_api->doRequest("POST", "{$this->getBaseApiPath()}/labels", array('name' => $name)));
+    }
+
+    /**
         $project->getLabelById($id)
         
         Retrieves the label with the given ID.
@@ -717,6 +715,24 @@ class Telerivet_Project extends Telerivet_Entity
     function queryDataTables($options = null)
     {
         return $this->_api->newApiCursor('Telerivet_DataTable', "{$this->getBaseApiPath()}/tables", $options);
+    }
+
+    /**
+        $project->getOrCreateDataTable($name)
+        
+        Gets or creates a data table by name.
+        
+        Arguments:
+          - name
+              * Name of the data table
+              * Required
+          
+        Returns:
+            Telerivet_DataTable
+    */
+    function getOrCreateDataTable($name)
+    {
+        return new Telerivet_DataTable($this->_api, $this->_api->doRequest("POST", "{$this->getBaseApiPath()}/tables", array('name' => $name)));
     }
 
     /**
