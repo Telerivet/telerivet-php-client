@@ -28,6 +28,10 @@
           * ID of the group to send the message to (null if scheduled to an individual contact)
           * Read-only
       
+      - contact_id
+          * ID of the contact to send the message to (null if scheduled to a group)
+          * Read-only
+      
       - to_number
           * Phone number to send the message to (null if scheduled to a group)
           * Read-only
@@ -60,15 +64,15 @@
           * Read-only
       
       - next_time (UNIX timestamp)
-          * The next upcoming time that Telerivet will sent this scheduled message (null if it will
-              not be sent again)
+          * The next upcoming time that Telerivet will sent this scheduled message (null if it
+              will not be sent again)
           * Read-only
       
       - occurrences (int)
           * Number of times this scheduled message has already been sent
           * Read-only
       
-      - is_template
+      - is_template (bool)
           * Set to true if Telerivet will render variables like [[contact.name]] in the message
               content, false otherwise
           * Read-only
@@ -84,7 +88,6 @@
       - project_id
           * ID of the project this scheduled message belongs to
           * Read-only
-      
 */
 class Telerivet_ScheduledMessage extends Telerivet_Entity
 {
@@ -92,7 +95,6 @@ class Telerivet_ScheduledMessage extends Telerivet_Entity
         $scheduled_msg->save()
         
         Saves any fields or custom variables that have changed for this scheduled message.
-        
     */
     function save()
     {
@@ -103,7 +105,6 @@ class Telerivet_ScheduledMessage extends Telerivet_Entity
         $scheduled_msg->delete()
         
         Cancels this scheduled message.
-        
     */
     function delete()
     {

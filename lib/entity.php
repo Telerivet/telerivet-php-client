@@ -25,21 +25,34 @@ abstract class Telerivet_Entity
         $this->_data = $data;
         $this->_vars = new Telerivet_CustomVars(isset($data['vars']) ? $data['vars'] : array());        
     }
-        
-    protected function _loadData()
+     
+    function load()
     {
         if (!$this->_is_loaded)
         {
             $this->_is_loaded = true;
-            $this->_setData($this->_api->doRequest('GET', $this->getBaseApiPath()));            
+            $old_dirty_vars = $this->_vars->getDirtyVariables();
+            
+            $this->_setData($this->_api->doRequest('GET', $this->getBaseApiPath()));
+            
+            foreach ($old_dirty_vars as $name => $value)
+            {
+                $this->_vars->set($name, $value);
+            }
+            
+            foreach ($this->_dirty as $name => $value)
+            {
+                $this->_data[$name] = $value;
+            }
         }
+        return $this;
     }
         
     function __get($name)
     {
         if ($name == 'vars')
         {
-            $this->_loadData();
+            $this->load();
             return $this->_vars;
         }
     
@@ -52,8 +65,8 @@ abstract class Telerivet_Entity
         {
             return null;
         }
-        
-        $this->_loadData();
+
+        $this->load();
         $data = $this->_data;
         
         return isset($data[$name]) ? $data[$name] : null;
@@ -61,14 +74,8 @@ abstract class Telerivet_Entity
     
     function __set($name, $value)
     {
-        if (!$this->_is_loaded)
-        {
-            $this->_loadData();
-        }
-        $this->_data[$name] = $value;
-        
-        $this->_dirty[$name] = $value;
-        // todo track dirty
+        $this->_data[$name] = $value;        
+        $this->_dirty[$name] = $value;        
     }
     
     /**
@@ -171,14 +178,24 @@ class Telerivet_CustomVars implements Iterator
         unset($this->_vars[$name]);
     }
     
-    function __get($name)
+    function get($name)
     {
         return isset($this->_vars[$name]) ? $this->_vars[$name] : null;
     }
     
-    function __set($name, $value)
+    function __get($name)
+    {
+        return $this->get($name);
+    }
+    
+    function set($name, $value)
     {
         $this->_vars[$name] = $value;
         $this->_dirty[$name] = $value;
+    }
+    
+    function __set($name, $value)
+    {
+        $this->set($name, $value);
     }
 }

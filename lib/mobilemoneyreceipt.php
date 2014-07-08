@@ -56,8 +56,8 @@
           * Read-only
       
       - other_tx_id
-          * The other transaction ID listed in the receipt (e.g. the transaction ID for a reversed
-              transaction)
+          * The other transaction ID listed in the receipt (e.g. the transaction ID for a
+              reversed transaction)
           * Read-only
       
       - content
@@ -73,10 +73,10 @@
           * Updatable via API
       
       - contact_id
-          * ID of the contact associated with the name/phone number on the receipt. Note that some
-              mobile money systems do not provide the other person's phone number, so it's possible
-              Telerivet may not automatically assign a contact_id, or may assign it to a different
-              contact with the same name.
+          * ID of the contact associated with the name/phone number on the receipt. Note that
+              some mobile money systems do not provide the other person's phone number, so it's
+              possible Telerivet may not automatically assign a contact_id, or may assign it to a
+              different contact with the same name.
           * Updatable via API
       
       - phone_id
@@ -90,7 +90,6 @@
       - project_id
           * ID of the project this receipt belongs to
           * Read-only
-      
 */
 class Telerivet_MobileMoneyReceipt extends Telerivet_Entity
 {
@@ -98,7 +97,6 @@ class Telerivet_MobileMoneyReceipt extends Telerivet_Entity
         $receipt->save()
         
         Saves any fields or custom variables that have changed for this mobile money receipt.
-        
     */
     function save()
     {
@@ -109,7 +107,6 @@ class Telerivet_MobileMoneyReceipt extends Telerivet_Entity
         $receipt->delete()
         
         Deletes this receipt.
-        
     */
     function delete()
     {

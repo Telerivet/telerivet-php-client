@@ -11,8 +11,8 @@
           * Read-only
       
       - direction
-          * Direction of the message: incoming messages are sent from one of your contacts to your
-              phone; outgoing messages are sent from your phone to one of your contacts
+          * Direction of the message: incoming messages are sent from one of your contacts to
+              your phone; outgoing messages are sent from your phone to one of your contacts
           * Allowed values: incoming, outgoing
           * Read-only
       
@@ -37,18 +37,18 @@
           * Read-only
       
       - time_sent (UNIX timestamp)
-          * The time that the message was reported to have been sent (null for incoming messages and
-              messages that have not yet been sent)
+          * The time that the message was reported to have been sent (null for incoming messages
+              and messages that have not yet been sent)
           * Read-only
       
       - from_number (string)
-          * The phone number that the message originated from (your number for outgoing messages,
-              the contact's number for incoming messages)
+          * The phone number that the message originated from (your number for outgoing
+              messages, the contact's number for incoming messages)
           * Read-only
       
       - to_number (string)
-          * The phone number that the message was sent to (your number for incoming messages, the
-              contact's number for outgoing messages)
+          * The phone number that the message was sent to (your number for incoming messages,
+              the contact's number for outgoing messages)
           * Read-only
       
       - content (string)
@@ -72,38 +72,31 @@
           * Custom variables stored for this message
           * Updatable via API
       
-      - mms_parts (array)
-          * List of MMS parts for this message (null for non-MMS messages).
-              Only included when retrieving an individual message, not when
-              querying a list of messages.
-              
-              Each MMS part in the list has the following properties:
-              
-              - cid: MMS content-id
-              - type: MIME type
-              - filename: original filename
-              - size (int): number of bytes
-              - url: URL where the content for this part is stored (secret but
-              publicly accessible, so you could link/embed it in a web page without having to re-host it
-              yourself)
-          * Read-only
-      
       - error_message
-          * A description of the error encountered while sending a message. (This field is omitted
-              from the API response if there is no error message.)
+          * A description of the error encountered while sending a message. (This field is
+              omitted from the API response if there is no error message.)
           * Updatable via API
       
       - external_id
-          * The ID of this message from an external SMS gateway provider (e.g. Twilio or Nexmo), if
-              available.
+          * The ID of this message from an external SMS gateway provider (e.g. Twilio or Nexmo),
+              if available.
           * Read-only
       
-      - price
+      - price (number)
           * The price of this message, if known. By convention, message prices are negative.
           * Read-only
       
       - price_currency
           * The currency of the message price, if applicable.
+          * Read-only
+      
+      - mms_parts (array)
+          * A list of parts in the MMS message, the same as returned by the
+              [getMMSParts](#Message.getMMSParts) method.
+              
+              Note: This property is only present when retrieving an individual
+              MMS message by ID, not when querying a list of messages. In other cases, use
+              [getMMSParts](#Message.getMMSParts).
           * Read-only
       
       - phone_id (string, max 34 characters)
@@ -117,7 +110,6 @@
       - project_id
           * ID of the project this contact belongs to
           * Read-only
-      
  */
 class Telerivet_Message extends Telerivet_Entity
 {
@@ -137,7 +129,7 @@ class Telerivet_Message extends Telerivet_Entity
      */
     function hasLabel($label)
     {
-        $this->_loadData();
+        $this->load();
         return isset($this->_label_ids_set[$label->id]);
     }
     
@@ -149,7 +141,6 @@ class Telerivet_Message extends Telerivet_Entity
         Arguments:
           - $label (Telerivet_Label)
               * Required
-          
      */
     function addLabel($label)
     {
@@ -165,7 +156,6 @@ class Telerivet_Message extends Telerivet_Entity
         Arguments:
           - $label (Telerivet_Label)
               * Required
-          
      */
     function removeLabel($label)
     {        
@@ -174,10 +164,33 @@ class Telerivet_Message extends Telerivet_Entity
     }
     
     /**
+        $message->getMMSParts()
+        
+        Retrieves a list of MMS parts for this message (empty for non-MMS messages).
+        
+        Each MMS part in the list is an object with the following
+        properties:
+        
+        - cid: MMS content-id
+        - type: MIME type
+        - filename: original filename
+        - size (int): number of bytes
+        - url: URL where the content for this part is stored (secret but
+        publicly accessible, so you could link/embed it in a web page without having to re-host it
+        yourself)
+        
+        Returns:
+            array
+    */
+    function getMMSParts()
+    {
+        return $this->_api->doRequest("GET", "{$this->getBaseApiPath()}/mms_parts");
+    }
+
+    /**
         $message->save()
         
         Saves any fields that have changed for this message.
-        
     */
     function save()
     {
@@ -188,7 +201,6 @@ class Telerivet_Message extends Telerivet_Entity
         $message->delete()
         
         Deletes this message.
-        
     */
     function delete()
     {

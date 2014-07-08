@@ -5,9 +5,9 @@
     
     Represents a Telerivet project.
     
-    Provides methods for sending and scheduling messages, as well as accessing,
-    creating and updating a variety of entities, including contacts, messages, scheduled messages,
-    groups, labels, phones, services, and data tables.
+    Provides methods for sending and scheduling messages, as well as
+    accessing, creating and updating a variety of entities, including contacts, messages,
+    scheduled messages, groups, labels, phones, services, and data tables.
     
     Fields:
     
@@ -27,7 +27,6 @@
       - vars (associative array)
           * Custom variables stored for this project
           * Updatable via API
-      
     Example Usage:
     -------------
     
@@ -75,7 +74,8 @@ class Telerivet_Project extends Telerivet_Entity
                 * POST parameter 'secret' passed to status_url
             
             - is_template (bool)
-                * Set to true to evaluate variables like [[contact.name]] in message content
+                * Set to true to evaluate variables like [[contact.name]] in message content. [(See
+                    available variables)](#variables)
                 * Default: false
             
             - label_ids (array)
@@ -143,7 +143,8 @@ class Telerivet_Project extends Telerivet_Entity
                     set)
             
             - is_template (bool)
-                * Set to true to evaluate variables like [[contact.name]] in message content
+                * Set to true to evaluate variables like [[contact.name]] in message content [(See
+                    available variables)](#variables)
                 * Default: false
             
             - vars (associative array)
@@ -153,7 +154,6 @@ class Telerivet_Project extends Telerivet_Entity
             (associative array)
               - count_queued (int)
                   * Number of messages queued to send
-              
      */
     function sendMessages($options)
     {
@@ -354,8 +354,6 @@ class Telerivet_Project extends Telerivet_Entity
         
         Retrieves the contact with the given ID.
         
-        Note: This does not make any API requests until you access a property of the Contact.
-        
         Arguments:
           - $id
               * ID of the contact
@@ -365,6 +363,24 @@ class Telerivet_Project extends Telerivet_Entity
             Telerivet_Contact
     */
     function getContactById($id)
+    {
+        return new Telerivet_Contact($this->_api, $this->_api->doRequest("GET", "{$this->getBaseApiPath()}/contacts/{$id}"));
+    }
+
+    /**
+        $project->initContactById($id)
+        
+        Initializes the Telerivet contact with the given ID without making an API request.
+        
+        Arguments:
+          - $id
+              * ID of the contact
+              * Required
+          
+        Returns:
+            Telerivet_Contact
+    */
+    function initContactById($id)
     {
         return new Telerivet_Contact($this->_api, array('project_id' => $this->id, 'id' => $id), false);
     }
@@ -424,8 +440,6 @@ class Telerivet_Project extends Telerivet_Entity
         
         Retrieves the phone with the given ID.
         
-        Note: This does not make any API requests until you access a property of the Phone.
-        
         Arguments:
           - $id
               * ID of the phone - see <https://telerivet.com/dashboard/api>
@@ -435,6 +449,24 @@ class Telerivet_Project extends Telerivet_Entity
             Telerivet_Phone
     */
     function getPhoneById($id)
+    {
+        return new Telerivet_Phone($this->_api, $this->_api->doRequest("GET", "{$this->getBaseApiPath()}/phones/{$id}"));
+    }
+
+    /**
+        $project->initPhoneById($id)
+        
+        Initializes the phone with the given ID without making an API request.
+        
+        Arguments:
+          - $id
+              * ID of the phone - see <https://telerivet.com/dashboard/api>
+              * Required
+          
+        Returns:
+            Telerivet_Phone
+    */
+    function initPhoneById($id)
     {
         return new Telerivet_Phone($this->_api, array('project_id' => $this->id, 'id' => $id), false);
     }
@@ -510,8 +542,6 @@ class Telerivet_Project extends Telerivet_Entity
         
         Retrieves the message with the given ID.
         
-        Note: This does not make any API requests until you access a property of the Message.
-        
         Arguments:
           - $id
               * ID of the message
@@ -521,6 +551,24 @@ class Telerivet_Project extends Telerivet_Entity
             Telerivet_Message
     */
     function getMessageById($id)
+    {
+        return new Telerivet_Message($this->_api, $this->_api->doRequest("GET", "{$this->getBaseApiPath()}/messages/{$id}"));
+    }
+
+    /**
+        $project->initMessageById($id)
+        
+        Initializes the Telerivet message with the given ID without making an API request.
+        
+        Arguments:
+          - $id
+              * ID of the message
+              * Required
+          
+        Returns:
+            Telerivet_Message
+    */
+    function initMessageById($id)
     {
         return new Telerivet_Message($this->_api, array('project_id' => $this->id, 'id' => $id), false);
     }
@@ -587,8 +635,6 @@ class Telerivet_Project extends Telerivet_Entity
         
         Retrieves the group with the given ID.
         
-        Note: This does not make any API requests until you access a property of the Group.
-        
         Arguments:
           - $id
               * ID of the group
@@ -598,6 +644,24 @@ class Telerivet_Project extends Telerivet_Entity
             Telerivet_Group
     */
     function getGroupById($id)
+    {
+        return new Telerivet_Group($this->_api, $this->_api->doRequest("GET", "{$this->getBaseApiPath()}/groups/{$id}"));
+    }
+
+    /**
+        $project->initGroupById($id)
+        
+        Initializes the group with the given ID without making an API request.
+        
+        Arguments:
+          - $id
+              * ID of the group
+              * Required
+          
+        Returns:
+            Telerivet_Group
+    */
+    function initGroupById($id)
     {
         return new Telerivet_Group($this->_api, array('project_id' => $this->id, 'id' => $id), false);
     }
@@ -664,16 +728,33 @@ class Telerivet_Project extends Telerivet_Entity
         
         Retrieves the label with the given ID.
         
-        Note: This does not make any API requests until you access a property of the Label.
-        
         Arguments:
-          - $id (ID of the label)
+          - $id
+              * ID of the label
               * Required
           
         Returns:
             Telerivet_Label
     */
     function getLabelById($id)
+    {
+        return new Telerivet_Label($this->_api, $this->_api->doRequest("GET", "{$this->getBaseApiPath()}/labels/{$id}"));
+    }
+
+    /**
+        $project->initLabelById($id)
+        
+        Initializes the label with the given ID without making an API request.
+        
+        Arguments:
+          - $id
+              * ID of the label
+              * Required
+          
+        Returns:
+            Telerivet_Label
+    */
+    function initLabelById($id)
     {
         return new Telerivet_Label($this->_api, array('project_id' => $this->id, 'id' => $id), false);
     }
@@ -740,16 +821,33 @@ class Telerivet_Project extends Telerivet_Entity
         
         Retrieves the data table with the given ID.
         
-        Note: This does not make any API requests until you access a property of the DataTable.
-        
         Arguments:
-          - $id (ID of the data table)
+          - $id
+              * ID of the data table
               * Required
           
         Returns:
             Telerivet_DataTable
     */
     function getDataTableById($id)
+    {
+        return new Telerivet_DataTable($this->_api, $this->_api->doRequest("GET", "{$this->getBaseApiPath()}/tables/{$id}"));
+    }
+
+    /**
+        $project->initDataTableById($id)
+        
+        Initializes the data table with the given ID without making an API request.
+        
+        Arguments:
+          - $id
+              * ID of the data table
+              * Required
+          
+        Returns:
+            Telerivet_DataTable
+    */
+    function initDataTableById($id)
     {
         return new Telerivet_DataTable($this->_api, array('project_id' => $this->id, 'id' => $id), false);
     }
@@ -806,17 +904,33 @@ class Telerivet_Project extends Telerivet_Entity
         
         Retrieves the scheduled message with the given ID.
         
-        Note: This does not make any API requests until you access a property of the
-        ScheduledMessage.
-        
         Arguments:
-          - $id (ID of the scheduled message)
+          - $id
+              * ID of the scheduled message
               * Required
           
         Returns:
             Telerivet_ScheduledMessage
     */
     function getScheduledMessageById($id)
+    {
+        return new Telerivet_ScheduledMessage($this->_api, $this->_api->doRequest("GET", "{$this->getBaseApiPath()}/scheduled/{$id}"));
+    }
+
+    /**
+        $project->initScheduledMessageById($id)
+        
+        Initializes the scheduled message with the given ID without making an API request.
+        
+        Arguments:
+          - $id
+              * ID of the scheduled message
+              * Required
+          
+        Returns:
+            Telerivet_ScheduledMessage
+    */
+    function initScheduledMessageById($id)
     {
         return new Telerivet_ScheduledMessage($this->_api, array('project_id' => $this->id, 'id' => $id), false);
     }
@@ -872,16 +986,33 @@ class Telerivet_Project extends Telerivet_Entity
         
         Retrieves the service with the given ID.
         
-        Note: This does not make any API requests until you access a property of the Service.
-        
         Arguments:
-          - $id (ID of the service)
+          - $id
+              * ID of the service
               * Required
           
         Returns:
             Telerivet_Service
     */
     function getServiceById($id)
+    {
+        return new Telerivet_Service($this->_api, $this->_api->doRequest("GET", "{$this->getBaseApiPath()}/services/{$id}"));
+    }
+
+    /**
+        $project->initServiceById($id)
+        
+        Initializes the service with the given ID without making an API request.
+        
+        Arguments:
+          - $id
+              * ID of the service
+              * Required
+          
+        Returns:
+            Telerivet_Service
+    */
+    function initServiceById($id)
     {
         return new Telerivet_Service($this->_api, array('project_id' => $this->id, 'id' => $id), false);
     }
@@ -948,9 +1079,6 @@ class Telerivet_Project extends Telerivet_Entity
         
         Retrieves the mobile money receipt with the given ID.
         
-        Note: This does not make any API requests until you access a property of the
-        MobileMoneyReceipt.
-        
         Arguments:
           - $id
               * ID of the mobile money receipt
@@ -961,14 +1089,106 @@ class Telerivet_Project extends Telerivet_Entity
     */
     function getReceiptById($id)
     {
+        return new Telerivet_MobileMoneyReceipt($this->_api, $this->_api->doRequest("GET", "{$this->getBaseApiPath()}/receipts/{$id}"));
+    }
+
+    /**
+        $project->initReceiptById($id)
+        
+        Initializes the mobile money receipt with the given ID without making an API request.
+        
+        Arguments:
+          - $id
+              * ID of the mobile money receipt
+              * Required
+          
+        Returns:
+            Telerivet_MobileMoneyReceipt
+    */
+    function initReceiptById($id)
+    {
         return new Telerivet_MobileMoneyReceipt($this->_api, array('project_id' => $this->id, 'id' => $id), false);
+    }
+
+    /**
+        $project->queryRoutes($options)
+        
+        Queries custom routes that can be used to send messages (not including Phones).
+        
+        Arguments:
+          - $options (associative array)
+            
+            - name
+                * Filter routes by name
+                * Allowed modifiers: name[ne], name[prefix], name[not_prefix], name[gte], name[gt],
+                    name[lt], name[lte]
+            
+            - sort
+                * Sort the results based on a field
+                * Allowed values: default, name
+                * Default: default
+            
+            - sort_dir
+                * Sort the results in ascending or descending order
+                * Allowed values: asc, desc
+                * Default: asc
+            
+            - page_size (int)
+                * Number of results returned per page (max 200)
+                * Default: 50
+            
+            - offset (int)
+                * Number of items to skip from beginning of result set
+                * Default: 0
+          
+        Returns:
+            Telerivet_APICursor (of Telerivet_Route)
+    */
+    function queryRoutes($options = null)
+    {
+        return $this->_api->newApiCursor('Telerivet_Route', "{$this->getBaseApiPath()}/routes", $options);
+    }
+
+    /**
+        $project->getRouteById($id)
+        
+        Gets a custom route by ID
+        
+        Arguments:
+          - $id
+              * ID of the route
+              * Required
+          
+        Returns:
+            Telerivet_Route
+    */
+    function getRouteById($id)
+    {
+        return new Telerivet_Route($this->_api, $this->_api->doRequest("GET", "{$this->getBaseApiPath()}/routes/{$id}"));
+    }
+
+    /**
+        $project->initRouteById($id)
+        
+        Initializes a custom route by ID without making an API request.
+        
+        Arguments:
+          - $id
+              * ID of the route
+              * Required
+          
+        Returns:
+            Telerivet_Route
+    */
+    function initRouteById($id)
+    {
+        return new Telerivet_Route($this->_api, array('project_id' => $this->id, 'id' => $id), false);
     }
 
     /**
         $project->save()
         
         Saves any fields or custom variables that have changed for the project.
-        
     */
     function save()
     {

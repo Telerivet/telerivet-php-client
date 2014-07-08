@@ -6,9 +6,8 @@
     An easy-to-use interface for interacting with API methods that return collections of objects
     that may be split into multiple pages of results.
     
-    Using the APICursor, you can easily iterate over query results without having to
-    manually fetch each page of results.
-    
+    Using the APICursor, you can easily iterate over query results without
+    having to manually fetch each page of results.
     
     Any method in the Telerivet PHP client library starting with the word 'query' returns a 
     Telerivet_APICursor object, which exposes the following methods:

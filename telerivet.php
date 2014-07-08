@@ -24,7 +24,7 @@ class Telerivet_API
     private $api_key;
     private $api_url;
     public $num_requests = 0;
-    private $client_version = '1.0.2';    
+    private $client_version = '1.1.0';    
     
     private $curl;
     public $debug = false;
@@ -42,7 +42,6 @@ class Telerivet_API
         Arguments:
           - $api_key (Your Telerivet API key; see <https://telerivet.com/dashboard/api>)
               * Required
-          
      */
     public function __construct($api_key, $api_url = 'https://api.telerivet.com/v1')
     {
@@ -50,7 +49,43 @@ class Telerivet_API
         $this->api_url = $api_url;
     }    
     
-    /**     
+    /**
+        $tr->getProjectById($id)
+        
+        Retrieves the Telerivet project with the given ID.
+        
+        Arguments:
+          - $id
+              * ID of the project -- see <https://telerivet.com/dashboard/api>
+              * Required
+          
+        Returns:
+            Telerivet_Project
+    */
+    function getProjectById($id)
+    {
+        return new Telerivet_Project($this, $this->doRequest("GET", "{$this->getBaseApiPath()}/projects/{$id}"));
+    }
+
+    /**
+        $tr->initProjectById($id)
+        
+        Initializes the Telerivet project with the given ID without making an API request.
+        
+        Arguments:
+          - $id
+              * ID of the project -- see <https://telerivet.com/dashboard/api>
+              * Required
+          
+        Returns:
+            Telerivet_Project
+    */
+    function initProjectById($id)
+    {
+        return new Telerivet_Project($this, array('id' => $id), false);
+    }
+
+    /**
         $tr->queryProjects($options)
         
         Queries projects accessible to the current user account.
@@ -83,28 +118,15 @@ class Telerivet_API
           
         Returns:
             Telerivet_APICursor (of Telerivet_Project)
-     */
+    */
     function queryProjects($options = null)
     {
-        return $this->newApiCursor('Telerivet_Project', '/projects', $options);
+        return $this->newApiCursor('Telerivet_Project', "{$this->getBaseApiPath()}/projects", $options);
     }
-    
-    /**     
-        $tr->getProjectById($id)
-        
-        Retrieves the Telerivet project with the given ID.
-        
-        Arguments:
-          - $id
-              * ID of the project -- see <https://telerivet.com/dashboard/api>
-              * Required
-          
-        Returns:
-            Telerivet_Project
-     */
-    function getProjectById($id)
+
+    function getBaseApiPath()
     {
-        return new Telerivet_Project($this, array('id' => $id), false);
+        return "";
     }
     
     function doRequest($method, $path, $params = null)
@@ -242,6 +264,7 @@ class Telerivet_IOException extends Telerivet_Exception {}
 $tr_lib_dir = dirname(__FILE__) . '/lib';
 require_once "{$tr_lib_dir}/entity.php";
 require_once "{$tr_lib_dir}/apicursor.php";
+
 require_once "{$tr_lib_dir}/message.php";
 require_once "{$tr_lib_dir}/contact.php";
 require_once "{$tr_lib_dir}/project.php";
@@ -253,4 +276,5 @@ require_once "{$tr_lib_dir}/datarow.php";
 require_once "{$tr_lib_dir}/scheduledmessage.php";
 require_once "{$tr_lib_dir}/service.php";
 require_once "{$tr_lib_dir}/contactservicestate.php";
+require_once "{$tr_lib_dir}/route.php";
 require_once "{$tr_lib_dir}/mobilemoneyreceipt.php";

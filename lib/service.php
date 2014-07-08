@@ -3,15 +3,15 @@
 /**
     Telerivet_Service
     
-    Represents an automated service on Telerivet, for example a poll, auto-reply, webhook service,
-    etc.
+    Represents an automated service on Telerivet, for example a poll, auto-reply, webhook
+    service, etc.
     
     A service, generally, defines some automated behavior that can be
     invoked/triggered in a particular context, and may be invoked either manually or when a
     particular event occurs.
     
-    Most commonly, services work in the context of a particular message, when the
-    message is originally received by Telerivet.
+    Most commonly, services work in the context of a particular message, when
+    the message is originally received by Telerivet.
     
     Fields:
     
@@ -29,17 +29,17 @@
           * Updatable via API
       
       - priority (int)
-          * A number that determines the order that services are triggered when a particular event
-              occurs (smaller numbers are triggered first). Any service can determine whether or not
-              execution "falls-through" to subsequent services (with larger priority values) by setting
-              the return_value variable within Telerivet's Rules Engine.
+          * A number that determines the order that services are triggered when a particular
+              event occurs (smaller numbers are triggered first). Any service can determine whether
+              or not execution "falls-through" to subsequent services (with larger priority values)
+              by setting the return_value variable within Telerivet's Rules Engine.
           * Updatable via API
       
       - contexts (associative array)
-          * A key/value map where the keys are the names of contexts supported by this service (e.g.
-              message, contact), and the values are themselves key/value maps where the keys are event
-              names and the values are all true. (This structure makes it easy to test whether a service
-              can be invoked for a particular context and event.)
+          * A key/value map where the keys are the names of contexts supported by this service
+              (e.g. message, contact), and the values are themselves key/value maps where the keys
+              are event names and the values are all true. (This structure makes it easy to test
+              whether a service can be invoked for a particular context and event.)
           * Read-only
       
       - vars (associative array)
@@ -56,20 +56,19 @@
           * Read-only
       
       - response_table_id
-          * ID of the data table where responses to this service will be stored (currently only used
-              for polls)
+          * ID of the data table where responses to this service will be stored (currently only
+              used for polls)
           * Read-only
       
       - sample_group_id
-          * ID of the group containing contacts that have been invited to interact with this service
-              (currently only used for polls)
+          * ID of the group containing contacts that have been invited to interact with this
+              service (currently only used for polls)
           * Read-only
       
       - respondent_group_id
-          * ID of the group containing contacts that have completed an interaction with this service
-              (currently only used for polls)
+          * ID of the group containing contacts that have completed an interaction with this
+              service (currently only used for polls)
           * Read-only
-      
  */
 class Telerivet_Service extends Telerivet_Entity
 {
@@ -108,6 +107,8 @@ class Telerivet_Service extends Telerivet_Entity
                 * The ID of the contact this service is triggered for
                 * Required if context is 'contact'
           
+        Returns:
+            object
      */
     function invoke($options)
     {
@@ -244,7 +245,6 @@ class Telerivet_Service extends Telerivet_Entity
         $service->save()
         
         Saves any fields or custom variables that have changed for this service.
-        
     */
     function save()
     {

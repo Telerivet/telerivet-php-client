@@ -4,10 +4,13 @@
     
     Represents a custom data table that can store arbitrary rows.
     
-    For example, poll services use data tables to store a row for each response.
+    For example, poll services use data tables to store a row for each
+    response.
     
-    It is currently only possible to create new data tables via the web UI; however,
-    after a table is created, you can add/update/delete rows via the API.
+    DataTables are schemaless -- each row simply stores custom variables. Each
+    variable name is equivalent to a different "column" of the data table.
+    Telerivet refers to these variables/columns as "fields", and automatically
+    creates a new field for each variable name used in a row of the table.
     
     Fields:
     
@@ -30,7 +33,6 @@
       - project_id
           * ID of the project this data table belongs to
           * Read-only
-      
 */
 class Telerivet_DataTable extends Telerivet_Entity
 {
@@ -108,16 +110,33 @@ class Telerivet_DataTable extends Telerivet_Entity
         
         Retrieves the row in the given table with the given ID.
         
-        Note: This does not make any API requests until you access a property of the DataRow.
-        
         Arguments:
-          - $id (ID of the row)
+          - $id
+              * ID of the row
               * Required
           
         Returns:
             Telerivet_DataRow
     */
     function getRowById($id)
+    {
+        return new Telerivet_DataRow($this->_api, $this->_api->doRequest("GET", "{$this->getBaseApiPath()}/rows/{$id}"));
+    }
+
+    /**
+        $table->initRowById($id)
+        
+        Initializes the row in the given table with the given ID, without making an API request.
+        
+        Arguments:
+          - $id
+              * ID of the row
+              * Required
+          
+        Returns:
+            Telerivet_DataRow
+    */
+    function initRowById($id)
     {
         return new Telerivet_DataRow($this->_api, array('project_id' => $this->project_id, 'table_id' => $this->id, 'id' => $id), false);
     }
@@ -162,7 +181,6 @@ class Telerivet_DataTable extends Telerivet_Entity
         $table->save()
         
         Saves any fields that have changed for this data table.
-        
     */
     function save()
     {
@@ -173,7 +191,6 @@ class Telerivet_DataTable extends Telerivet_Entity
         $table->delete()
         
         Permanently deletes the given data table, including all its rows
-        
     */
     function delete()
     {

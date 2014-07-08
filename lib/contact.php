@@ -21,13 +21,13 @@
           * Read-only
       
       - last_message_time (UNIX timestamp)
-          * Last time the contact sent or received a message (null if no messages have been sent or
-              received)
+          * Last time the contact sent or received a message (null if no messages have been sent
+              or received)
           * Read-only
       
       - last_message_id
-          * ID of the last message sent or received by this contact (null if no messages have been
-              sent or received)
+          * ID of the last message sent or received by this contact (null if no messages have
+              been sent or received)
           * Read-only
       
       - default_route_id
@@ -46,7 +46,6 @@
       - project_id
           * ID of the project this contact belongs to
           * Read-only
-      
  */
 class Telerivet_Contact extends Telerivet_Entity
 {    
@@ -66,7 +65,7 @@ class Telerivet_Contact extends Telerivet_Entity
      */    
     function isInGroup($group)
     {
-        $this->_loadData();
+        $this->load();
         return isset($this->_group_ids_set[$group->id]);
     }
     
@@ -78,7 +77,6 @@ class Telerivet_Contact extends Telerivet_Entity
         Arguments:
           - $group (Telerivet_Group)
               * Required
-          
      */    
     function addToGroup($group)
     {
@@ -94,7 +92,6 @@ class Telerivet_Contact extends Telerivet_Entity
         Arguments:
           - $group (Telerivet_Group)
               * Required
-          
      */    
     function removeFromGroup($group)
     {        
@@ -348,7 +345,6 @@ class Telerivet_Contact extends Telerivet_Entity
         $contact->save()
         
         Saves any fields or custom variables that have changed for this contact.
-        
     */
     function save()
     {
@@ -359,7 +355,6 @@ class Telerivet_Contact extends Telerivet_Entity
         $contact->delete()
         
         Deletes this contact.
-        
     */
     function delete()
     {

@@ -30,7 +30,6 @@
       - project_id
           * ID of the project this group belongs to
           * Read-only
-      
     
     Example Usage:
     -------------
@@ -160,7 +159,6 @@ class Telerivet_Group extends Telerivet_Entity
         $group->save()
         
         Saves any fields that have changed for this group.
-        
     */
     function save()
     {
@@ -171,7 +169,6 @@ class Telerivet_Group extends Telerivet_Entity
         $group->delete()
         
         Deletes this group (Note: no contacts are deleted.)
-        
     */
     function delete()
     {

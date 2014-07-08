@@ -13,7 +13,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')
     
     $api = new Telerivet_API($api_key);
     
-    $project = $api->getProjectById($project_id);
+    $project = $api->initProjectById($project_id);
     
     try
     {
