@@ -11,7 +11,7 @@
    
     $telerivet = new Telerivet_API($API_KEY);
    
-    $project = $telerivet->getProjectById($PROJECT_ID);
+    $project = $telerivet->initProjectById($PROJECT_ID);
    
     // Send a SMS message
     $project->sendMessage(array(

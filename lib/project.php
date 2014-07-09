@@ -32,7 +32,7 @@
     
     $PROJECT_ID = 'YOUR_PROJECT_ID'; // from https://telerivet.com/dashboard/api
     
-    $project = $telerivet->getProjectById($PROJECT_ID); 
+    $project = $telerivet->initProjectById($PROJECT_ID); 
     
     $project->sendMessage(array(
         'to_number' => '555-0001',
