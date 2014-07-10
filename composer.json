@@ -5,6 +5,6 @@
     "homepage": "https://telerivet.com/api",
     "license": "MIT",
     "require": {
-        "php": ">=5.3.0",
+        "php": ">=5.3.0"
     }
 }
