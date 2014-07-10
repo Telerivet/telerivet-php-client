@@ -35,11 +35,9 @@ require_once "path/to/telerivet.php";
 Alternatively, if you use Composer for dependency management, 
 you can add the following to your composer.json:
 
-```
 "require": {
     "telerivet/telerivet-php-client": "dev-master"
 }
-```
 
 Example Usage:
 --------------
