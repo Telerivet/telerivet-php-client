@@ -1,6 +1,6 @@
 PHP client library for Telerivet REST API
 
-http://telerivet.com
+https://telerivet.com/api
 
 Overview:
 ---------
@@ -15,9 +15,9 @@ You can use it to:
 - control automated services
 - much more
 
-All API methods are fully documented in the comments of the PHP source files;
-to learn what functionality is available, start with telerivet.php, lib/project.php, 
-and lib/apicursor.php .
+All API methods are fully documented at https://telerivet.com/api/rest/php ,
+as well as in the comments of the PHP source files. To learn what functionality is available, 
+start with telerivet.php, lib/project.php, and lib/apicursor.php .
 
 System Requirements:
 --------------------
@@ -44,7 +44,7 @@ Example Usage:
 
 require_once "path/to/telerivet.php";
    
-$API_KEY = 'YOUR_API_KEY';           // from https://telerivet.com/dashboard/api
+$API_KEY = 'YOUR_API_KEY';           // from https://telerivet.com/api/keys
 $PROJECT_ID = 'YOUR_PROJECT_ID';
 
 $telerivet = new Telerivet_API($API_KEY);
