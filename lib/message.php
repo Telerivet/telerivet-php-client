@@ -198,6 +198,22 @@ class Telerivet_Message extends Telerivet_Entity
     }
 
     /**
+        $message->resend()
+        
+        Resends a message, for example if the message failed to send or if it was not delivered. If
+        the message was originally in the queued, retrying, failed, or cancelled states, then
+        Telerivet will return the same message object. Otherwise, Telerivet will create and return a
+        new message object.
+        
+        Returns:
+            Telerivet_Message
+    */
+    function resend()
+    {
+        return new Telerivet_Message($this->_api, $this->_api->doRequest("POST", "{$this->getBaseApiPath()}/resend"));
+    }
+
+    /**
         $message->delete()
         
         Deletes this message.
