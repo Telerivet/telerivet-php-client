@@ -107,6 +107,10 @@
           * ID of the contact that sent or received the message
           * Read-only
       
+      - route_id (string, max 34 characters)
+          * ID of the route that sent the message (if applicable)
+          * Read-only
+      
       - project_id
           * ID of the project this contact belongs to
           * Read-only
@@ -198,19 +202,25 @@ class Telerivet_Message extends Telerivet_Entity
     }
 
     /**
-        $message->resend()
+        $message->resend($options)
         
         Resends a message, for example if the message failed to send or if it was not delivered. If
         the message was originally in the queued, retrying, failed, or cancelled states, then
         Telerivet will return the same message object. Otherwise, Telerivet will create and return a
         new message object.
         
+        Arguments:
+          - $options (associative array)
+            
+            - route_id
+                * ID of the phone or route to send the message from
+          
         Returns:
             Telerivet_Message
     */
-    function resend()
+    function resend($options = null)
     {
-        return new Telerivet_Message($this->_api, $this->_api->doRequest("POST", "{$this->getBaseApiPath()}/resend"));
+        return new Telerivet_Message($this->_api, $this->_api->doRequest("POST", "{$this->getBaseApiPath()}/resend", $options));
     }
 
     /**
