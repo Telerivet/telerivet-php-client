@@ -290,6 +290,57 @@ class Telerivet_Project extends Telerivet_Entity
     }    
     
     /**
+        $project->receiveMessage($options)
+        
+        Add an incoming message to Telerivet. Acts the same as if the message was received by a
+        phone. Also triggers any automated services that apply to the message.
+        
+        Arguments:
+          - $options (associative array)
+              * Required
+            
+            - content
+                * Content of the incoming message
+                * Required unless message_type is call
+            
+            - message_type
+                * Type of message
+                * Allowed values: sms, call
+                * Default: sms
+            
+            - from_number
+                * Phone number that sent the incoming message
+                * Required
+            
+            - phone_id
+                * ID of the phone that received the message
+                * Required
+            
+            - to_number
+                * Phone number that the incoming message was sent to
+                * Default: phone number of the phone that received the message
+            
+            - simulated (bool)
+                * If true, Telerivet will not send automated replies to actual phones
+            
+            - starred (bool)
+                * True if this message should be starred
+            
+            - label_ids (array)
+                * Array of IDs of labels to add to this message (maximum 5)
+            
+            - vars (associative array)
+                * Custom variables to set for this message
+          
+        Returns:
+            Telerivet_Message
+    */
+    function receiveMessage($options)
+    {
+        return new Telerivet_Message($this->_api, $this->_api->doRequest("POST", "{$this->getBaseApiPath()}/messages/receive", $options));
+    }
+
+    /**
         $project->queryContacts($options)
         
         Queries contacts within the given project.
