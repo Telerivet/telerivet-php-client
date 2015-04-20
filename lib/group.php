@@ -15,8 +15,12 @@
           * Name of the group
           * Updatable via API
       
+      - dynamic (bool)
+          * Whether this is a dynamic or normal group
+          * Read-only
+      
       - num_members (int)
-          * Number of contacts in the group
+          * Number of contacts in the group (null if the group is dynamic)
           * Read-only
       
       - time_created (UNIX timestamp)
@@ -75,6 +79,9 @@ class Telerivet_Group extends Telerivet_Entity
                 * Filter contacts by last time a message was sent or received
                 * Allowed modifiers: last_message_time[exists], last_message_time[ne],
                     last_message_time[min], last_message_time[max]
+            
+            - send_blocked (bool)
+                * Filter contacts by blocked status
             
             - vars (associative array)
                 * Filter contacts by value of a custom variable (e.g. vars[email], vars[foo], etc.)

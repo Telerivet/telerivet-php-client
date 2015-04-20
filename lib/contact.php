@@ -20,6 +20,10 @@
           * Time the contact was added in Telerivet
           * Read-only
       
+      - send_blocked (bool)
+          * True if Telerivet is blocked from sending messages to this contact
+          * Updatable via API
+      
       - last_message_time (UNIX timestamp)
           * Last time the contact sent or received a message (null if no messages have been sent
               or received)
@@ -177,6 +181,9 @@ class Telerivet_Contact extends Telerivet_Entity
                 * Filter groups by name
                 * Allowed modifiers: name[ne], name[prefix], name[not_prefix], name[gte], name[gt],
                     name[lt], name[lte]
+            
+            - dynamic (bool)
+                * Filter groups by dynamic/non-dynamic
             
             - sort
                 * Sort the results based on a field

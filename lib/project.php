@@ -368,6 +368,9 @@ class Telerivet_Project extends Telerivet_Entity
                 * Allowed modifiers: last_message_time[exists], last_message_time[ne],
                     last_message_time[min], last_message_time[max]
             
+            - send_blocked (bool)
+                * Filter contacts by blocked status
+            
             - vars (associative array)
                 * Filter contacts by value of a custom variable (e.g. vars[email], vars[foo], etc.)
                 * Allowed modifiers: vars[foo][exists], vars[foo][ne], vars[foo][prefix],
@@ -636,6 +639,9 @@ class Telerivet_Project extends Telerivet_Entity
                 * Filter groups by name
                 * Allowed modifiers: name[ne], name[prefix], name[not_prefix], name[gte], name[gt],
                     name[lt], name[lte]
+            
+            - dynamic (bool)
+                * Filter groups by dynamic/non-dynamic
             
             - sort
                 * Sort the results based on a field
