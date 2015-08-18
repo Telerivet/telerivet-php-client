@@ -271,12 +271,6 @@ class Telerivet_Contact extends Telerivet_Entity
                 * Filter data rows by the time they were created
                 * Allowed modifiers: time_created[ne], time_created[min], time_created[max]
             
-            - vars (associative array)
-                * Filter data rows by value of a custom variable (e.g. vars[q1], vars[foo], etc.)
-                * Allowed modifiers: vars[foo][exists], vars[foo][ne], vars[foo][prefix],
-                    vars[foo][not_prefix], vars[foo][gte], vars[foo][gt], vars[foo][lt], vars[foo][lte],
-                    vars[foo][min], vars[foo][max]
-            
             - sort
                 * Sort the results based on a field
                 * Allowed values: default
