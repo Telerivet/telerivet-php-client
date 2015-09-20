@@ -132,11 +132,11 @@ class Telerivet_Project extends Telerivet_Entity
             - status_url
                 * Webhook callback URL to be notified when message status changes
             
-            - label_ids (array)
-                * Array of IDs of labels to add to all messages sent (maximum 5)
-            
             - status_secret
                 * POST parameter 'secret' passed to status_url
+            
+            - label_ids (array)
+                * Array of IDs of labels to add to all messages sent (maximum 5)
             
             - exclude_contact_id
                 * Optionally excludes one contact from receiving the message (only when group_id is
@@ -386,6 +386,28 @@ class Telerivet_Project extends Telerivet_Entity
                 * Filter contacts by last time a message was sent or received
                 * Allowed modifiers: last_message_time[exists], last_message_time[ne],
                     last_message_time[min], last_message_time[max]
+            
+            - last_incoming_message_time (UNIX timestamp)
+                * Filter contacts by last time a message was received
+                * Allowed modifiers: last_incoming_message_time[exists],
+                    last_incoming_message_time[ne], last_incoming_message_time[min],
+                    last_incoming_message_time[max]
+            
+            - last_outgoing_message_time (UNIX timestamp)
+                * Filter contacts by last time a message was sent
+                * Allowed modifiers: last_outgoing_message_time[exists],
+                    last_outgoing_message_time[ne], last_outgoing_message_time[min],
+                    last_outgoing_message_time[max]
+            
+            - incoming_message_count (int)
+                * Filter contacts by number of messages received from the contact
+                * Allowed modifiers: incoming_message_count[ne], incoming_message_count[min],
+                    incoming_message_count[max]
+            
+            - outgoing_message_count (int)
+                * Filter contacts by number of messages sent to the contact
+                * Allowed modifiers: outgoing_message_count[ne], outgoing_message_count[min],
+                    outgoing_message_count[max]
             
             - send_blocked (bool)
                 * Filter contacts by blocked status
@@ -1029,7 +1051,7 @@ class Telerivet_Project extends Telerivet_Entity
             
             - context
                 * Filter services that can be invoked in a particular context
-                * Allowed values: message, contact, project, receipt
+                * Allowed values: message, contact, project
             
             - sort
                 * Sort the results based on a field
@@ -1259,6 +1281,21 @@ class Telerivet_Project extends Telerivet_Entity
     function initRouteById($id)
     {
         return new Telerivet_Route($this->_api, array('project_id' => $this->id, 'id' => $id), false);
+    }
+
+    /**
+        $project->getUsers()
+        
+        Returns an array of user accounts that have access to this project. Each item in the array
+        is an object containing `id`, `email`, and `name` properties. (The id corresponds to the
+        `user_id` property of the Message object.)
+        
+        Returns:
+            array
+    */
+    function getUsers()
+    {
+        return $this->_api->doRequest("GET", "{$this->getBaseApiPath()}/users");
     }
 
     /**
