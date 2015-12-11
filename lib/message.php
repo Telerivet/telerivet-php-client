@@ -83,7 +83,7 @@
           * Read-only
       
       - price (number)
-          * The price of this message, if known. By convention, message prices are negative.
+          * The price of this message, if known.
           * Read-only
       
       - price_currency
