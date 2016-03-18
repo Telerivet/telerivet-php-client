@@ -45,7 +45,7 @@ class Telerivet_Project extends Telerivet_Entity
     /**
         $project->sendMessage($options)
         
-        Sends one message (SMS or USSD request).
+        Sends one message (SMS, voice call, or USSD request).
         
         Arguments:
           - $options (associative array)
@@ -67,6 +67,10 @@ class Telerivet_Project extends Telerivet_Entity
                 * ID of the phone or route to send the message from
                 * Default: default sender phone ID for your project
             
+            - service_id
+                * Service that defines the call flow of the voice call
+                * Required if sending voice call
+            
             - status_url
                 * Webhook callback URL to be notified when message status changes
             
@@ -83,7 +87,7 @@ class Telerivet_Project extends Telerivet_Entity
             
             - message_type
                 * Type of message to send
-                * Allowed values: sms, ussd
+                * Allowed values: sms, ussd, call
                 * Default: sms
             
             - vars (associative array)
@@ -106,8 +110,8 @@ class Telerivet_Project extends Telerivet_Entity
     /**
         $project->sendMessages($options)
         
-        Sends an SMS message (optionally with mail-merge templates) to a group or a list of up to
-        500 phone numbers
+        Sends an SMS message (optionally with mail-merge templates) or voice call to a group or a
+        list of up to 500 phone numbers
         
         Arguments:
           - $options (associative array)
@@ -115,7 +119,7 @@ class Telerivet_Project extends Telerivet_Entity
             
             - content
                 * Content of the message to send
-                * Required
+                * Required if sending SMS message
             
             - group_id
                 * ID of the group to send the message to
@@ -129,6 +133,10 @@ class Telerivet_Project extends Telerivet_Entity
                 * ID of the phone or route to send the message from
                 * Default: default sender phone ID
             
+            - service_id
+                * Service that defines the call flow of the voice call
+                * Required if sending voice call
+            
             - status_url
                 * Webhook callback URL to be notified when message status changes
             
@@ -141,6 +149,11 @@ class Telerivet_Project extends Telerivet_Entity
             - exclude_contact_id
                 * Optionally excludes one contact from receiving the message (only when group_id is
                     set)
+            
+            - message_type
+                * Type of message to send
+                * Allowed values: sms, call
+                * Default: sms
             
             - is_template (bool)
                 * Set to true to evaluate variables like [[contact.name]] in message content [(See
@@ -173,7 +186,7 @@ class Telerivet_Project extends Telerivet_Entity
             
             - content
                 * Content of the message to schedule
-                * Required
+                * Required if sending SMS message
             
             - group_id
                 * ID of the group to send the message to
@@ -200,6 +213,10 @@ class Telerivet_Project extends Telerivet_Entity
             - route_id
                 * ID of the phone or route to send the message from
                 * Default: default sender phone ID
+            
+            - service_id
+                * Service that defines the call flow of the voice call
+                * Required if sending voice call
             
             - message_type
                 * Type of message to send

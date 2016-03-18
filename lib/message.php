@@ -108,6 +108,11 @@
               [getMMSParts](#Message.getMMSParts).
           * Read-only
       
+      - service_id (string, max 34 characters)
+          * ID of the service that handled the message (for voice calls, the service defines the
+              call flow)
+          * Read-only
+      
       - phone_id (string, max 34 characters)
           * ID of the phone that sent or received the message
           * Read-only
