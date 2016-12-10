@@ -104,7 +104,7 @@ class TelerivetDataTable extends TelerivetEntity
      */
     public function createRow($options = null)
     {
-        return new Telerivet_DataRow($this->_api, $this->_api->doRequest("POST", "{$this->getBaseApiPath()}/rows", $options));
+        return new TelerivetDataRow($this->_api, $this->_api->doRequest("POST", "{$this->getBaseApiPath()}/rows", $options));
     }
 
     /**
@@ -122,7 +122,7 @@ class TelerivetDataTable extends TelerivetEntity
      */
     public function getRowById($id)
     {
-        return new Telerivet_DataRow($this->_api, $this->_api->doRequest("GET", "{$this->getBaseApiPath()}/rows/{$id}"));
+        return new TelerivetDataRow($this->_api, $this->_api->doRequest("GET", "{$this->getBaseApiPath()}/rows/{$id}"));
     }
 
     /**
@@ -140,7 +140,7 @@ class TelerivetDataTable extends TelerivetEntity
      */
     public function initRowById($id)
     {
-        return new Telerivet_DataRow($this->_api, array('project_id' => $this->project_id, 'table_id' => $this->id, 'id' => $id), false);
+        return new TelerivetDataRow($this->_api, array('project_id' => $this->project_id, 'table_id' => $this->id, 'id' => $id), false);
     }
 
     /**
