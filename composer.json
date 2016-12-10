@@ -1,5 +1,5 @@
 {
-    "name": "telerivet/telerivet-php-client",
+    "name": "telerivet-psr/telerivet-php-client",
     "type": "library",
     "description": "PHP client library for Telerivet REST API",
     "homepage": "https://telerivet.com/api",
