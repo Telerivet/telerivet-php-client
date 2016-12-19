@@ -24,6 +24,10 @@
               <http://en.wikipedia.org/wiki/List_of_tz_database_time_zones>
           * Read-only
       
+      - url_slug
+          * Unique string used as a component of the project's URL in the Telerivet web app
+          * Read-only
+      
       - vars (associative array)
           * Custom variables stored for this project
           * Updatable via API
@@ -51,8 +55,14 @@ class Telerivet_Project extends Telerivet_Entity
           - $options (associative array)
               * Required
             
+            - message_type
+                * Type of message to send
+                * Allowed values: sms, ussd, call
+                * Default: sms
+            
             - content
-                * Content of the message to send
+                * Content of the message to send (if message_type=call, the text will be spoken
+                    during a text-to-speech call)
                 * Required if sending SMS message
             
             - to_number (string)
@@ -68,8 +78,29 @@ class Telerivet_Project extends Telerivet_Entity
                 * Default: default sender phone ID for your project
             
             - service_id
-                * Service that defines the call flow of the voice call
-                * Required if sending voice call
+                * Service that defines the call flow of the voice call (when message_type=call)
+            
+            - audio_url
+                * The URL of an MP3 file to play when the contact answers the call (when
+                    message_type=call).
+                    
+                    If audio_url is provided, the text-to-speech voice is not used to say
+                    `content`, although you can optionally use `content` to indicate the script for the
+                    audio.
+                    
+                    For best results, use an MP3 file containing only speech. Music is not
+                    recommended because the audio quality will be low when played over a phone line.
+            
+            - tts_lang
+                * The language of the text-to-speech voice (when message_type=call)
+                * Allowed values: en-US, en-GB, en-GB-WLS, en-AU, en-IN, da-DK, nl-NL, fr-FR, fr-CA,
+                    de-DE, is-IS, it-IT, pl-PL, pt-BR, pt-PT, ru-RU, es-ES, es-US, sv-SE
+                * Default: en-US
+            
+            - tts_voice
+                * The name of the text-to-speech voice (when message_type=call)
+                * Allowed values: female, male
+                * Default: female
             
             - status_url
                 * Webhook callback URL to be notified when message status changes
@@ -85,11 +116,6 @@ class Telerivet_Project extends Telerivet_Entity
             - label_ids (array)
                 * List of IDs of labels to add to this message
             
-            - message_type
-                * Type of message to send
-                * Allowed values: sms, ussd, call
-                * Default: sms
-            
             - vars (associative array)
                 * Custom variables to store with the message
             
@@ -98,6 +124,14 @@ class Telerivet_Project extends Telerivet_Entity
                     will attempt to send messages with higher priority numbers first (for example, so
                     you can prioritize an auto-reply ahead of a bulk message to a large group).
                 * Default: 1
+            
+            - user_id
+                * ID of the Telerivet user account that sent the message (use
+                    [project.getUsers](#Project.getUsers) to look up user IDs). In order to use this
+                    parameter, the user account associated with the API key must have administrator
+                    permissions for the project, and the user account associated with the user_id
+                    parameter must have access to the project.
+                * Default: User account associated with the API key
           
         Returns:
             Telerivet_Message
@@ -105,72 +139,6 @@ class Telerivet_Project extends Telerivet_Entity
     function sendMessage($options)
     {
         return new Telerivet_Message($this->_api, $this->_api->doRequest('POST', $this->getBaseApiPath() . '/messages/send', $options));
-    }
-    
-    /**
-        $project->sendMessages($options)
-        
-        Sends an SMS message (optionally with mail-merge templates) or voice call to a group or a
-        list of up to 500 phone numbers
-        
-        Arguments:
-          - $options (associative array)
-              * Required
-            
-            - content
-                * Content of the message to send
-                * Required if sending SMS message
-            
-            - group_id
-                * ID of the group to send the message to
-                * Required if to_numbers not set
-            
-            - to_numbers (array of strings)
-                * List of up to 500 phone numbers to send the message to
-                * Required if group_id not set
-            
-            - route_id
-                * ID of the phone or route to send the message from
-                * Default: default sender phone ID
-            
-            - service_id
-                * Service that defines the call flow of the voice call
-                * Required if sending voice call
-            
-            - status_url
-                * Webhook callback URL to be notified when message status changes
-            
-            - status_secret
-                * POST parameter 'secret' passed to status_url
-            
-            - label_ids (array)
-                * Array of IDs of labels to add to all messages sent (maximum 5)
-            
-            - exclude_contact_id
-                * Optionally excludes one contact from receiving the message (only when group_id is
-                    set)
-            
-            - message_type
-                * Type of message to send
-                * Allowed values: sms, call
-                * Default: sms
-            
-            - is_template (bool)
-                * Set to true to evaluate variables like [[contact.name]] in message content [(See
-                    available variables)](#variables)
-                * Default: false
-            
-            - vars (associative array)
-                * Custom variables to set for each message
-          
-        Returns:
-            (associative array)
-              - count_queued (int)
-                  * Number of messages queued to send
-     */
-    function sendMessages($options)
-    {
-        return $this->_api->doRequest('POST', $this->getBaseApiPath() . '/messages/send_batch', $options);        
     }
     
     /**
@@ -183,6 +151,11 @@ class Telerivet_Project extends Telerivet_Entity
         Arguments:
           - $options (associative array)
               * Required
+            
+            - message_type
+                * Type of message to send
+                * Allowed values: sms, ussd
+                * Default: sms
             
             - content
                 * Content of the message to schedule
@@ -215,13 +188,29 @@ class Telerivet_Project extends Telerivet_Entity
                 * Default: default sender phone ID
             
             - service_id
-                * Service that defines the call flow of the voice call
-                * Required if sending voice call
+                * Service that defines the call flow of the voice call (when message_type=call)
             
-            - message_type
-                * Type of message to send
-                * Allowed values: sms, ussd
-                * Default: sms
+            - audio_url
+                * The URL of an MP3 file to play when the contact answers the call (when
+                    message_type=call).
+                    
+                    If audio_url is provided, the text-to-speech voice is not used to say
+                    `content`, although you can optionally use `content` to indicate the script for the
+                    audio.
+                    
+                    For best results, use an MP3 file containing only speech. Music is not
+                    recommended because the audio quality will be low when played over a phone line.
+            
+            - tts_lang
+                * The language of the text-to-speech voice (when message_type=call)
+                * Allowed values: en-US, en-GB, en-GB-WLS, en-AU, en-IN, da-DK, nl-NL, fr-FR, fr-CA,
+                    de-DE, is-IS, it-IT, pl-PL, pt-BR, pt-PT, ru-RU, es-ES, es-US, sv-SE
+                * Default: en-US
+            
+            - tts_voice
+                * The name of the text-to-speech voice (when message_type=call)
+                * Allowed values: female, male
+                * Default: female
             
             - is_template (bool)
                 * Set to true to evaluate variables like [[contact.name]] in message content
@@ -325,6 +314,98 @@ class Telerivet_Project extends Telerivet_Entity
         return new Telerivet_Contact($this->_api, $data);
     }    
     
+    /**
+        $project->sendMessages($options)
+        
+        Sends an SMS message (optionally with mail-merge templates) or voice call to a group or a
+        list of up to 500 phone numbers
+        
+        Arguments:
+          - $options (associative array)
+              * Required
+            
+            - message_type
+                * Type of message to send
+                * Allowed values: sms, call
+                * Default: sms
+            
+            - content
+                * Content of the message to send
+                * Required if sending SMS message
+            
+            - group_id
+                * ID of the group to send the message to
+                * Required if to_numbers not set
+            
+            - to_numbers (array of strings)
+                * List of up to 500 phone numbers to send the message to
+                * Required if group_id not set
+            
+            - route_id
+                * ID of the phone or route to send the message from
+                * Default: default sender phone ID
+            
+            - service_id
+                * Service that defines the call flow of the voice call (when message_type=call)
+            
+            - audio_url
+                * The URL of an MP3 file to play when the contact answers the call (when
+                    message_type=call).
+                    
+                    If audio_url is provided, the text-to-speech voice is not used to say
+                    `content`, although you can optionally use `content` to indicate the script for the
+                    audio.
+                    
+                    For best results, use an MP3 file containing only speech. Music is not
+                    recommended because the audio quality will be low when played over a phone line.
+            
+            - tts_lang
+                * The language of the text-to-speech voice (when message_type=call)
+                * Allowed values: en-US, en-GB, en-GB-WLS, en-AU, en-IN, da-DK, nl-NL, fr-FR, fr-CA,
+                    de-DE, is-IS, it-IT, pl-PL, pt-BR, pt-PT, ru-RU, es-ES, es-US, sv-SE
+                * Default: en-US
+            
+            - tts_voice
+                * The name of the text-to-speech voice (when message_type=call)
+                * Allowed values: female, male
+                * Default: female
+            
+            - status_url
+                * Webhook callback URL to be notified when message status changes
+            
+            - status_secret
+                * POST parameter 'secret' passed to status_url
+            
+            - label_ids (array)
+                * Array of IDs of labels to add to all messages sent (maximum 5)
+            
+            - exclude_contact_id
+                * Optionally excludes one contact from receiving the message (only when group_id is
+                    set)
+            
+            - is_template (bool)
+                * Set to true to evaluate variables like [[contact.name]] in message content [(See
+                    available variables)](#variables)
+                * Default: false
+            
+            - vars (associative array)
+                * Custom variables to set for each message
+          
+        Returns:
+            (associative array)
+              - count_queued (int)
+                  * Number of messages queued to send
+              
+              - broadcast_id
+                  * ID of broadcast created for this message batch. If count\_queued is 0 or 1, a
+                      broadcast will not be created, and the broadcast\_id property will be null.
+    */
+    function sendMessages($options)
+    {
+        $data = $this->_api->doRequest("POST", "{$this->getBaseApiPath()}/messages/send_batch", $options);
+        return $data;
+    }
+
     /**
         $project->receiveMessage($options)
         
@@ -617,6 +698,9 @@ class Telerivet_Project extends Telerivet_Entity
             - time_created[max] (UNIX timestamp)
                 * Filter messages created before a particular time
             
+            - external_id
+                * Filter messages by ID from an external provider
+            
             - contact_id
                 * ID of the contact who sent/received the message
             
@@ -683,6 +767,88 @@ class Telerivet_Project extends Telerivet_Entity
     function initMessageById($id)
     {
         return new Telerivet_Message($this->_api, array('project_id' => $this->id, 'id' => $id), false);
+    }
+
+    /**
+        $project->queryBroadcasts($options)
+        
+        Queries broadcasts within the given project.
+        
+        Arguments:
+          - $options (associative array)
+            
+            - time_created[min] (UNIX timestamp)
+                * Filter broadcasts created on or after a particular time
+            
+            - time_created[max] (UNIX timestamp)
+                * Filter broadcasts created before a particular time
+            
+            - last_message_time[min] (UNIX timestamp)
+                * Filter broadcasts with most recent message on or after a particular time
+            
+            - last_message_time[max] (UNIX timestamp)
+                * Filter broadcasts with most recent message before a particular time
+            
+            - sort
+                * Sort the results based on a field
+                * Allowed values: default, last_message_time
+                * Default: default
+            
+            - sort_dir
+                * Sort the results in ascending or descending order
+                * Allowed values: asc, desc
+                * Default: asc
+            
+            - page_size (int)
+                * Number of results returned per page (max 200)
+                * Default: 50
+            
+            - offset (int)
+                * Number of items to skip from beginning of result set
+                * Default: 0
+          
+        Returns:
+            Telerivet_APICursor (of Telerivet_Broadcast)
+    */
+    function queryBroadcasts($options = null)
+    {
+        return $this->_api->newApiCursor('Telerivet_Broadcast', "{$this->getBaseApiPath()}/broadcasts", $options);
+    }
+
+    /**
+        $project->getBroadcastById($id)
+        
+        Retrieves the broadcast with the given ID.
+        
+        Arguments:
+          - $id
+              * ID of the broadcast
+              * Required
+          
+        Returns:
+            Telerivet_Broadcast
+    */
+    function getBroadcastById($id)
+    {
+        return new Telerivet_Broadcast($this->_api, $this->_api->doRequest("GET", "{$this->getBaseApiPath()}/broadcasts/{$id}"));
+    }
+
+    /**
+        $project->initBroadcastById($id)
+        
+        Initializes the Telerivet broadcast with the given ID without making an API request.
+        
+        Arguments:
+          - $id
+              * ID of the broadcast
+              * Required
+          
+        Returns:
+            Telerivet_Broadcast
+    */
+    function initBroadcastById($id)
+    {
+        return new Telerivet_Broadcast($this->_api, array('project_id' => $this->id, 'id' => $id), false);
     }
 
     /**
@@ -1068,7 +1234,7 @@ class Telerivet_Project extends Telerivet_Entity
             
             - context
                 * Filter services that can be invoked in a particular context
-                * Allowed values: message, contact, project
+                * Allowed values: message, call, contact, project
             
             - sort
                 * Sort the results based on a field

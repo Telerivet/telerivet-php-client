@@ -24,7 +24,7 @@ class Telerivet_API
     private $api_key;
     private $api_url;
     public $num_requests = 0;
-    private $client_version = '1.1.7';    
+    private $client_version = '1.2.0';    
     
     private $curl;
     public $debug = false;
@@ -218,7 +218,7 @@ class Telerivet_API
             curl_close($this->curl);
         }
     }    
-   
+    
     function newApiCursor($item_cls, $path, $options)
     {
         return new Telerivet_ApiCursor($this, $item_cls, $path, $options);
@@ -267,6 +267,7 @@ require_once "{$tr_lib_dir}/apicursor.php";
 
 require_once "{$tr_lib_dir}/message.php";
 require_once "{$tr_lib_dir}/contact.php";
+require_once "{$tr_lib_dir}/broadcast.php";
 require_once "{$tr_lib_dir}/project.php";
 require_once "{$tr_lib_dir}/label.php";
 require_once "{$tr_lib_dir}/group.php";

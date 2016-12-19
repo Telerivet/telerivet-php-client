@@ -98,7 +98,7 @@ class Telerivet_Service extends Telerivet_Entity
             
             - context
                 * The name of the context in which this service is invoked
-                * Allowed values: message, contact, project
+                * Allowed values: message, call, contact, project
                 * Required
             
             - event

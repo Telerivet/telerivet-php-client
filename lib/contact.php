@@ -157,6 +157,9 @@ class Telerivet_Contact extends Telerivet_Entity
             - time_created[max] (UNIX timestamp)
                 * Filter messages created before a particular time
             
+            - external_id
+                * Filter messages by ID from an external provider
+            
             - contact_id
                 * ID of the contact who sent/received the message
             
