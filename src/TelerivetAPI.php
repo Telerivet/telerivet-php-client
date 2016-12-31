@@ -32,7 +32,7 @@ class TelerivetAPI
     private $api_key;
     private $api_url;
     public $num_requests = 0;
-    private $client_version = '1.1.0';
+    private $client_version = '1.2.0';
 
     private $curl;
     public $debug = false;
