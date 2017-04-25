@@ -2,17 +2,17 @@
 
 /**
     PHP client library for Telerivet's REST API.
-    
+
     Example Usage:
     --------------
-       
+
     $API_KEY = 'YOUR_API_KEY';           // from https://telerivet.com/dashboard/api
     $PROJECT_ID = 'YOUR_PROJECT_ID';
-   
+
     $telerivet = new Telerivet_API($API_KEY);
-   
+
     $project = $telerivet->initProjectById($PROJECT_ID);
-   
+
     // Send a SMS message
     $project->sendMessage(array(
         'to_number' => '555-0001',
@@ -24,12 +24,12 @@ class Telerivet_API
     private $api_key;
     private $api_url;
     public $num_requests = 0;
-    private $client_version = '1.2.0';    
-    
+    private $client_version = '1.2.1';
+
     private $curl;
     public $debug = false;
-    
-    /**     
+
+    /**
         $tr = new Telerivet_API($api_key)
         
         Initializes a client handle to the Telerivet REST API.
@@ -47,8 +47,8 @@ class Telerivet_API
     {
         $this->api_key = $api_key;
         $this->api_url = $api_url;
-    }    
-    
+    }
+
     /**
         $tr->getProjectById($id)
         
@@ -128,7 +128,6 @@ class Telerivet_API
     {
         return "";
     }
-    
     function doRequest($method, $path, $params = null)
     {
         $curl = $this->curl;
@@ -136,7 +135,7 @@ class Telerivet_API
         {
             $curl = $this->curl = curl_init();
         }
-        
+
         $url = "{$this->api_url}{$path}";
 
         $headers = array(
@@ -145,43 +144,43 @@ class Telerivet_API
         if ($method === 'POST' || $method == 'PUT')
         {
             $headers[] = "Content-Type: application/json";
-            curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($params));                       
+            curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($params));
         }
         else
         {
             if ($params)
             {
                 $url .= "?" . http_build_query($params, '', '&');
-            }        
+            }
             curl_setopt($curl, CURLOPT_POSTFIELDS, '');
         }
 
-        curl_setopt($curl, CURLOPT_URL, $url);        
-        curl_setopt($curl, CURLOPT_CUSTOMREQUEST, $method);         
+        curl_setopt($curl, CURLOPT_URL, $url);
+        curl_setopt($curl, CURLOPT_CUSTOMREQUEST, $method);
         curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
-        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);        
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($curl, CURLOPT_BUFFERSIZE, 4096);
         curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 10);
         curl_setopt($curl, CURLOPT_TIMEOUT, 60);
-        curl_setopt($curl, CURLOPT_HTTPAUTH, CURLAUTH_BASIC); 
-        
+        curl_setopt($curl, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
+
         if ($this->debug)
         {
             error_log("$method $url");
         }
-        
+
         $cacert_file = dirname(__FILE__) . "/cacert.pem";
         if (file_exists($cacert_file))
         {
-            curl_setopt($curl, CURLOPT_CAINFO, $cacert_file);        
+            curl_setopt($curl, CURLOPT_CAINFO, $cacert_file);
         }
-        curl_setopt($curl, CURLOPT_USERPWD, "{$this->api_key}:");        
-        
+        curl_setopt($curl, CURLOPT_USERPWD, "{$this->api_key}:");
+
         $this->num_requests++;
-        
-        $response_json = curl_exec($curl);        
-        $network_error = curl_error($curl);                
-        
+
+        $response_json = curl_exec($curl);
+        $network_error = curl_error($curl);
+
         if ($network_error)
         {
             throw new Telerivet_IOException("Error connecting to Telerivet API: {$network_error}");
@@ -189,7 +188,7 @@ class Telerivet_API
         else
         {
             $response = json_decode($response_json, true);
-            
+
             if (isset($response['error']))
             {
                 $error = $response['error'];
@@ -204,21 +203,31 @@ class Telerivet_API
                         throw new Telerivet_APIException($error['message'], $error['code']);
                 }
             }
+            else if ($response)
+            {
+                return $response;
+            }
+            else if (json_last_error() != JSON_ERROR_NONE || $response_json === '')
+            {
+                $info = curl_getinfo($curl);
+                $http_code = $info['http_code'];
+                throw new Telerivet_IOException("Unexpected response from Telerivet API (HTTP {$http_code}): {$response_json}");
+            }
             else
-            {            
+            {
                 return $response;
             }
         }
     }
-    
+
     function __destruct()
     {
         if ($this->curl)
         {
             curl_close($this->curl);
         }
-    }    
-    
+    }
+
     function newApiCursor($item_cls, $path, $options)
     {
         return new Telerivet_ApiCursor($this, $item_cls, $path, $options);
@@ -242,7 +251,7 @@ class Telerivet_APIException extends Telerivet_Exception
 
 class Telerivet_InvalidParameterException extends Telerivet_APIException
 {
-    public $param;    
+    public $param;
     function __construct($message, $error_code, $param)
     {
         parent::__construct($message, $error_code);
