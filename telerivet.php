@@ -24,7 +24,7 @@ class Telerivet_API
     private $api_key;
     private $api_url;
     public $num_requests = 0;
-    private $client_version = '1.2.3';
+    private $client_version = '1.3.0';
 
     private $curl;
     public $debug = false;
@@ -122,6 +122,81 @@ class Telerivet_API
     function queryProjects($options = null)
     {
         return $this->newApiCursor('Telerivet_Project', "{$this->getBaseApiPath()}/projects", $options);
+    }
+
+    /**
+        $tr->getOrganizationById($id)
+        
+        Retrieves the Telerivet organization with the given ID.
+        
+        Arguments:
+          - $id
+              * ID of the organization -- see <https://telerivet.com/dashboard/api>
+              * Required
+          
+        Returns:
+            Telerivet_Organization
+    */
+    function getOrganizationById($id)
+    {
+        return new Telerivet_Organization($this, $this->doRequest("GET", "{$this->getBaseApiPath()}/organizations/{$id}"));
+    }
+
+    /**
+        $tr->initOrganizationById($id)
+        
+        Initializes the Telerivet organization with the given ID without making an API request.
+        
+        Arguments:
+          - $id
+              * ID of the organization -- see <https://telerivet.com/dashboard/api>
+              * Required
+          
+        Returns:
+            Telerivet_Organization
+    */
+    function initOrganizationById($id)
+    {
+        return new Telerivet_Organization($this, array('id' => $id), false);
+    }
+
+    /**
+        $tr->queryOrganizations($options)
+        
+        Queries organizations accessible to the current user account.
+        
+        Arguments:
+          - $options (associative array)
+            
+            - name
+                * Filter organizations by name
+                * Allowed modifiers: name[ne], name[prefix], name[not_prefix], name[gte], name[gt],
+                    name[lt], name[lte]
+            
+            - sort
+                * Sort the results based on a field
+                * Allowed values: default, name
+                * Default: default
+            
+            - sort_dir
+                * Sort the results in ascending or descending order
+                * Allowed values: asc, desc
+                * Default: asc
+            
+            - page_size (int)
+                * Number of results returned per page (max 200)
+                * Default: 50
+            
+            - offset (int)
+                * Number of items to skip from beginning of result set
+                * Default: 0
+          
+        Returns:
+            Telerivet_APICursor (of Telerivet_Organization)
+    */
+    function queryOrganizations($options = null)
+    {
+        return $this->newApiCursor('Telerivet_Organization', "{$this->getBaseApiPath()}/organizations", $options);
     }
 
     function getBaseApiPath()
@@ -288,3 +363,4 @@ require_once "{$tr_lib_dir}/service.php";
 require_once "{$tr_lib_dir}/contactservicestate.php";
 require_once "{$tr_lib_dir}/route.php";
 require_once "{$tr_lib_dir}/mobilemoneyreceipt.php";
+require_once "{$tr_lib_dir}/organization.php";

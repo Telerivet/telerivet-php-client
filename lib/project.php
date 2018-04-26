@@ -31,6 +31,10 @@
       - vars (associative array)
           * Custom variables stored for this project
           * Updatable via API
+      
+      - organization_id (string, max 34 characters)
+          * ID of the organization this project belongs to
+          * Read-only
     Example Usage:
     -------------
     
@@ -145,9 +149,9 @@ class Telerivet_Project extends Telerivet_Entity
     /**
         $project->scheduleMessage($options)
         
-        Schedules an SMS message to a group or single contact. Note that Telerivet only sends
-        scheduled messages approximately once every 15 seconds, so it is not possible to control the
-        exact second at which a scheduled message is sent.
+        Schedules a message to a group or single contact. Note that Telerivet only sends scheduled
+        messages approximately once every 15 seconds, so it is not possible to control the exact
+        second at which a scheduled message is sent.
         
         Arguments:
           - $options (associative array)
@@ -155,7 +159,7 @@ class Telerivet_Project extends Telerivet_Entity
             
             - message_type
                 * Type of message to send
-                * Allowed values: sms, ussd
+                * Allowed values: sms, ussd, call
                 * Default: sms
             
             - content
