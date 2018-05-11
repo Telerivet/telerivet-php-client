@@ -24,7 +24,7 @@ class Telerivet_API
     private $api_key;
     private $api_url;
     public $num_requests = 0;
-    private $client_version = '1.3.0';
+    private $client_version = '1.3.4';
 
     private $curl;
     public $debug = false;
@@ -356,11 +356,11 @@ require_once "{$tr_lib_dir}/project.php";
 require_once "{$tr_lib_dir}/label.php";
 require_once "{$tr_lib_dir}/group.php";
 require_once "{$tr_lib_dir}/phone.php";
+require_once "{$tr_lib_dir}/route.php";
 require_once "{$tr_lib_dir}/datatable.php";
 require_once "{$tr_lib_dir}/datarow.php";
 require_once "{$tr_lib_dir}/scheduledmessage.php";
 require_once "{$tr_lib_dir}/service.php";
 require_once "{$tr_lib_dir}/contactservicestate.php";
-require_once "{$tr_lib_dir}/route.php";
 require_once "{$tr_lib_dir}/mobilemoneyreceipt.php";
 require_once "{$tr_lib_dir}/organization.php";

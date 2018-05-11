@@ -85,7 +85,7 @@ class Telerivet_Label extends Telerivet_Entity
                 * ID of the contact who sent/received the message
             
             - phone_id
-                * ID of the phone that sent/received the message
+                * ID of the phone (basic route) that sent/received the message
             
             - sort
                 * Sort the results based on a field

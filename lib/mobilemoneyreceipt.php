@@ -80,7 +80,7 @@
           * Updatable via API
       
       - phone_id
-          * ID of the phone that received the receipt
+          * ID of the phone (basic route) that received the receipt
           * Read-only
       
       - message_id
