@@ -24,7 +24,7 @@ class Telerivet_API
     private $api_key;
     private $api_url;
     public $num_requests = 0;
-    private $client_version = '1.3.4';
+    private $client_version = '1.4.0';
 
     private $curl;
     public $debug = false;
@@ -214,12 +214,20 @@ class Telerivet_API
         $url = "{$this->api_url}{$path}";
 
         $headers = array(
-            "User-Agent: Telerivet PHP Client/{$this->client_version} PHP/" . PHP_VERSION . " OS/" . PHP_OS
+            "User-Agent: Telerivet PHP Client/{$this->client_version} PHP/" . PHP_VERSION . " OS/" . PHP_OS,
+            "Expect:", // avoid sending Expect: 100-continue to reduce latency
         );
         if ($method === 'POST' || $method == 'PUT')
         {
             $headers[] = "Content-Type: application/json";
-            curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($params));
+            $post_data = json_encode($params);
+            $data_len = strlen($post_data);
+            if ($data_len >= 400 && function_exists('gzencode'))
+            {
+                $headers[] = "Content-Encoding: gzip";
+                $post_data = gzencode($post_data);
+            }
+            curl_setopt($curl, CURLOPT_POSTFIELDS, $post_data);
         }
         else
         {
@@ -238,6 +246,7 @@ class Telerivet_API
         curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 10);
         curl_setopt($curl, CURLOPT_TIMEOUT, 60);
         curl_setopt($curl, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
+        curl_setopt($curl, CURLOPT_ENCODING, 'gzip,deflate');
 
         if ($this->debug)
         {
@@ -350,6 +359,7 @@ require_once "{$tr_lib_dir}/entity.php";
 require_once "{$tr_lib_dir}/apicursor.php";
 
 require_once "{$tr_lib_dir}/message.php";
+require_once "{$tr_lib_dir}/scheduledmessage.php";
 require_once "{$tr_lib_dir}/contact.php";
 require_once "{$tr_lib_dir}/broadcast.php";
 require_once "{$tr_lib_dir}/project.php";
@@ -359,8 +369,6 @@ require_once "{$tr_lib_dir}/phone.php";
 require_once "{$tr_lib_dir}/route.php";
 require_once "{$tr_lib_dir}/datatable.php";
 require_once "{$tr_lib_dir}/datarow.php";
-require_once "{$tr_lib_dir}/scheduledmessage.php";
 require_once "{$tr_lib_dir}/service.php";
 require_once "{$tr_lib_dir}/contactservicestate.php";
-require_once "{$tr_lib_dir}/mobilemoneyreceipt.php";
 require_once "{$tr_lib_dir}/organization.php";

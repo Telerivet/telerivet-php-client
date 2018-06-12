@@ -2,6 +2,13 @@
 /**
     Telerivet_Broadcast
     
+    Represents a collection of related outgoing messages.
+    Typically, messages in a broadcast have the same content template and were
+    sent at the same time; however, a broadcast can also contain messages with unrelated content
+    and messages that were sent at different times.
+    A broadcast is automatically created when sending a message to a group of
+    contacts.
+    
     Fields:
     
       - id (string, max 34 characters)
@@ -25,9 +32,10 @@
               `filter_params` properties, as they may change without notice.)
           * Read-only
       
-      - recipients_str
-          * A string with a human readable description of the first few recipients (possibly
-              truncated)
+      - title
+          * Title of the broadcast. If a title was not provided when the broadcast was sent, it
+              is automatically set to a human readable description of the first few recipients
+              (possibly truncated)
           * Read-only
       
       - time_created (UNIX timestamp)
@@ -114,7 +122,7 @@
           * Read-only
       
       - vars (associative array)
-          * Custom variables stored for this message
+          * Custom variables stored for this broadcast
           * Read-only
       
       - price (number)

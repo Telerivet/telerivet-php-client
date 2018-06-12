@@ -166,6 +166,9 @@ class Telerivet_Contact extends Telerivet_Entity
             - phone_id
                 * ID of the phone (basic route) that sent/received the message
             
+            - broadcast_id
+                * ID of the broadcast containing the message
+            
             - sort
                 * Sort the results based on a field
                 * Allowed values: default
