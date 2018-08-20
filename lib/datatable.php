@@ -25,6 +25,18 @@
           * Number of rows in the table
           * Read-only
       
+      - show_add_row (bool)
+          * Whether to allow adding or importing rows via the web app
+          * Updatable via API
+      
+      - show_stats (bool)
+          * Whether to show row statistics in the web app
+          * Updatable via API
+      
+      - show_contact_columns (bool)
+          * Whether to show 'Contact Name' and 'Phone Number' columns in the web app
+          * Updatable via API
+      
       - vars (associative array)
           * Custom variables stored for this data table
           * Updatable via API
@@ -147,8 +159,9 @@ class Telerivet_DataTable extends Telerivet_Entity
         $table->getFields()
         
         Gets a list of all fields (columns) defined for this data table. The return value is an
-        array of objects with the properties 'name' and 'variable'. (Fields are automatically
-        created any time a DataRow's 'vars' property is updated.)
+        array of objects with the properties 'name', 'variable', 'type', 'order', 'readonly', and
+        'lookup_key'. (Fields are automatically created any time a DataRow's 'vars' property is
+        updated.)
         
         Returns:
             array
@@ -156,6 +169,40 @@ class Telerivet_DataTable extends Telerivet_Entity
     function getFields()
     {
         return $this->_api->doRequest("GET", "{$this->getBaseApiPath()}/fields");
+    }
+
+    /**
+        $table->setFieldMetadata($variable, $options)
+        
+        Allows customizing how a field (column) is displayed in the Telerivet web app.
+        
+        Arguments:
+          - $variable
+              * The variable name of the field to create or update.
+              * Required
+          
+          - $options (associative array)
+            
+            - name (string, max 64 characters)
+                * Display name for the field
+            
+            - type (string)
+                * Field type
+                * Allowed values: text, long_text, number, boolean, email, url, audio, phone_number,
+                    date, date_time, groups, route
+            
+            - order (int)
+                * Order in which to display the field
+            
+            - readonly (bool)
+                * Set to true to prevent editing the field in the Telerivet web app
+          
+        Returns:
+            object
+    */
+    function setFieldMetadata($variable, $options = null)
+    {
+        return $this->_api->doRequest("POST", "{$this->getBaseApiPath()}/fields/{$variable}", $options);
     }
 
     /**
