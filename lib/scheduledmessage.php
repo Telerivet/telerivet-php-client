@@ -87,7 +87,7 @@
       
       - message_type
           * Type of scheduled message
-          * Allowed values: sms, ussd, call
+          * Allowed values: sms, mms, ussd, call, service
           * Read-only
       
       - time_created (UNIX timestamp)

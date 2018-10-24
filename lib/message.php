@@ -24,7 +24,7 @@
       
       - message_type
           * Type of the message
-          * Allowed values: sms, mms, ussd, call
+          * Allowed values: sms, mms, ussd, call, service
           * Read-only
       
       - source
@@ -39,6 +39,10 @@
       - time_sent (UNIX timestamp)
           * The time that the message was reported to have been sent (null for incoming messages
               and messages that have not yet been sent)
+          * Read-only
+      
+      - time_updated (UNIX timestamp)
+          * The time that the message was last updated in Telerivet.
           * Read-only
       
       - from_number (string)

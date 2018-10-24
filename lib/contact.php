@@ -137,7 +137,7 @@ class Telerivet_Contact extends Telerivet_Entity
             
             - message_type
                 * Filter messages by message_type
-                * Allowed values: sms, mms, ussd, call
+                * Allowed values: sms, mms, ussd, call, service
             
             - source
                 * Filter messages by source
@@ -248,7 +248,7 @@ class Telerivet_Contact extends Telerivet_Entity
             
             - message_type
                 * Filter scheduled messages by message_type
-                * Allowed values: sms, mms, ussd, call
+                * Allowed values: sms, mms, ussd, call, service
             
             - time_created (UNIX timestamp)
                 * Filter scheduled messages by time_created

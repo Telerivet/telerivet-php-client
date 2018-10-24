@@ -75,7 +75,7 @@
       
       - message_type
           * Type of message sent from this broadcast
-          * Allowed values: sms, mms, ussd, call
+          * Allowed values: sms, mms, ussd, call, service
           * Read-only
       
       - content (string)
@@ -145,6 +145,11 @@
       
       - route_id (string, max 34 characters)
           * ID of the phone or route used to send the broadcast (if applicable)
+          * Read-only
+      
+      - service_id (string, max 34 characters)
+          * The service associated with this broadcast (for voice calls, the service defines the
+              call flow)
           * Read-only
       
       - user_id (string, max 34 characters)

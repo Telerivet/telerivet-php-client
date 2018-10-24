@@ -58,7 +58,7 @@ class Telerivet_Label extends Telerivet_Entity
             
             - message_type
                 * Filter messages by message_type
-                * Allowed values: sms, mms, ussd, call
+                * Allowed values: sms, mms, ussd, call, service
             
             - source
                 * Filter messages by source

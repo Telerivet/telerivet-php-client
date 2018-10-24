@@ -145,13 +145,18 @@ class Telerivet_Project extends Telerivet_Entity
         messages approximately once every 15 seconds, so it is not possible to control the exact
         second at which a scheduled message is sent.
         
+        With `message_type`=`service`, schedules an automated service (such
+        as a poll) to be invoked for a group or list of phone numbers. Any service that can be
+        triggered for a contact can be scheduled via this method, whether or not the service
+        actually sends a message.
+        
         Arguments:
           - $options (associative array)
               * Required
             
             - message_type
                 * Type of message to send
-                * Allowed values: sms, ussd, call
+                * Allowed values: sms, ussd, call, service
                 * Default: sms
             
             - content
@@ -185,8 +190,8 @@ class Telerivet_Project extends Telerivet_Entity
                 * Default: default sender route ID
             
             - service_id
-                * Service that defines the call flow of the voice call (when `message_type` is
-                    `call`)
+                * Service to invoke for each recipient (when `message_type` is `call` or `service`)
+                * Required if message_type is service
             
             - audio_url
                 * The URL of an MP3 file to play when the contact answers the call (when
@@ -215,7 +220,9 @@ class Telerivet_Project extends Telerivet_Entity
                 * Default: false
             
             - label_ids (array)
-                * Array of IDs of labels to add to the sent messages (maximum 5)
+                * Array of IDs of labels to add to the sent messages (maximum 5). Does not apply
+                    when `message_type`=`service`, since the labels are determined by the service
+                    itself.
             
             - timezone_id
                 * TZ database timezone ID; see
@@ -316,7 +323,11 @@ class Telerivet_Project extends Telerivet_Entity
         $project->sendBroadcast($options)
         
         Sends a text message (optionally with mail-merge templates) or voice call to a group or a
-        list of up to 500 phone numbers
+        list of up to 500 phone numbers.
+        
+        With `message_type`=`service`, invokes an automated service (such as
+        a poll) for a group or list of phone numbers. Any service that can be triggered for a
+        contact can be invoked via this method, whether or not the service actually sends a message.
         
         Arguments:
           - $options (associative array)
@@ -324,7 +335,7 @@ class Telerivet_Project extends Telerivet_Entity
             
             - message_type
                 * Type of message to send
-                * Allowed values: sms, call
+                * Allowed values: sms, call, service
                 * Default: sms
             
             - content
@@ -348,8 +359,8 @@ class Telerivet_Project extends Telerivet_Entity
                     generated from the recipient group name or phone numbers.
             
             - service_id
-                * Service that defines the call flow of the voice call (when `message_type` is
-                    `call`)
+                * Service to invoke for each recipient (when `message_type` is `call` or `service`)
+                * Required if message_type is service
             
             - audio_url
                 * The URL of an MP3 file to play when the contact answers the call (when
@@ -380,7 +391,9 @@ class Telerivet_Project extends Telerivet_Entity
                 * POST parameter 'secret' passed to status_url
             
             - label_ids (array)
-                * Array of IDs of labels to add to all messages sent (maximum 5)
+                * Array of IDs of labels to add to all messages sent (maximum 5). Does not apply
+                    when `message_type`=`service`, since the labels are determined by the service
+                    itself.
             
             - exclude_contact_id
                 * Optionally excludes one contact from receiving the message (only when group_id is
@@ -833,7 +846,7 @@ class Telerivet_Project extends Telerivet_Entity
             
             - message_type
                 * Filter messages by message_type
-                * Allowed values: sms, mms, ussd, call
+                * Allowed values: sms, mms, ussd, call, service
             
             - source
                 * Filter messages by source
@@ -1301,7 +1314,7 @@ class Telerivet_Project extends Telerivet_Entity
             
             - message_type
                 * Filter scheduled messages by message_type
-                * Allowed values: sms, mms, ussd, call
+                * Allowed values: sms, mms, ussd, call, service
             
             - time_created (UNIX timestamp)
                 * Filter scheduled messages by time_created
