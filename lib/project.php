@@ -125,9 +125,10 @@ class Telerivet_Project extends Telerivet_Entity
                 * Custom variables to store with the message
             
             - priority (int)
-                * Priority of the message (currently only observed for Android phones). Telerivet
-                    will attempt to send messages with higher priority numbers first (for example, so
-                    you can prioritize an auto-reply ahead of a bulk message to a large group).
+                * Priority of the message. Telerivet will attempt to send messages with higher
+                    priority numbers first (for example, so you can prioritize an auto-reply ahead of a
+                    bulk message to a large group).
+                * Allowed values: 1, 2
                 * Default: 1
           
         Returns:
