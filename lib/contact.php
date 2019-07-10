@@ -20,6 +20,10 @@
           * Time the contact was added in Telerivet
           * Read-only
       
+      - time_updated (UNIX timestamp)
+          * Time the contact was last updated in Telerivet
+          * Read-only
+      
       - send_blocked (bool)
           * True if Telerivet is blocked from sending messages to this contact
           * Updatable via API
@@ -168,6 +172,9 @@ class Telerivet_Contact extends Telerivet_Entity
             
             - broadcast_id
                 * ID of the broadcast containing the message
+            
+            - scheduled_id
+                * ID of the scheduled message that created this message
             
             - sort
                 * Sort the results based on a field

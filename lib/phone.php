@@ -161,6 +161,9 @@ class Telerivet_Phone extends Telerivet_Entity
             - broadcast_id
                 * ID of the broadcast containing the message
             
+            - scheduled_id
+                * ID of the scheduled message that created this message
+            
             - sort
                 * Sort the results based on a field
                 * Allowed values: default

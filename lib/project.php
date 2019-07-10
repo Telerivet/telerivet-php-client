@@ -53,16 +53,17 @@ class Telerivet_Project extends Telerivet_Entity
     /**
         $project->sendMessage($options)
         
-        Sends one message (SMS, voice call, or USSD request).
+        Sends one message (SMS, MMS, voice call, or USSD request).
         
         Arguments:
           - $options (associative array)
               * Required
             
             - message_type
-                * Type of message to send
-                * Allowed values: sms, ussd, call
-                * Default: sms
+                * Type of message to send. If `text`, will use the default text message type for the
+                    selected route.
+                * Allowed values: sms, mms, ussd, call, text
+                * Default: text
             
             - content
                 * Content of the message to send (if `message_type` is `call`, the text will be
@@ -80,6 +81,45 @@ class Telerivet_Project extends Telerivet_Entity
             - route_id
                 * ID of the phone or route to send the message from
                 * Default: default sender route ID for your project
+            
+            - status_url
+                * Webhook callback URL to be notified when message status changes
+            
+            - status_secret
+                * POST parameter 'secret' passed to status_url
+            
+            - is_template (bool)
+                * Set to true to evaluate variables like [[contact.name]] in message content. [(See
+                    available variables)](#variables)
+                * Default: false
+            
+            - track_clicks (boolean)
+                * If true, URLs in the message content will automatically be replaced with unique
+                    short URLs.
+                * Default: false
+            
+            - media_urls (array)
+                * URLs of media files to attach to the text message. If `message_type` is `sms`,
+                    short links to each media URL will be appended to the end of the content (separated
+                    by a new line).
+            
+            - label_ids (array)
+                * List of IDs of labels to add to this message
+            
+            - vars (associative array)
+                * Custom variables to store with the message
+            
+            - priority (int)
+                * Priority of the message. Telerivet will attempt to send messages with higher
+                    priority numbers first (for example, so you can prioritize an auto-reply ahead of a
+                    bulk message to a large group).
+                * Allowed values: 1, 2
+                * Default: 1
+            
+            - simulated (bool)
+                * Set to true to test the Telerivet API without actually sending a message from the
+                    route
+                * Default: false
             
             - service_id
                 * Service that defines the call flow of the voice call (when `message_type` is
@@ -106,30 +146,6 @@ class Telerivet_Project extends Telerivet_Entity
                 * The name of the text-to-speech voice (when message_type=call)
                 * Allowed values: female, male
                 * Default: female
-            
-            - status_url
-                * Webhook callback URL to be notified when message status changes
-            
-            - status_secret
-                * POST parameter 'secret' passed to status_url
-            
-            - is_template (bool)
-                * Set to true to evaluate variables like [[contact.name]] in message content. [(See
-                    available variables)](#variables)
-                * Default: false
-            
-            - label_ids (array)
-                * List of IDs of labels to add to this message
-            
-            - vars (associative array)
-                * Custom variables to store with the message
-            
-            - priority (int)
-                * Priority of the message. Telerivet will attempt to send messages with higher
-                    priority numbers first (for example, so you can prioritize an auto-reply ahead of a
-                    bulk message to a large group).
-                * Allowed values: 1, 2
-                * Default: 1
           
         Returns:
             Telerivet_Message
@@ -216,9 +232,19 @@ class Telerivet_Project extends Telerivet_Entity
                 * Allowed values: female, male
                 * Default: female
             
+            - track_clicks (boolean)
+                * If true, URLs in the message content will automatically be replaced with unique
+                    short URLs.
+                * Default: false
+            
             - is_template (bool)
                 * Set to true to evaluate variables like [[contact.name]] in message content
                 * Default: false
+            
+            - media_urls (array)
+                * URLs of media files to attach to the text message. If `message_type` is `sms`,
+                    short links to each media URL will be appended to the end of the content (separated
+                    by a new line).
             
             - label_ids (array)
                 * Array of IDs of labels to add to the sent messages (maximum 5). Does not apply
@@ -335,9 +361,10 @@ class Telerivet_Project extends Telerivet_Entity
               * Required
             
             - message_type
-                * Type of message to send
-                * Allowed values: sms, call, service
-                * Default: sms
+                * Type of message to send. If `text`, will use the default text message type for the
+                    selected route.
+                * Allowed values: sms, mms, call, service, text
+                * Default: text
             
             - content
                 * Content of the message to send
@@ -358,6 +385,39 @@ class Telerivet_Project extends Telerivet_Entity
             - title (string)
                 * Title of the broadcast. If a title is not provided, a title will automatically be
                     generated from the recipient group name or phone numbers.
+            
+            - status_url
+                * Webhook callback URL to be notified when message status changes
+            
+            - status_secret
+                * POST parameter 'secret' passed to status_url
+            
+            - label_ids (array)
+                * Array of IDs of labels to add to all messages sent (maximum 5). Does not apply
+                    when `message_type`=`service`, since the labels are determined by the service
+                    itself.
+            
+            - exclude_contact_id
+                * Optionally excludes one contact from receiving the message (only when group_id is
+                    set)
+            
+            - is_template (bool)
+                * Set to true to evaluate variables like [[contact.name]] in message content [(See
+                    available variables)](#variables)
+                * Default: false
+            
+            - track_clicks (boolean)
+                * If true, URLs in the message content will automatically be replaced with unique
+                    short URLs.
+                * Default: false
+            
+            - media_urls (array)
+                * URLs of media files to attach to the text message. If `message_type` is `sms`,
+                    short links to each URL will be appended to the end of the content (separated by a
+                    new line).
+            
+            - vars (associative array)
+                * Custom variables to set for each message
             
             - service_id
                 * Service to invoke for each recipient (when `message_type` is `call` or `service`)
@@ -384,29 +444,6 @@ class Telerivet_Project extends Telerivet_Entity
                 * The name of the text-to-speech voice (when message_type=call)
                 * Allowed values: female, male
                 * Default: female
-            
-            - status_url
-                * Webhook callback URL to be notified when message status changes
-            
-            - status_secret
-                * POST parameter 'secret' passed to status_url
-            
-            - label_ids (array)
-                * Array of IDs of labels to add to all messages sent (maximum 5). Does not apply
-                    when `message_type`=`service`, since the labels are determined by the service
-                    itself.
-            
-            - exclude_contact_id
-                * Optionally excludes one contact from receiving the message (only when group_id is
-                    set)
-            
-            - is_template (bool)
-                * Set to true to evaluate variables like [[contact.name]] in message content [(See
-                    available variables)](#variables)
-                * Default: false
-            
-            - vars (associative array)
-                * Custom variables to set for each message
           
         Returns:
             Telerivet_Broadcast
@@ -431,9 +468,10 @@ class Telerivet_Project extends Telerivet_Entity
                 * Required
             
             - message_type
-                * Type of message to send
-                * Allowed values: sms
-                * Default: sms
+                * Type of message to send. If `text`, will use the default text message type for the
+                    selected route.
+                * Allowed values: sms, text
+                * Default: text
             
             - route_id
                 * ID of the phone or route to send the messages from
@@ -878,6 +916,9 @@ class Telerivet_Project extends Telerivet_Entity
             
             - broadcast_id
                 * ID of the broadcast containing the message
+            
+            - scheduled_id
+                * ID of the scheduled message that created this message
             
             - sort
                 * Sort the results based on a field

@@ -117,8 +117,21 @@
               sent to or received by a real phone)
           * Read-only
       
+      - track_clicks (boolean)
+          * If true, URLs in the message content will automatically be replaced with unique
+              short URLs.
+          * Read-only
+      
       - label_ids (array)
           * List of IDs of labels applied to all messages in the broadcast
+          * Read-only
+      
+      - media (array)
+          * For text messages containing media files, this is an array of objects with the
+              properties `url`, `type` (MIME type), `filename`, and `size` (file size in bytes).
+              Unknown properties are null. This property is undefined for messages that do not
+              contain media files. Note: For files uploaded via the Telerivet web app, the URL is
+              temporary and may not be valid for more than 1 day.
           * Read-only
       
       - vars (associative array)
