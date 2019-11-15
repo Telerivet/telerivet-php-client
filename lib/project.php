@@ -262,6 +262,10 @@ class Telerivet_Project extends Telerivet_Entity
             
             - end_time_offset (int)
                 * Number of seconds from now until the recurring message will stop
+            
+            - vars (associative array)
+                * Custom variables to set for this scheduled message, which will be copied to each
+                    message sent from this scheduled message
           
         Returns:
             Telerivet_ScheduledMessage
@@ -464,13 +468,16 @@ class Telerivet_Project extends Telerivet_Entity
               * Required
             
             - messages (array)
-                * Array of up to 100 objects with `content` and `to_number` properties
+                * Array of up to 100 objects with `content` and `to_number` properties. Each object
+                    may also contain the optional properties `status_url`, `status_secret`, `vars`,
+                    and/or `priority`, which override the parameters of the same name defined below, to
+                    allow passing different values for each message.
                 * Required
             
             - message_type
                 * Type of message to send. If `text`, will use the default text message type for the
                     selected route.
-                * Allowed values: sms, text
+                * Allowed values: sms, mms, chat, text
                 * Default: text
             
             - route_id
@@ -501,6 +508,26 @@ class Telerivet_Project extends Telerivet_Entity
             - is_template (bool)
                 * Set to true to evaluate variables like [[contact.name]] in message content [(See
                     available variables)](#variables)
+                * Default: false
+            
+            - media_urls (array)
+                * URLs of media files to attach to the text message. If `message_type` is `sms`,
+                    short links to each media URL will be appended to the end of the content (separated
+                    by a new line).
+            
+            - vars (associative array)
+                * Custom variables to store with the message
+            
+            - priority (int)
+                * Priority of the message. Telerivet will attempt to send messages with higher
+                    priority numbers first (for example, so you can prioritize an auto-reply ahead of a
+                    bulk message to a large group).
+                * Allowed values: 1, 2
+                * Default: 1
+            
+            - simulated (bool)
+                * Set to true to test the Telerivet API without actually sending a message from the
+                    route
                 * Default: false
           
         Returns:
@@ -734,7 +761,7 @@ class Telerivet_Project extends Telerivet_Entity
                 * Default: asc
             
             - page_size (int)
-                * Number of results returned per page (max 200)
+                * Number of results returned per page (max 500)
                 * Default: 50
             
             - offset (int)
@@ -820,7 +847,7 @@ class Telerivet_Project extends Telerivet_Entity
                 * Default: asc
             
             - page_size (int)
-                * Number of results returned per page (max 200)
+                * Number of results returned per page (max 500)
                 * Default: 50
             
             - offset (int)
@@ -931,7 +958,7 @@ class Telerivet_Project extends Telerivet_Entity
                 * Default: asc
             
             - page_size (int)
-                * Number of results returned per page (max 200)
+                * Number of results returned per page (max 500)
                 * Default: 50
             
             - offset (int)
@@ -1013,7 +1040,7 @@ class Telerivet_Project extends Telerivet_Entity
                 * Default: asc
             
             - page_size (int)
-                * Number of results returned per page (max 200)
+                * Number of results returned per page (max 500)
                 * Default: 50
             
             - offset (int)
@@ -1091,7 +1118,7 @@ class Telerivet_Project extends Telerivet_Entity
                 * Default: asc
             
             - page_size (int)
-                * Number of results returned per page (max 200)
+                * Number of results returned per page (max 500)
                 * Default: 50
             
             - offset (int)
@@ -1184,7 +1211,7 @@ class Telerivet_Project extends Telerivet_Entity
                 * Default: asc
             
             - page_size (int)
-                * Number of results returned per page (max 200)
+                * Number of results returned per page (max 500)
                 * Default: 50
             
             - offset (int)
@@ -1277,7 +1304,7 @@ class Telerivet_Project extends Telerivet_Entity
                 * Default: asc
             
             - page_size (int)
-                * Number of results returned per page (max 200)
+                * Number of results returned per page (max 500)
                 * Default: 50
             
             - offset (int)
@@ -1378,7 +1405,7 @@ class Telerivet_Project extends Telerivet_Entity
                 * Default: asc
             
             - page_size (int)
-                * Number of results returned per page (max 200)
+                * Number of results returned per page (max 500)
                 * Default: 50
             
             - offset (int)
@@ -1460,7 +1487,7 @@ class Telerivet_Project extends Telerivet_Entity
                 * Default: asc
             
             - page_size (int)
-                * Number of results returned per page (max 200)
+                * Number of results returned per page (max 500)
                 * Default: 50
             
             - offset (int)
@@ -1535,7 +1562,7 @@ class Telerivet_Project extends Telerivet_Entity
                 * Default: asc
             
             - page_size (int)
-                * Number of results returned per page (max 200)
+                * Number of results returned per page (max 500)
                 * Default: 50
             
             - offset (int)

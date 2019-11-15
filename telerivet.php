@@ -24,7 +24,7 @@ class Telerivet_API
     private $api_key;
     private $api_url;
     public $num_requests = 0;
-    private $client_version = '1.4.4';
+    private $client_version = '1.4.5';
 
     private $curl;
     public $debug = false;
@@ -109,7 +109,7 @@ class Telerivet_API
                 * Default: asc
             
             - page_size (int)
-                * Number of results returned per page (max 200)
+                * Number of results returned per page (max 500)
                 * Default: 50
             
             - offset (int)
@@ -184,7 +184,7 @@ class Telerivet_API
                 * Default: asc
             
             - page_size (int)
-                * Number of results returned per page (max 200)
+                * Number of results returned per page (max 500)
                 * Default: 50
             
             - offset (int)

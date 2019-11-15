@@ -122,6 +122,12 @@
               short URLs.
           * Read-only
       
+      - clicked_count (int)
+          * The number of messages in this broadcast containing short links that were clicked.
+              At most one click per message is counted. If track_clicks is false, this property will
+              be null.
+          * Read-only
+      
       - label_ids (array)
           * List of IDs of labels applied to all messages in the broadcast
           * Read-only

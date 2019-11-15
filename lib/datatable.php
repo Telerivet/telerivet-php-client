@@ -79,7 +79,7 @@ class Telerivet_DataTable extends Telerivet_Entity
                 * Default: asc
             
             - page_size (int)
-                * Number of results returned per page (max 200)
+                * Number of results returned per page (max 500)
                 * Default: 50
             
             - offset (int)
@@ -189,7 +189,7 @@ class Telerivet_DataTable extends Telerivet_Entity
             - type (string)
                 * Field type
                 * Allowed values: text, long_text, number, boolean, email, url, audio, phone_number,
-                    date, date_time, groups, route
+                    date, date_time, groups, route, select, buttons
             
             - order (int)
                 * Order in which to display the field
