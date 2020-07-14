@@ -62,7 +62,8 @@ class Telerivet_Label extends Telerivet_Entity
             
             - source
                 * Filter messages by source
-                * Allowed values: phone, provider, web, api, service, webhook, scheduled
+                * Allowed values: phone, provider, web, api, service, webhook, scheduled,
+                    integration
             
             - starred (bool)
                 * Filter messages by starred/unstarred

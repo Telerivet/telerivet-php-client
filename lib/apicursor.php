@@ -8,35 +8,34 @@
     
     Using the APICursor, you can easily iterate over query results without
     having to manually fetch each page of results.
-    
-    Any method in the Telerivet PHP client library starting with the word 'query' returns a 
+    Any method in the Telerivet PHP client library starting with the word 'query' returns a
     Telerivet_APICursor object, which exposes the following methods:
-    
+
         $cursor->count();
         $cursor->all();
         $cursor->hasNext();
         $cursor->next();
-    
+
     Example Usage:
     -------------
-    
+
     $groups = $project->queryGroups()->all();
-    
+
     $num_contacts = $project->queryContacts()->count();
-    
+
     $name_prefix = 'John';
     $cursor = $project->queryContacts(array(
         'name[prefix]' => $name_prefix,
         'sort' => 'name',
-    ));   
-    
-    echo "{$cursor->count()} contacts matching $name_prefix:\n";   
+    ));
+
+    echo "{$cursor->count()} contacts matching $name_prefix:\n";
     while ($cursor->hasNext())
     {
         $contact = $cursor->next();
-        echo "{$contact->name} {$contact->phone_number} {$contact->vars->birthdate}\n";        
+        echo "{$contact->name} {$contact->phone_number} {$contact->vars->birthdate}\n";
     }
-    
+
  */
 class Telerivet_ApiCursor
 {
@@ -44,8 +43,8 @@ class Telerivet_ApiCursor
     protected $item_cls;
     protected $path;
     protected $params;
-    
-    
+
+
     function __construct($api, $item_cls, $path, $params)
     {
         if (!isset($params))
@@ -56,13 +55,13 @@ class Telerivet_ApiCursor
         {
             throw new Telerivet_Exception("Cannot construct Telerivet_ApiCursor with 'count' parameter. Call the count() method instead.");
         }
-    
+
         $this->api = $api;
         $this->item_cls = $item_cls;
         $this->path = $path;
         $this->params = $params;
     }
-    
+
     private $_limit;
     private $offset = 0;
     private $_count = -1;
@@ -70,8 +69,8 @@ class Telerivet_ApiCursor
     private $data;
     private $truncated;
     private $next_marker;
-    
-    /* 
+
+    /*
         $cursor->count()
         
         Returns the total count of entities matching the current query, without actually fetching
@@ -90,14 +89,14 @@ class Telerivet_ApiCursor
         {
             $params = $this->params;
             $params['count'] = '1';
-            
+
             $res = $this->api->doRequest("GET", $this->path, $params);
             $this->_count = (int)$res['count'];
         }
         return $this->_count;
     }
-    
-    /* 
+
+    /*
         $cursor->limit($limit)
         
         Limits the maximum number of entities fetched by this query.
@@ -120,8 +119,8 @@ class Telerivet_ApiCursor
         $this->_limit = $limit;
         return $this;
     }
-    
-    /* 
+
+    /*
         $cursor->all()
         
         Get all entities matching the current query in an array.
@@ -136,7 +135,7 @@ class Telerivet_ApiCursor
     function all()
     {
         $items = array();
-        
+
         while (true)
         {
             $item = $this->next();
@@ -145,11 +144,11 @@ class Telerivet_ApiCursor
                 break;
             }
             $items[] = $item;
-        }        
-        return $items;        
+        }
+        return $items;
     }
-    
-    /* 
+
+    /*
         $cursor->hasNext()
         
         Returns true if there are any more entities in the result set, false otherwise
@@ -163,7 +162,7 @@ class Telerivet_ApiCursor
         {
             return false;
         }
-    
+
         if (!isset($this->data))
         {
             $this->loadNextPage();
@@ -176,14 +175,14 @@ class Telerivet_ApiCursor
 
         if (!$this->truncated)
         {
-            return false;            
+            return false;
         }
-        
+
         $this->loadNextPage();
-        return $this->pos < sizeof($this->data);        
+        return $this->pos < sizeof($this->data);
     }
-    
-    /* 
+
+    /*
         $cursor->next()
         
         Returns the next entity in the result set.
@@ -197,17 +196,17 @@ class Telerivet_ApiCursor
         {
             return null;
         }
-    
+
         if (!isset($this->data) || ($this->pos >= sizeof($this->data) && $this->truncated))
         {
             $this->loadNextPage();
         }
-        
+
         if ($this->pos < sizeof($this->data))
         {
             $item_data = $this->data[$this->pos];
-            $this->pos++;        
-            $this->offset++;            
+            $this->pos++;
+            $this->offset++;
             $cls = $this->item_cls;
             return new $cls($this->api, $item_data, true);
         }
@@ -216,26 +215,26 @@ class Telerivet_ApiCursor
             return null;
         }
     }
-    
+
     private function loadNextPage()
     {
         $request_params = $this->params;
-                
+
         if (isset($this->next_marker))
         {
             $request_params['marker'] = $this->next_marker;
         }
-        
+
         if (isset($this->_limit) && !isset($request_params['page_size']))
         {
             $request_params['page_size'] = min($this->_limit, 200);
         }
-        
+
         $response = $this->api->doRequest("GET", $this->path, $request_params);
-        
+
         $this->data = $response['data'];
         $this->truncated = $response['truncated'];
         $this->next_marker = $response['next_marker'];
         $this->pos = 0;
-    }    
+    }
 }

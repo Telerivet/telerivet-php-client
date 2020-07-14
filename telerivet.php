@@ -24,7 +24,7 @@ class Telerivet_API
     private $api_key;
     private $api_url;
     public $num_requests = 0;
-    private $client_version = '1.4.5';
+    private $client_version = '1.4.6';
 
     private $curl;
     public $debug = false;
@@ -372,3 +372,4 @@ require_once "{$tr_lib_dir}/datarow.php";
 require_once "{$tr_lib_dir}/service.php";
 require_once "{$tr_lib_dir}/contactservicestate.php";
 require_once "{$tr_lib_dir}/organization.php";
+require_once "{$tr_lib_dir}/airtimetransaction.php";

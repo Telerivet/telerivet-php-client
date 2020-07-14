@@ -109,7 +109,7 @@
       
       - source
           * How the message originated within Telerivet
-          * Allowed values: phone, provider, web, api, service, webhook, scheduled
+          * Allowed values: phone, provider, web, api, service, webhook, scheduled, integration
           * Read-only
       
       - simulated (bool)
