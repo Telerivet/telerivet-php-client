@@ -65,6 +65,10 @@
           * ID of the project that the airtime transaction belongs to
           * Read-only
       
+      - external_id
+          * The ID of this transaction from an external airtime gateway provider, if available.
+          * Read-only
+      
       - vars (associative array)
           * Custom variables stored for this transaction
           * Updatable via API
