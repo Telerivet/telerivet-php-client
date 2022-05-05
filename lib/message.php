@@ -19,7 +19,7 @@
       - status
           * Current status of the message
           * Allowed values: ignored, processing, received, sent, queued, failed, failed_queued,
-              cancelled, delivered, not_delivered
+              cancelled, delivered, not_delivered, read
           * Read-only
       
       - message_type
@@ -70,6 +70,13 @@
       
       - label_ids (array)
           * List of IDs of labels applied to this message
+          * Read-only
+      
+      - route_params (associative array)
+          * Route-specific parameters for the message. The parameters object may have keys
+              matching the `phone_type` field of a phone (basic route) that may be used to send the
+              message. The corresponding value is an object with route-specific parameters to use
+              when the message is sent by that type of route.
           * Read-only
       
       - vars (associative array)
@@ -139,12 +146,12 @@
       
       - short_urls (array)
           * For text messages containing short URLs, this is an array of objects with the
-              properties `short_url`, `link_type`, and `time_clicked` (the first time that URL was
-              clicked). If `link_type` is "redirect", the object also contains a `destination_url`
-              property. If `link_type` is "media", the object also contains an `media_index`
-              property (the index in the media array). If `link_type` is "service", the object also
-              contains a `service_id` property. This property is undefined for messages that do not
-              contain short URLs.
+              properties `short_url`, `link_type`, `time_clicked` (the first time that URL was
+              clicked), and `expiration_time`. If `link_type` is "redirect", the object also
+              contains a `destination_url` property. If `link_type` is "media", the object also
+              contains an `media_index` property (the index in the media array). If `link_type` is
+              "service", the object also contains a `service_id` property. This property is
+              undefined for messages that do not contain short URLs.
           * Read-only
       
       - media (array)

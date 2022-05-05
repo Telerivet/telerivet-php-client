@@ -16,12 +16,12 @@ You can use it to:
 - much more
 
 All API methods are fully documented at https://telerivet.com/api/rest/php ,
-as well as in the comments of the PHP source files. To learn what functionality is available, 
+as well as in the comments of the PHP source files. To learn what functionality is available,
 start with telerivet.php, lib/project.php, and lib/apicursor.php .
 
 System Requirements:
 --------------------
-PHP 5.3 or higher
+PHP 7.0 or higher (PHP 5.3-5.6 supported by an older version of this library at https://github.com/Telerivet/telerivet-php-client/releases/tag/v1.5.0)
 PHP json extension (usually enabled in PHP by default)
 PHP curl extension (usually enabled in PHP by default)
 
@@ -32,7 +32,7 @@ and require telerivet.php in your PHP code, e.g.:
 
 require_once "path/to/telerivet.php";
 
-Alternatively, if you use Composer for dependency management, 
+Alternatively, if you use Composer for dependency management,
 you can add the following to your composer.json:
 
 "require": {
@@ -43,7 +43,7 @@ Example Usage:
 --------------
 
 require_once "path/to/telerivet.php";
-   
+
 $API_KEY = 'YOUR_API_KEY';           // from https://telerivet.com/api/keys
 $PROJECT_ID = 'YOUR_PROJECT_ID';
 
@@ -55,9 +55,9 @@ $project = $telerivet->initProjectById($PROJECT_ID);
 $project->sendMessage(array(
     'to_number' => '555-0001',
     'content' => 'Hello world!'
-));   
+));
 
-// Query contacts  
+// Query contacts
 $name_prefix = 'John';
 $cursor = $project->queryContacts(array(
     'name[prefix]' => $name_prefix,
@@ -69,7 +69,7 @@ echo "{$cursor->count()} contacts matching $name_prefix:\n";
 while ($cursor->hasNext())
 {
     $contact = $cursor->next();
-    echo "{$contact->name} {$contact->phone_number} {$contact->vars->birthdate}\n";        
+    echo "{$contact->name} {$contact->phone_number} {$contact->vars->birthdate}\n";
 }
 
 // Import a contact
@@ -82,6 +82,6 @@ $contact = $project->getOrCreateContact(array(
     )
 ));
 
-// Add a contact to a group    
+// Add a contact to a group
 $group = $project->getOrCreateGroup('Subscribers');
 $contact->addToGroup($group);

@@ -24,7 +24,7 @@ class Telerivet_API
     private $api_key;
     private $api_url;
     public $num_requests = 0;
-    private $client_version = '1.5.0';
+    private $client_version = '1.6.0';
 
     private $curl;
     public $debug = false;
