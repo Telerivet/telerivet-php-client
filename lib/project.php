@@ -98,10 +98,30 @@ class Telerivet_Project extends Telerivet_Entity
                     short URLs.
                 * Default: false
             
+            - short_link_params (associative array)
+                *
+                    If `track_clicks` is true, `short_link_params` may be used to specify
+                    custom parameters for each short link in the message. The following parameters are
+                    supported:
+                    
+                    `domain` (string): A custom short domain name to use for the short
+                    links. The domain name must already be registered for your project or organization.
+                    
+                    `expiration_sec` (integer): The number of seconds after the message is
+                    created (queued to send) when the short links will stop forwarding to the
+                    destination URL.
+                    If null, the short links will not expire.
+            
             - media_urls (array)
                 * URLs of media files to attach to the text message. If `message_type` is `sms`,
                     short links to each media URL will be appended to the end of the content (separated
                     by a new line).
+            
+            - route_params (associative array)
+                * Route-specific parameters for the message. The parameters object should have one
+                    or more keys matching the `phone_type` field of a phone (basic route) that may be
+                    used to send the message. The corresponding value should be an object with
+                    route-specific parameters to use if the message is sent by that type of route.
             
             - label_ids (array)
                 * List of IDs of labels to add to this message
@@ -237,6 +257,20 @@ class Telerivet_Project extends Telerivet_Entity
                     short URLs.
                 * Default: false
             
+            - short_link_params (associative array)
+                *
+                    If `track_clicks` is true, `short_link_params` may be used to specify
+                    custom parameters for each short link in the message. The following parameters are
+                    supported:
+                    
+                    `domain` (string): A custom short domain name to use for the short
+                    links. The domain name must already be registered for your project or organization.
+                    
+                    `expiration_sec` (integer): The number of seconds after the message is
+                    created (queued to send) when the short links will stop forwarding to the
+                    destination URL.
+                    If null, the short links will not expire.
+            
             - is_template (bool)
                 * Set to true to evaluate variables like [[contact.name]] in message content
                 * Default: false
@@ -245,6 +279,12 @@ class Telerivet_Project extends Telerivet_Entity
                 * URLs of media files to attach to the text message. If `message_type` is `sms`,
                     short links to each media URL will be appended to the end of the content (separated
                     by a new line).
+            
+            - route_params (associative array)
+                * Route-specific parameters to use when sending the message. The parameters object
+                    may have keys matching the `phone_type` field of a phone (basic route) that may be
+                    used to send the message. The corresponding value is an object with route-specific
+                    parameters to use when sending a message with that type of route.
             
             - label_ids (array)
                 * Array of IDs of labels to add to the sent messages (maximum 5). Does not apply
@@ -415,6 +455,20 @@ class Telerivet_Project extends Telerivet_Entity
                     short URLs.
                 * Default: false
             
+            - short_link_params (associative array)
+                *
+                    If `track_clicks` is true, `short_link_params` may be used to specify
+                    custom parameters for each short link in the message. The following parameters are
+                    supported:
+                    
+                    `domain` (string): A custom short domain name to use for the short
+                    links. The domain name must already be registered for your project or organization.
+                    
+                    `expiration_sec` (integer): The number of seconds after the message is
+                    created (queued to send) when the short links will stop forwarding to the
+                    destination URL.
+                    If null, the short links will not expire.
+            
             - media_urls (array)
                 * URLs of media files to attach to the text message. If `message_type` is `sms`,
                     short links to each URL will be appended to the end of the content (separated by a
@@ -422,6 +476,12 @@ class Telerivet_Project extends Telerivet_Entity
             
             - vars (associative array)
                 * Custom variables to set for each message
+            
+            - route_params (associative array)
+                * Route-specific parameters for the messages in the broadcast. The parameters object
+                    may have keys matching the `phone_type` field of a phone (basic route) that may be
+                    used to send messages in this broadcast. The corresponding value is an object with
+                    route-specific parameters to use when sending messages with that type of route.
             
             - service_id
                 * Service to invoke for each recipient (when `message_type` is `call` or `service`)
@@ -510,10 +570,35 @@ class Telerivet_Project extends Telerivet_Entity
                     available variables)](#variables)
                 * Default: false
             
+            - track_clicks (boolean)
+                * If true, URLs in the message content will automatically be replaced with unique
+                    short URLs.
+                * Default: false
+            
+            - short_link_params (associative array)
+                *
+                    If `track_clicks` is true, `short_link_params` may be used to specify
+                    custom parameters for each short link in the message. The following parameters are
+                    supported:
+                    
+                    `domain` (string): A custom short domain name to use for the short
+                    links. The domain name must already be registered for your project or organization.
+                    
+                    `expiration_sec` (integer): The number of seconds after the message is
+                    created (queued to send) when the short links will stop forwarding to the
+                    destination URL.
+                    If null, the short links will not expire.
+            
             - media_urls (array)
                 * URLs of media files to attach to the text message. If `message_type` is `sms`,
                     short links to each media URL will be appended to the end of the content (separated
                     by a new line).
+            
+            - route_params (associative array)
+                * Route-specific parameters to apply to all messages. The parameters object may have
+                    keys matching the `phone_type` field of a phone (basic route) that may be used to
+                    send messages. The corresponding value is an object with route-specific parameters
+                    to use when sending messages with that type of route.
             
             - vars (associative array)
                 * Custom variables to store with the message
@@ -540,6 +625,10 @@ class Telerivet_Project extends Telerivet_Entity
                       (Other properties of the Message object are
                       omitted in order to reduce the amount of redundant data sent in each API
                       response.)
+                      If the `messages` parameter in the API request
+                      contains items with `to_number` values that are associated with blocked contacts,
+                      the `id` and `status` properties corresponding to those items will be null, and no
+                      messages will be sent to those numbers.
               
               - broadcast_id
                   * ID of broadcast that these messages are associated with, if `broadcast_id` or
@@ -715,24 +804,22 @@ class Telerivet_Project extends Telerivet_Entity
             
             - time_created (UNIX timestamp)
                 * Filter contacts by time created
-                * Allowed modifiers: time_created[ne], time_created[min], time_created[max]
+                * Allowed modifiers: time_created[min], time_created[max]
             
             - last_message_time (UNIX timestamp)
                 * Filter contacts by last time a message was sent or received
-                * Allowed modifiers: last_message_time[ne], last_message_time[min],
-                    last_message_time[max], last_message_time[exists]
+                * Allowed modifiers: last_message_time[min], last_message_time[max],
+                    last_message_time[exists]
             
             - last_incoming_message_time (UNIX timestamp)
                 * Filter contacts by last time a message was received
-                * Allowed modifiers: last_incoming_message_time[ne],
-                    last_incoming_message_time[min], last_incoming_message_time[max],
-                    last_incoming_message_time[exists]
+                * Allowed modifiers: last_incoming_message_time[min],
+                    last_incoming_message_time[max], last_incoming_message_time[exists]
             
             - last_outgoing_message_time (UNIX timestamp)
                 * Filter contacts by last time a message was sent
-                * Allowed modifiers: last_outgoing_message_time[ne],
-                    last_outgoing_message_time[min], last_outgoing_message_time[max],
-                    last_outgoing_message_time[exists]
+                * Allowed modifiers: last_outgoing_message_time[min],
+                    last_outgoing_message_time[max], last_outgoing_message_time[exists]
             
             - incoming_message_count (int)
                 * Filter contacts by number of messages received from the contact
@@ -836,8 +923,8 @@ class Telerivet_Project extends Telerivet_Entity
             
             - last_active_time (UNIX timestamp)
                 * Filter phones by last active time
-                * Allowed modifiers: last_active_time[ne], last_active_time[min],
-                    last_active_time[max], last_active_time[exists]
+                * Allowed modifiers: last_active_time[min], last_active_time[max],
+                    last_active_time[exists]
             
             - sort
                 * Sort the results based on a field
@@ -931,7 +1018,7 @@ class Telerivet_Project extends Telerivet_Entity
             - status
                 * Filter messages by status
                 * Allowed values: ignored, processing, received, sent, queued, failed,
-                    failed_queued, cancelled, delivered, not_delivered
+                    failed_queued, cancelled, delivered, not_delivered, read
             
             - time_created[min] (UNIX timestamp)
                 * Filter messages created on or after a particular time
@@ -941,18 +1028,26 @@ class Telerivet_Project extends Telerivet_Entity
             
             - external_id
                 * Filter messages by ID from an external provider
+                * Allowed modifiers: external_id[ne], external_id[exists]
             
             - contact_id
                 * ID of the contact who sent/received the message
+                * Allowed modifiers: contact_id[ne], contact_id[exists]
             
             - phone_id
                 * ID of the phone (basic route) that sent/received the message
             
             - broadcast_id
                 * ID of the broadcast containing the message
+                * Allowed modifiers: broadcast_id[ne], broadcast_id[exists]
             
             - scheduled_id
                 * ID of the scheduled message that created this message
+                * Allowed modifiers: scheduled_id[ne], scheduled_id[exists]
+            
+            - group_id
+                * Filter messages sent or received by contacts in a particular group. The group must
+                    be a normal group, not a dynamic group.
             
             - sort
                 * Sort the results based on a field
@@ -1175,8 +1270,16 @@ class Telerivet_Project extends Telerivet_Entity
                     <table>
                     <tr><td> `service_id` </td> <td> The ID of the
                     service to apply (string) </td></tr>
+                    <tr><td> `variables` </td> <td> Optional object
+                    containing up to 25 temporary variable names and their corresponding values to set
+                    when invoking the service. Values may be strings, numbers, or boolean (true/false).
+                    String values may be up to 4096 bytes in length. Arrays and objects are not
+                    supported. Within Custom Actions, each variable can be used like [[$name]] (with a
+                    leading $ character and surrounded by double square brackets). Within a Cloud Script
+                    API service or JavaScript action, each variable will be available as a global
+                    JavaScript variable like $name (with a leading $ character). (object) </td></tr>
                     </table>
-                    
+                    <br />
                     **`update_contact_var`**, **`update_message_var`**,
                     **`update_row_var`**:
                     <table>
@@ -1185,37 +1288,37 @@ class Telerivet_Project extends Telerivet_Entity
                     <tr><td> `value` </td> <td> The value to set
                     (string, boolean, float, null) </td></tr>
                     </table>
-                    
+                    <br />
                     **`add_group_members`**, **`remove_group_members`**:
                     <table>
                     <tr><td> `group_id` </td> <td> The ID of the group
                     (string) </td></tr>
                     </table>
-                    
+                    <br />
                     **`add_label`**, **`remove_label`**:
                     <table>
                     <tr><td> `label_id` </td> <td> The ID of the label
                     (string) </td></tr>
                     </table>
-                    
+                    <br />
                     **`resend_messages`**:
                     <table>
                     <tr><td> `route_id` </td> <td> ID of the new route
                     to use, or null to use the original route (string) </td></tr>
                     </table>
-                    
+                    <br />
                     **`set_send_blocked`**:
                     <table>
                     <tr><td> `send_blocked` </td> <td> `true` to block
                     sending messages, `false` to unblock sending messages (boolean) </td></tr>
                     </table>
-                    
+                    <br />
                     **`set_conversation_status`**:
                     <table>
                     <tr><td> `conversation_status` </td> <td> "active",
                     "handled", or "closed" (string) </td></tr>
                     </table>
-                    
+                    <br />
                     **`export_contacts`**, **`export_messages`**,
                     **`export_rows`**:
                     <table>
@@ -1239,7 +1342,7 @@ class Telerivet_Project extends Telerivet_Entity
                     save in the CSV file. If not provided, all default columns will be saved. (array of
                     strings, optional) </td></tr>
                     </table>
-                    
+                    <br />
                     **`delete_contacts`**, **`delete_messages`**,
                     **`delete_rows`**, **`cancel_messages`**, **`retry_message_services`**: <br />
                     No parameters.
@@ -1686,16 +1789,15 @@ class Telerivet_Project extends Telerivet_Entity
             
             - time_created (UNIX timestamp)
                 * Filter scheduled messages by time_created
-                * Allowed modifiers: time_created[ne], time_created[min], time_created[max]
+                * Allowed modifiers: time_created[min], time_created[max]
             
             - next_time (UNIX timestamp)
                 * Filter scheduled messages by next_time
-                * Allowed modifiers: next_time[ne], next_time[min], next_time[max],
-                    next_time[exists]
+                * Allowed modifiers: next_time[min], next_time[max], next_time[exists]
             
             - sort
                 * Sort the results based on a field
-                * Allowed values: default, name
+                * Allowed values: default, next_time
                 * Default: default
             
             - sort_dir

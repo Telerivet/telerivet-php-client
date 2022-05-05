@@ -58,7 +58,7 @@ class Telerivet_DataTable extends Telerivet_Entity
             
             - time_created (UNIX timestamp)
                 * Filter data rows by the time they were created
-                * Allowed modifiers: time_created[ne], time_created[min], time_created[max]
+                * Allowed modifiers: time_created[min], time_created[max]
             
             - contact_id
                 * Filter data rows associated with a particular contact
