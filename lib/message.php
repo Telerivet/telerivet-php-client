@@ -130,15 +130,6 @@
           * Allowed values: female, male
           * Read-only
       
-      - mms_parts (array)
-          * A list of parts in the MMS message, the same as returned by the
-              [getMMSParts](#Message.getMMSParts) method.
-              
-              Note: This property is only present when retrieving an individual
-              MMS message by ID, not when querying a list of messages. In other cases, use
-              [getMMSParts](#Message.getMMSParts).
-          * Read-only
-      
       - track_clicks (boolean)
           * If true, URLs in the message content are short URLs that redirect to a destination
               URL.
@@ -160,6 +151,27 @@
               Unknown properties are null. This property is undefined for messages that do not
               contain media files. Note: For files uploaded via the Telerivet web app, the URL is
               temporary and may not be valid for more than 1 day.
+          * Read-only
+      
+      - mms_parts (array)
+          * A list of parts in the MMS message (only for incoming MMS messages received via
+              Telerivet Gateway Android app).
+              
+              Each MMS part in the list is an object with the following
+              properties:
+              
+              - cid: MMS content-id
+              - type: MIME type
+              - filename: original filename
+              - size (int): number of bytes
+              - url: URL where the content for this part is stored (secret but
+              publicly accessible, so you could link/embed it in a web page without having to
+              re-host it yourself)
+              
+              In general, the `media` property of the message is recommended for
+              retrieving information about MMS media files, instead of `mms_parts`.
+              The `mms_parts` property is also only present when retrieving an
+              individual MMS message by ID, not when querying a list of messages.
           * Read-only
       
       - time_clicked (UNIX timestamp)
@@ -256,18 +268,15 @@ class Telerivet_Message extends Telerivet_Entity
     /**
         $message->getMMSParts()
         
-        Retrieves a list of MMS parts for this message (empty for non-MMS messages).
+        (Deprecated) Retrieves a list of MMS parts for this message (only for incoming MMS messages
+        received via Telerivet Gateway Android app).
+        Note: This only works for MMS messages received via the Telerivet
+        Gateway Android app.
+        In general, the `media` property of the message is recommended for
+        retrieving information about MMS media files.
         
-        Each MMS part in the list is an object with the following
-        properties:
-        
-        - cid: MMS content-id
-        - type: MIME type
-        - filename: original filename
-        - size (int): number of bytes
-        - url: URL where the content for this part is stored (secret but
-        publicly accessible, so you could link/embed it in a web page without having to re-host it
-        yourself)
+        The return value has the same format as the `mms_parts` property of
+        the Message object.
         
         Returns:
             array

@@ -1323,15 +1323,15 @@ class Telerivet_Project extends Telerivet_Entity
                     **`export_rows`**:
                     <table>
                     <tr><td>`storage_id` </td> <td> ID of a storage
-                    backend where the CSV file will be saved. (string)
+                    provider where the CSV file will be saved. (string)
                     
                     Currently only AWS S3 is supported as a storage
-                    backend.
+                    provider.
                     This requires creating a S3 bucket in your own
                     AWS account, as well as an IAM user with access key and secret that has permission
                     to write to that bucket.
-                    To configure your own S3 bucket as a storage
-                    backend, contact support.
+                    You can configure your own S3 bucket as a
+                    storage provider on the <a href="/dashboard/a/storage">Storage Providers</a> page.
                     
                     Direct downloads are not supported when
                     exporting data via the API.
@@ -2112,6 +2112,210 @@ class Telerivet_Project extends Telerivet_Entity
     function initAirtimeTransactionById($id)
     {
         return new Telerivet_AirtimeTransaction($this->_api, array('project_id' => $this->id, 'id' => $id), false);
+    }
+
+    /**
+        $project->getContactFields()
+        
+        Gets a list of all custom fields defined for contacts in this project. The return value is
+        an array of objects with the properties 'name', 'variable', 'type', 'order', 'readonly', and
+        'lookup_key'. (Fields are automatically created any time a Contact's 'vars' property is
+        updated.)
+        
+        Returns:
+            array
+    */
+    function getContactFields()
+    {
+        return $this->_api->doRequest("GET", "{$this->getBaseApiPath()}/contact_fields");
+    }
+
+    /**
+        $project->setContactFieldMetadata($variable, $options)
+        
+        Allows customizing how a custom contact field is displayed in the Telerivet web app.
+        
+        Arguments:
+          - $variable
+              * The variable name of the field to create or update.
+              * Required
+          
+          - $options (associative array)
+              * Required
+            
+            - name (string, max 64 characters)
+                * Display name for the field
+            
+            - type (int)
+                * Field type
+                * Allowed values: text, long_text, phone_number, email, url, audio, date, date_time,
+                    number, boolean, select
+            
+            - order (int)
+                * Order in which to display the field
+            
+            - items (array)
+                * Array of up to 100 objects containing `value` and `label` string properties to
+                    show in the dropdown list when type is `select`. Each `value` and `label` must be
+                    between 1 and 256 characters in length.
+                * Required if type is `select`
+            
+            - readonly (bool)
+                * Set to true to prevent editing the field in the Telerivet web app
+            
+            - lookup_key (bool)
+                * Set to true to allow using this field as a lookup key when importing contacts via
+                    the Telerivet web app
+            
+            - show_on_conversation (bool)
+                * Set to true to show field on Conversations tab
+          
+        Returns:
+            object
+    */
+    function setContactFieldMetadata($variable, $options)
+    {
+        return $this->_api->doRequest("POST", "{$this->getBaseApiPath()}/contact_fields/{$variable}", $options);
+    }
+
+    /**
+        $project->getMessageFields()
+        
+        Gets a list of all custom fields defined for messages in this project. The return value is
+        an array of objects with the properties 'name', 'variable', 'type', 'order', 'readonly', and
+        'lookup_key'. (Fields are automatically created any time a Contact's 'vars' property is
+        updated.)
+        
+        Returns:
+            array
+    */
+    function getMessageFields()
+    {
+        return $this->_api->doRequest("GET", "{$this->getBaseApiPath()}/message_fields");
+    }
+
+    /**
+        $project->setMessageFieldMetadata($variable, $options)
+        
+        Allows customizing how a custom message field is displayed in the Telerivet web app.
+        
+        Arguments:
+          - $variable
+              * The variable name of the field to create or update.
+              * Required
+          
+          - $options (associative array)
+              * Required
+            
+            - name (string, max 64 characters)
+                * Display name for the field
+            
+            - type (string)
+                * Field type
+                * Allowed values: text, long_text, phone_number, email, url, audio, date, date_time,
+                    number, boolean, select
+            
+            - order (int)
+                * Order in which to display the field
+            
+            - items (array)
+                * Array of up to 100 objects containing `value` and `label` string properties to
+                    show in the dropdown list when type is `select`. Each `value` and `label` must be
+                    between 1 and 256 characters in length.
+                * Required if type is `select`
+            
+            - hide_values (bool)
+                * Set to true to avoid showing values of this field on the Messages page
+          
+        Returns:
+            object
+    */
+    function setMessageFieldMetadata($variable, $options)
+    {
+        return $this->_api->doRequest("POST", "{$this->getBaseApiPath()}/message_fields/{$variable}", $options);
+    }
+
+    /**
+        $project->getMessageStats($options)
+        
+        Retrieves statistics about messages sent or received via Telerivet. This endpoint returns
+        historical data that is computed shortly after midnight each day in the project's time zone,
+        and does not contain message statistics for the current day.
+        
+        Arguments:
+          - $options (associative array)
+              * Required
+            
+            - start_date (string)
+                * Start date of message statistics, in YYYY-MM-DD format
+                * Required
+            
+            - end_date (string)
+                * End date of message statistics (inclusive), in YYYY-MM-DD format
+                * Required
+            
+            - rollup (string)
+                * Date interval to group by
+                * Allowed values: day, week, month, year, all
+                * Default: day
+            
+            - properties (string)
+                * Comma separated list of properties to group by
+                * Allowed values: org_id, org_name, org_industry, project_id, project_name, user_id,
+                    user_email, user_name, phone_id, phone_name, phone_type, direction, source, status,
+                    network_code, network_name, message_type, service_id, service_name, simulated, link
+            
+            - metrics (string)
+                * Comma separated list of metrics to return (summed for each distinct value of the
+                    requested properties)
+                * Allowed values: count, num_parts, duration, price
+                * Required
+            
+            - currency (string)
+                * Three-letter ISO 4217 currency code used when returning the 'price' field. If the
+                    original price was in a different currency, it will be converted to the requested
+                    currency using the approximate current exchange rate.
+                * Default: USD
+            
+            - filters (associative array)
+                * Key-value pairs of properties and corresponding values; the returned statistics
+                    will only include messages where the property matches the provided value. Only the
+                    following properties are supported for filters: `user_id`, `phone_id`, `direction`,
+                    `source`, `status`, `service_id`, `simulated`, `message_type`, `network_code`
+          
+        Returns:
+            (associative array)
+              - intervals (array)
+                  * List of objects representing each date interval containing at least one message
+                      matching the filters.
+                      Each object has the following properties:
+                      
+                      <table>
+                      <tr><td> start_time </td> <td> The UNIX timestamp of the start
+                      of the interval (int) </td></tr>
+                      <tr><td> end_time </td> <td> The UNIX timestamp of the end of
+                      the interval, exclusive (int) </td></tr>
+                      <tr><td> start_date </td> <td> The date of the start of the
+                      interval in YYYY-MM-DD format (string) </td></tr>
+                      <tr><td> end_date </td> <td> The date of the end of the
+                      interval in YYYY-MM-DD format, inclusive (string) </td></tr>
+                      <tr><td> groups </td> <td> Array of groups for each
+                      combination of requested property values matching the filters (array)
+                      <br /><br />
+                      Each object has the following properties:
+                      <table>
+                      <tr><td> properties </td> <td> An object of key/value
+                      pairs for each distinct value of the requested properties (object) </td></tr>
+                      <tr><td> metrics </td> <td> An object of key/value pairs
+                      for each requested metric (object) </td></tr>
+                      </table>
+                      </td></tr>
+                      </table>
+    */
+    function getMessageStats($options)
+    {
+        $data = $this->_api->doRequest("GET", "{$this->getBaseApiPath()}/message_stats", $options);
+        return $data;
     }
 
     /**
