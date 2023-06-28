@@ -75,7 +75,7 @@
       
       - message_type
           * Type of message sent from this broadcast
-          * Allowed values: sms, mms, ussd, call, service
+          * Allowed values: sms, mms, ussd, ussd_session, call, chat, service
           * Read-only
       
       - content (string)
@@ -97,7 +97,7 @@
           * Allowed values: female, male
           * Read-only
       
-      - is_template (bool)
+      - replace_variables (bool)
           * Set to true if Telerivet will render variables like [[contact.name]] in the message
               content, false otherwise
           * Read-only

@@ -28,6 +28,14 @@
           * Country code
           * Read-only
       
+      - time_created (UNIX timestamp)
+          * The time that the airtime transaction was created on Telerivet's servers
+          * Read-only
+      
+      - transaction_time (UNIX timestamp)
+          * The time that the airtime transaction was sent, or null if it has not been sent
+          * Read-only
+      
       - status
           * Current status of airtime transaction (`successful`, `failed`, `cancelled`,
               `queued`, `pending_approval`, or `pending_payment`)

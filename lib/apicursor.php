@@ -208,7 +208,14 @@ class Telerivet_ApiCursor
             $this->pos++;
             $this->offset++;
             $cls = $this->item_cls;
-            return new $cls($this->api, $item_data, true);
+            if ($cls)
+            {
+                return new $cls($this->api, $item_data, true);
+            }
+            else
+            {
+                return $item_data;
+            }
         }
         else
         {

@@ -15,12 +15,56 @@
           * Updatable via API
       
       - timezone_id
-          * Billing quota time zone ID; see
-              <http://en.wikipedia.org/wiki/List_of_tz_database_time_zones>
+          * Billing quota time zone ID; see [List of tz database time zones Wikipedia
+              article](http://en.wikipedia.org/wiki/List_of_tz_database_time_zones).
           * Updatable via API
 */
 class Telerivet_Organization extends Telerivet_Entity
 {
+    /**
+        $organization->createProject($options)
+        
+        Creates a new project.
+        
+        Some project settings are not currently possible to configure via
+        the API, and can only be edited via the web app after the project is created.
+        
+        Arguments:
+          - $options (associative array)
+              * Required
+            
+            - name (string)
+                * Name of the project to create, which must be unique in the organization.
+                * Required
+            
+            - timezone_id
+                * Default TZ database timezone ID; see [List of tz database time zones Wikipedia
+                    article](http://en.wikipedia.org/wiki/List_of_tz_database_time_zones). This timezone
+                    is used when computing statistics by date.
+            
+            - url_slug
+                * Unique string used as a component of the project's URL in the Telerivet web app.
+                    If not provided, a URL slug will be generated automatically.
+            
+            - auto_create_contacts (bool)
+                * If true, a contact will be automatically created for each unique phone number that
+                    a message is sent to or received from. If false, contacts will not automatically be
+                    created (unless contact information is modified by an automated service). The
+                    Conversations tab in the web app will only show messages that are associated with a
+                    contact.
+                * Default: 1
+            
+            - vars
+                * Custom variables and values to set for this project
+          
+        Returns:
+            Telerivet_Project
+    */
+    function createProject($options)
+    {
+        return new Telerivet_Project($this->_api, $this->_api->doRequest("POST", "{$this->getBaseApiPath()}/projects", $options));
+    }
+
     /**
         $organization->save()
         

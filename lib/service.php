@@ -23,6 +23,10 @@
           * Name of the service
           * Updatable via API
       
+      - service_type
+          * Type of the service.
+          * Read-only
+      
       - active (bool)
           * Whether the service is active or inactive. Inactive services are not automatically
               triggered and cannot be invoked via the API.
@@ -50,31 +54,48 @@
           * ID of the project this service belongs to
           * Read-only
       
-      - label_id
-          * ID of the label containing messages sent or received by this service (currently only
-              used for polls)
-          * Read-only
-      
       - response_table_id
-          * ID of the data table where responses to this service will be stored (currently only
-              used for polls)
-          * Read-only
+          * ID of the data table where responses to this service will be stored
+          * Updatable via API
       
-      - sample_group_id
-          * ID of the group containing contacts that have been invited to interact with this
-              service (currently only used for polls)
-          * Read-only
+      - phone_ids
+          * IDs of phones (basic routes) associated with this service, or null if the service is
+              associated with all routes. Only applies for service types that handle incoming
+              messages, voice calls, or USSD sessions.
+          * Updatable via API
       
-      - respondent_group_id
-          * ID of the group containing contacts that have completed an interaction with this
-              service (currently only used for polls)
-          * Read-only
+      - apply_mode
+          * If apply_mode is `unhandled`, the service will not be triggered if another service
+              has already handled the incoming message. If apply_mode is `always`, the service will
+              always be triggered regardless of other services. Only applies to services that handle
+              incoming messages.
+          * Allowed values: always, unhandled
+          * Updatable via API
       
-      - questions (array)
-          * Array of objects describing each question in a poll (only used for polls). Each
-              object has the properties `"id"` (the question ID), `"content"` (the text of the
-              question), and `"question_type"` (either `"multiple_choice"`, `"missed_call"`, or
-              `"open"`).
+      - contact_number_filter
+          * If contact_number_filter is `long_number`, this service will only be triggered if
+              the contact phone number has at least 7 digits (ignoring messages from shortcodes and
+              alphanumeric senders). If contact_number_filter is `all`, the service will be
+              triggered for all contact phone numbers.  Only applies to services that handle
+              incoming messages.
+          * Allowed values: long_number, all
+          * Updatable via API
+      
+      - show_action (bool)
+          * Whether this service is shown in the 'Actions' menu within the Telerivet web app
+              when the service is active. Only provided for service types that are manually
+              triggered.
+          * Updatable via API
+      
+      - direction
+          * Determines whether the service handles incoming voice calls, outgoing voice calls,
+              or both. Only applies to services that handle voice calls.
+          * Allowed values: incoming, outgoing, both
+          * Updatable via API
+      
+      - webhook_url
+          * URL that a third-party can invoke to trigger this service. Only provided for
+              services that are triggered by a webhook request.
           * Read-only
  */
 class Telerivet_Service extends Telerivet_Entity
@@ -152,7 +173,7 @@ class Telerivet_Service extends Telerivet_Entity
                       async=true.)
               
               - sent_messages (array of objects)
-                  * Array of messages sent by the service (Undefined if async=true.)
+                  * Array of messages sent by the service.
               
               - airtime_transactions (array of objects)
                   * Array of airtime transactions sent by the service (Undefined if async=true.)
@@ -289,6 +310,47 @@ class Telerivet_Service extends Telerivet_Entity
     }
 
     /**
+        $service->getConfig()
+        
+        Gets configuration specific to the type of automated service.
+        
+        Only certain types of services provide their configuration via the
+        API.
+        
+        Returns:
+            object
+    */
+    function getConfig()
+    {
+        return $this->_api->doRequest("GET", "{$this->getBaseApiPath()}/config");
+    }
+
+    /**
+        $service->setConfig($options)
+        
+        Updates configuration specific to the type of automated service.
+        
+        Only certain types of services support updating their configuration
+        via the API.
+        
+        Note: when updating a service of type custom_template_instance,
+        the validation script will be invoked when calling this method.
+        
+        Arguments:
+          - $options (associative array)
+              * Configuration for this service type. See
+                  [project.createService](#Project.createService) for available configuration options.
+              * Required
+          
+        Returns:
+            object
+    */
+    function setConfig($options)
+    {
+        return $this->_api->doRequest("POST", "{$this->getBaseApiPath()}/config", $options);
+    }
+
+    /**
         $service->save()
         
         Saves any fields or custom variables that have changed for this service.
@@ -296,6 +358,16 @@ class Telerivet_Service extends Telerivet_Entity
     function save()
     {
         parent::save();
+    }
+
+    /**
+        $service->delete()
+        
+        Deletes this service.
+    */
+    function delete()
+    {
+        $this->_api->doRequest("DELETE", "{$this->getBaseApiPath()}");
     }
 
     function getBaseApiPath()

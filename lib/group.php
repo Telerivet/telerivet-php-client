@@ -145,7 +145,7 @@ class Telerivet_Group extends Telerivet_Entity
             
             - message_type
                 * Filter scheduled messages by message_type
-                * Allowed values: sms, mms, ussd, call, service
+                * Allowed values: sms, mms, ussd, ussd_session, call, chat, service
             
             - time_created (UNIX timestamp)
                 * Filter scheduled messages by time_created
@@ -154,6 +154,9 @@ class Telerivet_Group extends Telerivet_Entity
             - next_time (UNIX timestamp)
                 * Filter scheduled messages by next_time
                 * Allowed modifiers: next_time[min], next_time[max], next_time[exists]
+            
+            - relative_scheduled_id
+                * Filter scheduled messages created for a relative scheduled message
             
             - sort
                 * Sort the results based on a field

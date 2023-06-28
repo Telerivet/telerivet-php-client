@@ -35,7 +35,7 @@ class Telerivet_Route extends Telerivet_Entity
     /**
         $route->save()
         
-        Saves any fields or custom variables that have changed for this route.
+        Saves any fields or custom variables that have changed for this custom route.
     */
     function save()
     {
