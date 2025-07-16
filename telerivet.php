@@ -24,7 +24,7 @@ class Telerivet_API
     private $api_key;
     private $api_url;
     public $num_requests = 0;
-    private $client_version = '1.7.0';
+    private $client_version = '1.8.0';
 
     private $curl;
     public $debug = false;
@@ -82,7 +82,7 @@ class Telerivet_API
     */
     function initProjectById($id)
     {
-        return new Telerivet_Project($this, array('id' => $id), false);
+        return new Telerivet_Project($this, ['id' => $id], false);
     }
 
     /**
@@ -157,7 +157,7 @@ class Telerivet_API
     */
     function initOrganizationById($id)
     {
-        return new Telerivet_Organization($this, array('id' => $id), false);
+        return new Telerivet_Organization($this, ['id' => $id], false);
     }
 
     /**

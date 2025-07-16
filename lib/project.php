@@ -43,7 +43,12 @@
           * Updatable via API
       
       - vars (associative array)
-          * Custom variables stored for this project
+          * Custom variables stored for this project. Variable names may be up to 32 characters
+              in length and can contain the characters a-z, A-Z, 0-9, and _.
+              Values may be strings, numbers, or boolean (true/false).
+              String values may be up to 4096 bytes in length when encoded as UTF-8.
+              Up to 100 variables are supported per object.
+              Setting a variable to null will delete the variable.
           * Updatable via API
       
       - organization_id (string, max 34 characters)
@@ -128,14 +133,25 @@ class Telerivet_Project extends Telerivet_Entity
             
             - media_urls (array)
                 * URLs of media files to attach to the text message. If `message_type` is `sms`,
-                    short links to each media URL will be appended to the end of the content (separated
-                    by a new line).
+                    short links to each URL will be appended to the end of the content (separated by a
+                    new line).
+                    
+                    
+                    By default, each file must have a https:// or http:// URL, which requires the file
+                    to be uploaded somewhere that is accessible via the internet. For media files that
+                    are not already accessible via the internet, the media_urls parameter also supports
+                    data URIs with the file data encoded via Base64 (e.g. "data:image/png;base64,..."),
+                    with a maximum file size of 2 MB. To send media via data URIs, contact Telerivet to
+                    request enabling the data URIs feature for your project.
             
             - route_params (associative array)
-                * Route-specific parameters for the message. The parameters object should have one
-                    or more keys matching the `phone_type` field of a phone (basic route) that may be
-                    used to send the message. The corresponding value should be an object with
-                    route-specific parameters to use if the message is sent by that type of route.
+                * Route-specific parameters for the message.
+                    
+                    When sending messages via chat apps such as WhatsApp, the route_params
+                    parameter can be used to send messages with app-specific features such as quick
+                    replies and link buttons.
+                    
+                    For more details, see [Route-Specific Parameters](#route_params).
             
             - label_ids (array)
                 * List of IDs of labels to add to this message
@@ -296,14 +312,25 @@ class Telerivet_Project extends Telerivet_Entity
             
             - media_urls (array)
                 * URLs of media files to attach to the text message. If `message_type` is `sms`,
-                    short links to each media URL will be appended to the end of the content (separated
-                    by a new line).
+                    short links to each URL will be appended to the end of the content (separated by a
+                    new line).
+                    
+                    
+                    By default, each file must have a https:// or http:// URL, which requires the file
+                    to be uploaded somewhere that is accessible via the internet. For media files that
+                    are not already accessible via the internet, the media_urls parameter also supports
+                    data URIs with the file data encoded via Base64 (e.g. "data:image/png;base64,..."),
+                    with a maximum file size of 2 MB. To send media via data URIs, contact Telerivet to
+                    request enabling the data URIs feature for your project.
             
             - route_params (associative array)
-                * Route-specific parameters to use when sending the message. The parameters object
-                    may have keys matching the `phone_type` field of a phone (basic route) that may be
-                    used to send the message. The corresponding value is an object with route-specific
-                    parameters to use when sending a message with that type of route.
+                * Route-specific parameters to use when sending the message.
+                    
+                    When sending messages via chat apps such as WhatsApp, the route_params
+                    parameter can be used to send messages with app-specific features such as quick
+                    replies and link buttons.
+                    
+                    For more details, see [Route-Specific Parameters](#route_params).
             
             - label_ids (array)
                 * Array of IDs of labels to add to the sent messages (maximum 5). Does not apply
@@ -383,7 +410,12 @@ class Telerivet_Project extends Telerivet_Entity
                 * ID of one or more groups to remove this contact as a member (max 20)
             
             - vars (associative array)
-                * Custom variables and values to update on the contact
+                * Custom variables and values to update on the contact. Variable names may be up to
+                    32 characters in length and can contain the characters a-z, A-Z, 0-9, and _.
+                    Values may be strings, numbers, or boolean (true/false).
+                    String values may be up to 4096 bytes in length when encoded as UTF-8.
+                    Up to 100 variables are supported per object.
+                    Setting a variable to null will delete the variable.
           
         Returns:
             Telerivet_Contact
@@ -492,15 +524,26 @@ class Telerivet_Project extends Telerivet_Entity
                 * URLs of media files to attach to the text message. If `message_type` is `sms`,
                     short links to each URL will be appended to the end of the content (separated by a
                     new line).
+                    
+                    
+                    By default, each file must have a https:// or http:// URL, which requires the file
+                    to be uploaded somewhere that is accessible via the internet. For media files that
+                    are not already accessible via the internet, the media_urls parameter also supports
+                    data URIs with the file data encoded via Base64 (e.g. "data:image/png;base64,..."),
+                    with a maximum file size of 2 MB. To send media via data URIs, contact Telerivet to
+                    request enabling the data URIs feature for your project.
             
             - vars (associative array)
                 * Custom variables to set for each message
             
             - route_params (associative array)
-                * Route-specific parameters for the messages in the broadcast. The parameters object
-                    may have keys matching the `phone_type` field of a phone (basic route) that may be
-                    used to send messages in this broadcast. The corresponding value is an object with
-                    route-specific parameters to use when sending messages with that type of route.
+                * Route-specific parameters for the messages in the broadcast.
+                    
+                    When sending messages via chat apps such as WhatsApp, the route_params
+                    parameter can be used to send messages with app-specific features such as quick
+                    replies and link buttons.
+                    
+                    For more details, see [Route-Specific Parameters](#route_params).
             
             - service_id
                 * Service to invoke for each recipient (when `message_type` is `call` or `service`)
@@ -610,14 +653,25 @@ class Telerivet_Project extends Telerivet_Entity
             
             - media_urls (array)
                 * URLs of media files to attach to the text message. If `message_type` is `sms`,
-                    short links to each media URL will be appended to the end of the content (separated
-                    by a new line).
+                    short links to each URL will be appended to the end of the content (separated by a
+                    new line).
+                    
+                    
+                    By default, each file must have a https:// or http:// URL, which requires the file
+                    to be uploaded somewhere that is accessible via the internet. For media files that
+                    are not already accessible via the internet, the media_urls parameter also supports
+                    data URIs with the file data encoded via Base64 (e.g. "data:image/png;base64,..."),
+                    with a maximum file size of 2 MB. To send media via data URIs, contact Telerivet to
+                    request enabling the data URIs feature for your project.
             
             - route_params (associative array)
-                * Route-specific parameters to apply to all messages. The parameters object may have
-                    keys matching the `phone_type` field of a phone (basic route) that may be used to
-                    send messages. The corresponding value is an object with route-specific parameters
-                    to use when sending messages with that type of route.
+                * Route-specific parameters to apply to all messages.
+                    
+                    When sending messages via chat apps such as WhatsApp, the route_params
+                    parameter can be used to send messages with app-specific features such as quick
+                    replies and link buttons.
+                    
+                    For more details, see [Route-Specific Parameters](#route_params).
             
             - vars (associative array)
                 * Custom variables to store with the message
@@ -823,14 +877,25 @@ class Telerivet_Project extends Telerivet_Entity
             
             - media_urls (array)
                 * URLs of media files to attach to the text message. If `message_type` is `sms`,
-                    short links to each media URL will be appended to the end of the content (separated
-                    by a new line).
+                    short links to each URL will be appended to the end of the content (separated by a
+                    new line).
+                    
+                    
+                    By default, each file must have a https:// or http:// URL, which requires the file
+                    to be uploaded somewhere that is accessible via the internet. For media files that
+                    are not already accessible via the internet, the media_urls parameter also supports
+                    data URIs with the file data encoded via Base64 (e.g. "data:image/png;base64,..."),
+                    with a maximum file size of 2 MB. To send media via data URIs, contact Telerivet to
+                    request enabling the data URIs feature for your project.
             
             - route_params (associative array)
-                * Route-specific parameters to use when sending the message. The parameters object
-                    may have keys matching the `phone_type` field of a phone (basic route) that may be
-                    used to send the message. The corresponding value is an object with route-specific
-                    parameters to use when sending a message with that type of route.
+                * Route-specific parameters to use when sending the message.
+                    
+                    When sending messages via chat apps such as WhatsApp, the route_params
+                    parameter can be used to send messages with app-specific features such as quick
+                    replies and link buttons.
+                    
+                    For more details, see [Route-Specific Parameters](#route_params).
             
             - label_ids (array)
                 * Array of IDs of labels to add to the sent messages (maximum 5). Does not apply
@@ -872,7 +937,7 @@ class Telerivet_Project extends Telerivet_Entity
             
             - message_type
                 * Type of message
-                * Allowed values: sms, call
+                * Allowed values: sms, call, chat
                 * Default: sms
             
             - from_number
@@ -1080,7 +1145,7 @@ class Telerivet_Project extends Telerivet_Entity
     */
     function initContactById($id)
     {
-        return new Telerivet_Contact($this->_api, array('project_id' => $this->id, 'id' => $id), false);
+        return new Telerivet_Contact($this->_api, ['project_id' => $this->id, 'id' => $id], false);
     }
 
     /**
@@ -1166,7 +1231,7 @@ class Telerivet_Project extends Telerivet_Entity
     */
     function initPhoneById($id)
     {
-        return new Telerivet_Phone($this->_api, array('project_id' => $this->id, 'id' => $id), false);
+        return new Telerivet_Phone($this->_api, ['project_id' => $this->id, 'id' => $id], false);
     }
 
     /**
@@ -1289,7 +1354,7 @@ class Telerivet_Project extends Telerivet_Entity
     */
     function initMessageById($id)
     {
-        return new Telerivet_Message($this->_api, array('project_id' => $this->id, 'id' => $id), false);
+        return new Telerivet_Message($this->_api, ['project_id' => $this->id, 'id' => $id], false);
     }
 
     /**
@@ -1371,7 +1436,7 @@ class Telerivet_Project extends Telerivet_Entity
     */
     function initBroadcastById($id)
     {
-        return new Telerivet_Broadcast($this->_api, array('project_id' => $this->id, 'id' => $id), false);
+        return new Telerivet_Broadcast($this->_api, ['project_id' => $this->id, 'id' => $id], false);
     }
 
     /**
@@ -1665,7 +1730,7 @@ class Telerivet_Project extends Telerivet_Entity
     */
     function initTaskById($id)
     {
-        return new Telerivet_Task($this->_api, array('project_id' => $this->id, 'id' => $id), false);
+        return new Telerivet_Task($this->_api, ['project_id' => $this->id, 'id' => $id], false);
     }
 
     /**
@@ -1725,7 +1790,7 @@ class Telerivet_Project extends Telerivet_Entity
     */
     function getOrCreateGroup($name)
     {
-        return new Telerivet_Group($this->_api, $this->_api->doRequest("POST", "{$this->getBaseApiPath()}/groups", array('name' => $name)));
+        return new Telerivet_Group($this->_api, $this->_api->doRequest("POST", "{$this->getBaseApiPath()}/groups", ['name' => $name]));
     }
 
     /**
@@ -1761,7 +1826,7 @@ class Telerivet_Project extends Telerivet_Entity
     */
     function initGroupById($id)
     {
-        return new Telerivet_Group($this->_api, array('project_id' => $this->id, 'id' => $id), false);
+        return new Telerivet_Group($this->_api, ['project_id' => $this->id, 'id' => $id], false);
     }
 
     /**
@@ -1818,7 +1883,7 @@ class Telerivet_Project extends Telerivet_Entity
     */
     function getOrCreateLabel($name)
     {
-        return new Telerivet_Label($this->_api, $this->_api->doRequest("POST", "{$this->getBaseApiPath()}/labels", array('name' => $name)));
+        return new Telerivet_Label($this->_api, $this->_api->doRequest("POST", "{$this->getBaseApiPath()}/labels", ['name' => $name]));
     }
 
     /**
@@ -1854,7 +1919,7 @@ class Telerivet_Project extends Telerivet_Entity
     */
     function initLabelById($id)
     {
-        return new Telerivet_Label($this->_api, array('project_id' => $this->id, 'id' => $id), false);
+        return new Telerivet_Label($this->_api, ['project_id' => $this->id, 'id' => $id], false);
     }
 
     /**
@@ -1911,7 +1976,7 @@ class Telerivet_Project extends Telerivet_Entity
     */
     function getOrCreateDataTable($name)
     {
-        return new Telerivet_DataTable($this->_api, $this->_api->doRequest("POST", "{$this->getBaseApiPath()}/tables", array('name' => $name)));
+        return new Telerivet_DataTable($this->_api, $this->_api->doRequest("POST", "{$this->getBaseApiPath()}/tables", ['name' => $name]));
     }
 
     /**
@@ -1947,7 +2012,7 @@ class Telerivet_Project extends Telerivet_Entity
     */
     function initDataTableById($id)
     {
-        return new Telerivet_DataTable($this->_api, array('project_id' => $this->id, 'id' => $id), false);
+        return new Telerivet_DataTable($this->_api, ['project_id' => $this->id, 'id' => $id], false);
     }
 
     /**
@@ -2080,7 +2145,7 @@ class Telerivet_Project extends Telerivet_Entity
     */
     function initScheduledMessageById($id)
     {
-        return new Telerivet_ScheduledMessage($this->_api, array('project_id' => $this->id, 'id' => $id), false);
+        return new Telerivet_ScheduledMessage($this->_api, ['project_id' => $this->id, 'id' => $id], false);
     }
 
     /**
@@ -2116,7 +2181,7 @@ class Telerivet_Project extends Telerivet_Entity
     */
     function initRelativeScheduledMessageById($id)
     {
-        return new Telerivet_RelativeScheduledMessage($this->_api, array('project_id' => $this->id, 'id' => $id), false);
+        return new Telerivet_RelativeScheduledMessage($this->_api, ['project_id' => $this->id, 'id' => $id], false);
     }
 
     /**
@@ -2198,7 +2263,12 @@ class Telerivet_Project extends Telerivet_Entity
                 * Required
             
             - vars
-                * Custom variables and values to set for this service
+                * Custom variables and values to set for this service. Variable names may be up to
+                    32 characters in length and can contain the characters a-z, A-Z, 0-9, and _.
+                    Values may be strings, numbers, or boolean (true/false).
+                    String values may be up to 4096 bytes in length when encoded as UTF-8.
+                    Up to 100 variables are supported per object.
+                    Setting a variable to null will delete the variable.
             
             - active (bool)
                 * Whether the service is initially active or inactive. Inactive services are not
@@ -2341,7 +2411,7 @@ class Telerivet_Project extends Telerivet_Entity
     */
     function initServiceById($id)
     {
-        return new Telerivet_Service($this->_api, array('project_id' => $this->id, 'id' => $id), false);
+        return new Telerivet_Service($this->_api, ['project_id' => $this->id, 'id' => $id], false);
     }
 
     /**
@@ -2527,7 +2597,7 @@ class Telerivet_Project extends Telerivet_Entity
     */
     function initRouteById($id)
     {
-        return new Telerivet_Route($this->_api, array('project_id' => $this->id, 'id' => $id), false);
+        return new Telerivet_Route($this->_api, ['project_id' => $this->id, 'id' => $id], false);
     }
 
     /**
@@ -2570,8 +2640,8 @@ class Telerivet_Project extends Telerivet_Entity
             
             - status
                 * Filter transactions by status
-                * Allowed values: pending, queued, processing, successful, failed, cancelled,
-                    pending_payment, pending_approval
+                * Allowed values: pending, queued, processing, submitted, successful, failed,
+                    cancelled, pending_payment, pending_approval
             
             - sort_dir
                 * Sort the results in ascending or descending order
@@ -2627,7 +2697,7 @@ class Telerivet_Project extends Telerivet_Entity
     */
     function initAirtimeTransactionById($id)
     {
-        return new Telerivet_AirtimeTransaction($this->_api, array('project_id' => $this->id, 'id' => $id), false);
+        return new Telerivet_AirtimeTransaction($this->_api, ['project_id' => $this->id, 'id' => $id], false);
     }
 
     /**
@@ -2651,6 +2721,9 @@ class Telerivet_Project extends Telerivet_Entity
         
         Allows customizing how a custom contact field is displayed in the Telerivet web app.
         
+        The variable path parameter can contain the characters a-z, A-Z,
+        0-9, and _, and may be up to 32 characters in length.
+        
         Arguments:
           - $variable
               * The variable name of the field to create or update.
@@ -2665,7 +2738,7 @@ class Telerivet_Project extends Telerivet_Entity
             - type (int)
                 * Field type
                 * Allowed values: text, long_text, secret, phone_number, email, url, audio, date,
-                    date_time, number, boolean, checkbox, select, radio
+                    date_time, number, boolean, checkbox, select, radio, route
             
             - order (int)
                 * Order in which to display the field
@@ -2715,6 +2788,9 @@ class Telerivet_Project extends Telerivet_Entity
         
         Allows customizing how a custom message field is displayed in the Telerivet web app.
         
+        The variable path parameter can contain the characters a-z, A-Z,
+        0-9, and _, and may be up to 32 characters in length.
+        
         Arguments:
           - $variable
               * The variable name of the field to create or update.
@@ -2729,7 +2805,7 @@ class Telerivet_Project extends Telerivet_Entity
             - type (string)
                 * Field type
                 * Allowed values: text, long_text, secret, phone_number, email, url, audio, date,
-                    date_time, number, boolean, checkbox, select, radio
+                    date_time, number, boolean, checkbox, select, radio, route
             
             - order (int)
                 * Order in which to display the field
