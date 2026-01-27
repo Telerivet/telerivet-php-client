@@ -132,39 +132,39 @@ class Telerivet_DataTable extends Telerivet_Entity
     }
 
     /**
-        $table->getRowById($id)
+        $table->getRowById($row_id)
         
         Retrieves the row in the given table with the given ID.
         
         Arguments:
-          - $id
+          - $row_id
               * ID of the row
               * Required
           
         Returns:
             Telerivet_DataRow
     */
-    function getRowById($id)
+    function getRowById($row_id)
     {
-        return new Telerivet_DataRow($this->_api, $this->_api->doRequest("GET", "{$this->getBaseApiPath()}/rows/{$id}"));
+        return new Telerivet_DataRow($this->_api, $this->_api->doRequest("GET", "{$this->getBaseApiPath()}/rows/{$row_id}"));
     }
 
     /**
-        $table->initRowById($id)
+        $table->initRowById($row_id)
         
         Initializes the row in the given table with the given ID, without making an API request.
         
         Arguments:
-          - $id
+          - $row_id
               * ID of the row
               * Required
           
         Returns:
             Telerivet_DataRow
     */
-    function initRowById($id)
+    function initRowById($row_id)
     {
-        return new Telerivet_DataRow($this->_api, ['project_id' => $this->project_id, 'table_id' => $this->id, 'id' => $id], false);
+        return new Telerivet_DataRow($this->_api, ['project_id' => $this->project_id, 'table_id' => $this->id, 'row_id' => $row_id], false);
     }
 
     /**
@@ -212,9 +212,9 @@ class Telerivet_DataTable extends Telerivet_Entity
             
             - items (array)
                 * Array of up to 100 objects containing `value` and `label` string properties to
-                    show in the dropdown list when type is `select`. Each `value` and `label` must be
-                    between 1 and 256 characters in length.
-                * Required if type is `select`
+                    show when type is `select` or `radio`. Each `value` and `label` must be between 1
+                    and 256 characters in length.
+                * Required if type is `select` or `radio`
             
             - readonly (bool)
                 * Set to true to prevent editing the field in the Telerivet web app

@@ -9,9 +9,6 @@
     parameters, and properties related to Custom Routes continue to use the term "Route" to
     maintain backwards compatibility.
     
-    Custom routing rules can currently only be configured via Telerivet's web
-    UI.
-    
     Fields:
     
       - id (string, max 34 characters)
@@ -34,13 +31,18 @@
       - project_id
           * ID of the project this route belongs to
           * Read-only
+      
+      - actions (array of RoutingAction)
+          * Array of routing action objects. Allowed action types: `use_phone`, `condition`.
+          * Updatable via API
 */
 class Telerivet_Route extends Telerivet_Entity
 {
     /**
         $route->save()
         
-        Saves any fields or custom variables that have changed for this custom route.
+        Saves any fields, custom variables, or routing actions that have changed for this custom
+        route.
     */
     function save()
     {

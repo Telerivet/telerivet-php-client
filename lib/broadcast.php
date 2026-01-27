@@ -73,6 +73,12 @@
               numbers, or if the group membership changed while the broadcast was being sent.
           * Read-only
       
+      - num_parts (number)
+          * The total number of SMS parts that have been sent in this broadcast. The number of
+              SMS parts does not include messages that are still queued, or messages that failed to
+              send.
+          * Read-only
+      
       - message_type
           * Type of message sent from this broadcast
           * Allowed values: sms, mms, ussd, ussd_session, call, chat, service
@@ -192,6 +198,16 @@
       
       - project_id
           * ID of the project this broadcast belongs to
+          * Read-only
+      
+      - is_template (bool)
+          * Set to true if Telerivet will render variables like [[contact.name]] in the message
+              content
+          * Read-only
+      
+      - recipients_str (string)
+          * A string with a human readable description of the first few recipients (possibly
+              truncated)
           * Read-only
 */
 class Telerivet_Broadcast extends Telerivet_Entity

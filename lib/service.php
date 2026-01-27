@@ -63,10 +63,32 @@
           * ID of the data table where responses to this service will be stored
           * Updatable via API
       
-      - phone_ids
+      - phone_ids (array)
           * IDs of phones (basic routes) associated with this service, or null if the service is
               associated with all routes. Only applies for service types that handle incoming
               messages, voice calls, or USSD sessions.
+          * Updatable via API
+      
+      - message_types (array of strings)
+          * Types of messages that this service handles. Only provided for service types that
+              handle incoming messages.
+          * Allowed values: text, call, ussd
+          * Updatable via API
+      
+      - table_ids (array)
+          * IDs of data tables that this service applies to, or null if this service applies to
+              all data tables. Only provided for data row services (`data_row_script` and
+              `data_row_actions`).
+          * Updatable via API
+      
+      - message_statuses (array of strings)
+          * Message statuses that this service handles. Only provided for
+              `message_status_actions` services.
+          * Allowed values: sent, delivered, failed, failed_queued, not_delivered
+          * Updatable via API
+      
+      - tags (array)
+          * Tags used to organize this service. Each tag can be up to 32 characters in length.
           * Updatable via API
       
       - apply_mode
@@ -102,6 +124,10 @@
           * URL that a third-party can invoke to trigger this service. Only provided for
               services that are triggered by a webhook request.
           * Read-only
+      
+      - is_custom_template (bool)
+          * Whether this service was created from a custom service template
+          * Read-only
  */
 class Telerivet_Service extends Telerivet_Entity
 {
@@ -127,7 +153,8 @@ class Telerivet_Service extends Telerivet_Entity
             
             - context
                 * The name of the context in which this service is invoked
-                * Allowed values: message, call, ussd_session, row, contact, project
+                * Allowed values: message, call, ussd_session, row, contact, project,
+                    airtime_transaction
                 * Required
             
             - event
@@ -146,6 +173,10 @@ class Telerivet_Service extends Telerivet_Entity
                 * The phone number of the contact this service is triggered for (either `contact_id`
                     or `phone_number` is required if `context` is 'contact'). If no  contact exists with
                     this phone number, a new contact will be created.
+            
+            - row_id
+                * The ID of the data row this service is triggered for
+                * Required if context is 'row'
             
             - variables (associative array)
                 * Object containing up to 25 temporary variable names and their corresponding values
@@ -325,7 +356,8 @@ class Telerivet_Service extends Telerivet_Entity
         Gets configuration specific to the type of automated service.
         
         Only certain types of services provide their configuration via the
-        API.
+        API. See [Service Configuration Reference](#service_config) for available configuration
+        options.
         
         Returns:
             object
@@ -348,8 +380,8 @@ class Telerivet_Service extends Telerivet_Entity
         
         Arguments:
           - $options (associative array)
-              * Configuration for this service type. See
-                  [project.createService](#Project.createService) for available configuration options.
+              * Configuration for this service type. See [Service Configuration
+                  Reference](#service_config) for available configuration options.
               * Required
           
         Returns:
