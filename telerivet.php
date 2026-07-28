@@ -24,7 +24,7 @@ class Telerivet_API
     private $api_key;
     private $api_url;
     public $num_requests = 0;
-    private $client_version = '1.8.5';
+    private $client_version = '1.9.6';
 
     private $curl;
     public $debug = false;
@@ -364,6 +364,7 @@ require_once "{$tr_lib_dir}/relativescheduledmessage.php";
 require_once "{$tr_lib_dir}/scheduledservice.php";
 require_once "{$tr_lib_dir}/contact.php";
 require_once "{$tr_lib_dir}/broadcast.php";
+require_once "{$tr_lib_dir}/campaign.php";
 require_once "{$tr_lib_dir}/task.php";
 require_once "{$tr_lib_dir}/project.php";
 require_once "{$tr_lib_dir}/label.php";
@@ -372,9 +373,11 @@ require_once "{$tr_lib_dir}/phone.php";
 require_once "{$tr_lib_dir}/route.php";
 require_once "{$tr_lib_dir}/datatable.php";
 require_once "{$tr_lib_dir}/datarow.php";
+require_once "{$tr_lib_dir}/dataview.php";
 require_once "{$tr_lib_dir}/service.php";
 require_once "{$tr_lib_dir}/contactservicestate.php";
 require_once "{$tr_lib_dir}/messagetemplate.php";
+require_once "{$tr_lib_dir}/storedfile.php";
 require_once "{$tr_lib_dir}/organization.php";
 require_once "{$tr_lib_dir}/airtimetransaction.php";
 require_once "{$tr_lib_dir}/webhook.php";

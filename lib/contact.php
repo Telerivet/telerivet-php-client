@@ -2,6 +2,17 @@
 /**
     Telerivet_Contact
     
+    A contact represents a person or other entity that can be communicated with via phone number
+    or other messaging channel within a project.
+    
+    Each contact has a name, phone number, and custom variables that can be used
+    to personalize messages. Contacts can belong to one or more groups, and can be used as
+    recipients for broadcasts, campaigns, and other messaging operations.
+    
+    Contacts can be imported or created individually via the API or web app. If
+    the project's auto_create_contacts setting is enabled, a contact will be automatically
+    created for each unique phone number that a message is sent to or received from.
+    
     Fields:
     
       - id (string, max 34 characters)
@@ -84,6 +95,10 @@
       - project_id
           * ID of the project this contact belongs to
           * Read-only
+      
+      - url
+          * URL to this contact in the Telerivet web app
+          * Read-only
  */
 class Telerivet_Contact extends Telerivet_Entity
 {    
@@ -156,7 +171,7 @@ class Telerivet_Contact extends Telerivet_Entity
             - source
                 * Filter messages by source
                 * Allowed values: phone, provider, web, api, service, webhook, scheduled,
-                    integration
+                    integration, mcp
             
             - starred (bool)
                 * Filter messages by starred/unstarred

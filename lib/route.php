@@ -28,6 +28,10 @@
               Setting a variable to null will delete the variable.
           * Updatable via API
       
+      - url
+          * URL to this route in the Telerivet web app
+          * Read-only
+      
       - project_id
           * ID of the project this route belongs to
           * Read-only

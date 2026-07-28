@@ -115,7 +115,8 @@
       
       - source
           * How the message originated within Telerivet
-          * Allowed values: phone, provider, web, api, service, webhook, scheduled, integration
+          * Allowed values: phone, provider, web, api, service, webhook, scheduled, integration,
+              mcp
           * Read-only
       
       - simulated (bool)
@@ -139,11 +140,8 @@
           * Read-only
       
       - media (array)
-          * For text messages containing media files, this is an array of objects with the
-              properties `url`, `type` (MIME type), `filename`, and `size` (file size in bytes).
-              Unknown properties are null. This property is undefined for messages that do not
-              contain media files. Note: For files uploaded via the Telerivet web app, the URL is
-              temporary and may not be valid for more than 1 day.
+          * Array of media attachments for the text message. This property is undefined for
+              messages that do not contain media files.
           * Read-only
       
       - vars (associative array)
@@ -190,6 +188,10 @@
       - service_id (string, max 34 characters)
           * The service associated with this broadcast (for voice calls, the service defines the
               call flow)
+          * Read-only
+      
+      - url
+          * URL to this broadcast in the Telerivet web app
           * Read-only
       
       - user_id (string, max 34 characters)

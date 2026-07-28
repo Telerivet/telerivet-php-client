@@ -51,6 +51,10 @@
       - project_id
           * ID of the project this data table belongs to
           * Read-only
+      
+      - url
+          * URL to this data table in the Telerivet web app
+          * Read-only
 */
 class Telerivet_DataTable extends Telerivet_Entity
 {
@@ -132,6 +136,45 @@ class Telerivet_DataTable extends Telerivet_Entity
     }
 
     /**
+        $table->importRows($options)
+        
+        Creates and/or updates up to 200 rows in a single API call. When creating or updating a
+        large number of rows, this method is significantly faster than sending a separate API
+        request for each row.
+        
+        By default, a new row will be created for each item. To update
+        existing rows, set the `lookup_key` parameter to match rows by ID, contact, or the value of
+        a custom variable.
+        
+        Arguments:
+          - $options (associative array)
+              * Required
+            
+            - rows (array)
+                * Array of up to 200 objects which may contain the properties `vars` (object),
+                    `contact_id` (string), `from_number` (string), and `id` (string). All properties are
+                    optional, unless used as a lookup key.
+                * Required
+            
+            - lookup_key
+                * The field used to search for a matching row, or 'none' to always create a new row.
+                    To search by a custom variable, precede the variable name with 'vars.'.
+                * Allowed values: none, id, contact_id, vars.variable_name
+                * Default: none
+          
+        Returns:
+            (associative array)
+              - rows (array)
+                  * List of objects representing each row, in the same order as provided in the
+                      `rows` parameter in the API request.
+    */
+    function importRows($options)
+    {
+        $data = $this->_api->doRequest("POST", "{$this->getBaseApiPath()}/import_rows", $options);
+        return $data;
+    }
+
+    /**
         $table->getRowById($row_id)
         
         Retrieves the row in the given table with the given ID.
@@ -165,6 +208,119 @@ class Telerivet_DataTable extends Telerivet_Entity
     function initRowById($row_id)
     {
         return new Telerivet_DataRow($this->_api, ['project_id' => $this->project_id, 'table_id' => $this->id, 'row_id' => $row_id], false);
+    }
+
+    /**
+        $table->queryViews($options)
+        
+        Queries views of this data table.
+        
+        Arguments:
+          - $options (associative array)
+            
+            - name
+                * Filter views by name
+                * Allowed modifiers: name[ne], name[prefix], name[not_prefix], name[gte], name[gt],
+                    name[lt], name[lte]
+            
+            - sort
+                * Sort the results based on a field
+                * Allowed values: default, name
+                * Default: default
+            
+            - sort_dir
+                * Sort the results in ascending or descending order
+                * Allowed values: asc, desc
+                * Default: asc
+            
+            - page_size (int)
+                * Number of results returned per page (max 500)
+                * Default: 50
+            
+            - offset (int)
+                * Number of items to skip from beginning of result set
+                * Default: 0
+          
+        Returns:
+            Telerivet_APICursor (of Telerivet_DataView)
+    */
+    function queryViews($options = null)
+    {
+        return $this->_api->newApiCursor('Telerivet_DataView', "{$this->getBaseApiPath()}/views", $options);
+    }
+
+    /**
+        $table->createView($options)
+        
+        Creates a new view of this data table, defined by a filter on its rows. The view's filter
+        conditions cannot be changed after the view is created (although the view can be renamed or
+        deleted).
+        
+        Telerivet will automatically store the count of rows matching each
+        data view once a day, making it possible to retrieve historical statistics for the number of
+        rows matching the filter, but only for dates after the view is created.
+        
+        Arguments:
+          - $options (associative array)
+              * Required
+            
+            - name (string, max 64 characters)
+                * Name of the view (must be unique within the data table)
+                * Required
+            
+            - filters (associative array)
+                * Key-value pairs of conditions that rows must match to be included in the view. To
+                    filter by a custom variable, precede the variable name with 'vars.' (conditions on
+                    custom variables may also be provided as a nested object under a `vars` key, e.g.
+                    `{"vars": {"q1": "yes"}}`); other supported keys are `id`, `time_created`,
+                    `time_updated`, `contact_id`, `contact_name`, and `from_number`. Each value is
+                    either a value to match exactly, or an object with an operator such as `ne`,
+                    `prefix`, `gte`, `gt`, `lte`, `lt`, `exists`, or `not_exists` as the key (e.g.
+                    `{"gte": 10}`).
+                * Required
+          
+        Returns:
+            Telerivet_DataView
+    */
+    function createView($options)
+    {
+        return new Telerivet_DataView($this->_api, $this->_api->doRequest("POST", "{$this->getBaseApiPath()}/views", $options));
+    }
+
+    /**
+        $table->getViewById($view_id)
+        
+        Retrieves the view of the given table with the given ID.
+        
+        Arguments:
+          - $view_id
+              * ID of the view
+              * Required
+          
+        Returns:
+            Telerivet_DataView
+    */
+    function getViewById($view_id)
+    {
+        return new Telerivet_DataView($this->_api, $this->_api->doRequest("GET", "{$this->getBaseApiPath()}/views/{$view_id}"));
+    }
+
+    /**
+        $table->initViewById($view_id)
+        
+        Initializes the view of the given table with the given ID, without making an API request.
+        
+        Arguments:
+          - $view_id
+              * ID of the view
+              * Required
+          
+        Returns:
+            Telerivet_DataView
+    */
+    function initViewById($view_id)
+    {
+        return new Telerivet_DataView($this->_api, ['project_id' => $this->project_id, 'table_id' => $this->id, 'view_id' => $view_id], false);
     }
 
     /**
@@ -229,6 +385,34 @@ class Telerivet_DataTable extends Telerivet_Entity
     function setFieldMetadata($variable, $options)
     {
         return $this->_api->doRequest("POST", "{$this->getBaseApiPath()}/fields/{$variable}", $options);
+    }
+
+    /**
+        $table->updateFields($options)
+        
+        Updates metadata for one or more fields (columns) in the data table. Only the specified
+        fields are updated; other fields are not affected.
+        
+        To delete a field, include an object with the `variable` and
+        `delete` properties set (e.g. `{"variable": "my_field", "delete": true}`). Deleting a field
+        will also clear the corresponding variable on all rows in the table.
+        
+        Arguments:
+          - $options (associative array)
+              * Required
+            
+            - metadata (array)
+                * Array of up to 100 objects describing the fields to create, update, or delete.
+                    Each object must contain a `variable` property. Only the properties provided for
+                    each field will be updated.
+                * Required
+          
+        Returns:
+            array
+    */
+    function updateFields($options)
+    {
+        return $this->_api->doRequest("POST", "{$this->getBaseApiPath()}/fields", $options);
     }
 
     /**

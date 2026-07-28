@@ -55,6 +55,14 @@
               Setting a variable to null will delete the variable.
           * Updatable via API
       
+      - url
+          * URL to this service in the Telerivet web app
+          * Read-only
+      
+      - url_edit
+          * URL to edit the service in the Telerivet web app
+          * Read-only
+      
       - project_id
           * ID of the project this service belongs to
           * Read-only
@@ -356,8 +364,8 @@ class Telerivet_Service extends Telerivet_Entity
         Gets configuration specific to the type of automated service.
         
         Only certain types of services provide their configuration via the
-        API. See [Service Configuration Reference](#service_config) for available configuration
-        options.
+        API. See [Service Configuration Reference](#service_config) or the machine-readable [OpenAPI
+        specification](https://api.telerivet.com/openapi.json) for available configuration options.
         
         Returns:
             object
@@ -381,7 +389,9 @@ class Telerivet_Service extends Telerivet_Entity
         Arguments:
           - $options (associative array)
               * Configuration for this service type. See [Service Configuration
-                  Reference](#service_config) for available configuration options.
+                  Reference](#service_config) or the machine-readable [OpenAPI
+                  specification](https://api.telerivet.com/openapi.json) for available configuration
+                  options.
               * Required
           
         Returns:

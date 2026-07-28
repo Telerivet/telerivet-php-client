@@ -130,12 +130,9 @@
           * Updatable via API
       
       - media (array)
-          * For text messages containing media files, this is an array of objects with the
-              properties `url`, `type` (MIME type), `filename`, and `size` (file size in bytes).
-              Unknown properties are null. This property is undefined for messages that do not
-              contain media files. Note: For files uploaded via the Telerivet web app, the URL is
-              temporary and may not be valid for more than 1 day.
-          * Read-only
+          * Array of media attachments for the text message. This property is undefined for
+              messages that do not contain media files.
+          * Updatable via API
       
       - route_params (associative array)
           * Route-specific parameters to use when sending the message.

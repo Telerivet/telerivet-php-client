@@ -2,7 +2,8 @@
 /**
     Telerivet_AirtimeTransaction
     
-    Represents a transaction where airtime is sent to a mobile phone number.
+    Represents a transaction where airtime is sent to a mobile phone number. This also is used
+    to represent non-airtime value transfers such as data bundles or gift cards.
     
     To send airtime, first [create a Custom Actions service to send a particular amount of
     airtime](/dashboard/add_service?subtype_id=main.service.rules.contact&action_id=main.rule.sendairtime),

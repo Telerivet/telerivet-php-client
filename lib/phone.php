@@ -69,6 +69,21 @@
               to send messages. When null, there is no restriction on recipient countries.
           * Updatable via API
       
+      - sent_message_limit (int)
+          * Maximum number of messages that can be sent from this phone in a given period. When
+              the sent_message_count reaches this limit, sending is automatically paused. Set to
+              null to disable the limit.
+          * Updatable via API
+      
+      - sent_message_count (int)
+          * Number of messages sent from this phone since the counter was last reset (see
+              sent_message_epoch). This property is not updated if sent_message_limit is null.
+          * Read-only
+      
+      - sent_message_epoch (UNIX timestamp)
+          * The UNIX timestamp when the sent_message_count was last reset to 0.
+          * Read-only
+      
       - send_delay (number)
           * Number of seconds to wait after sending each message from this phone, to avoid
               exceeding carrier rate limits.
@@ -177,6 +192,10 @@
               Only applicable for routes that support external API configuration. Write-only; not
               returned by the API when retrieving a phone.
           * Updatable via API
+      
+      - url
+          * URL to this phone in the Telerivet web app
+          * Read-only
     
     Example Usage:
     -------------
@@ -213,7 +232,7 @@ class Telerivet_Phone extends Telerivet_Entity
             - source
                 * Filter messages by source
                 * Allowed values: phone, provider, web, api, service, webhook, scheduled,
-                    integration
+                    integration, mcp
             
             - starred (bool)
                 * Filter messages by starred/unstarred
@@ -286,6 +305,18 @@ class Telerivet_Phone extends Telerivet_Entity
     function save()
     {
         parent::save();
+    }
+
+    /**
+        $phone->resetSentMessageCount()
+        
+        Resets this route's sent_message_count to 0 and updates sent_message_epoch to the current
+        time. If sending was automatically paused because the previous count reached the limit,
+        sending will be resumed.
+    */
+    function resetSentMessageCount()
+    {
+        $this->_api->doRequest("POST", "{$this->getBaseApiPath()}/reset_sent_message_count");
     }
 
     function getBaseApiPath()
